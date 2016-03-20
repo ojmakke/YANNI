@@ -2,7 +2,8 @@
  * randomizer.cpp
  *
  *  Created on: Mar 17, 2016
- *      Author: Omar Makke
+ *      Author: Omar Makke (O jMakke)
+ *      ojQuote: "Every person needs some personal philosophy in life"
  */
 #ifndef RANDOMIZER_H_
 #define RANDOMIZER_H_
@@ -12,8 +13,8 @@ class Randomizer
 {
 public:
 	Randomizer();
-	T getRand(T in, T max);
-	T getRand();		// Between 0 and 1
+	T get_rand(T in, T max);
+	T get_rand();		// Between 0 and 1
 
 };
 

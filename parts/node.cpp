@@ -2,12 +2,13 @@
  * node.cpp
  *
  *  Created on: Mar 17, 2016
- *      Author: Omar Makke
+ *      Author: Omar Makke (O jMakke)
  */
 
 #include <vector>
 
 #include "node.h"
+#include "edge.h"
 #include "../activation/activation.h"
 #include "../activation/logistic.hpp"
 #include "../activation/step.hpp"
@@ -25,26 +26,28 @@ extern NNHelper<double> nnhelper;
 template<typename T>
 Node<T>::Node(ActivationEnum type)
 {
+	is_input=false;
+	is_output=false;
 	switch(type)
 	{
 		case LOGISTIC:
 		{
-			this->F =  Logistic<T>();
+			F =  new Logistic<T>();
 			break;
 		}
 		case TANH:
 		{
-			this->F = Tanh<T>();
+			F = new Tanh<T>();
 			break;
 		}
 		case RECTIFY:
 		{
-			this->F = Rectify<T>();
+			F = new Rectify<T>();
 			break;
 		}
 		case STEP:
 		{
-			this->F = Step<T>();
+			F = new Step<T>();
 			break;
 		}
 	}
@@ -55,11 +58,22 @@ Node<T>::~Node()
 {
 	// Remember, as you see in connectTo(), edges are created in node. Therefore, node clears them.
 	// The "Next edge
-	for(auto *e : forward)
+
+	fprintf(stdout, "Node destructor called\n");
+	if(forward.size() == 0)
 	{
-		delete e;
-		e = nullptr;
+		fprintf(stdout, "No forward edges to delete\n");
 	}
+	else
+	{
+		for(size_t i = 0; i < forward.size(); i++)
+		{
+			fprintf(stdout, "Deleting forwad edge %d\n", (int) i);
+			Edge<T> *edge = forward.at(i);
+			delete(edge);
+		}
+	}
+	delete F;
 
 //	// Now clean the vectors
 //	typename std::vector<Edge<T>*>::iterator it;
@@ -68,17 +82,46 @@ Node<T>::~Node()
 }
 
 template<typename T>
-void Node<T>::connectTo(Node<T> *node)
+void Node<T>::connect_to(Node<T> *node)
 {
+	fprintf(stdout, "Creating edge\n");
 	// Create an edge
 	Edge<T> *edge = new Edge<T>();
-	*edge->value = (T) nnhelper.randomizer.getRand();
+
+	edge->set_value((T) nnhelper.randomizer.get_rand());
+	fprintf(stdout, "Some random number: %f\n", (float) edge->get_value());
 	edge->n = node;
 	edge->p = this;
 
 	// Store the edge in both nodes
-	forward.push_back(*edge);
+	forward.push_back(edge);
+	fprintf(stdout, "Setting edge in next node\n");
 	std::vector<Edge<T> *> *backward = &(node->backward); 		// This node is behind the next node
-	*backward->push_back(edge);
+	fprintf(stdout, "Edge obtained\n");
+	backward->push_back(edge);
+	fprintf(stdout, "Edge connected\n");
 	return;
 }
+
+template<typename T>
+T Node<T>::get_output()
+{
+	return y;
+}
+
+template<typename T>
+T Node<T>::get_net()
+{
+	return fnet;
+}
+
+template<typename T>
+void Node<T>::set_output(T output)
+{
+	y = output;
+}
+
+
+// Tell compiler which classes to compile
+template class Node<double>;
+template class Node<float>;

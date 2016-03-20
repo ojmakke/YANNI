@@ -2,7 +2,8 @@
  * edge.h
  *
  *  Created on: Mar 17, 2016
- *      Author: Omar Makke
+ *      Author: Omar Makke ( OJ )
+ *      ojQuote: "The hardest thing about Mathematics is truly understanding the definitions"
  */
 
 #ifndef PARTS_EDGE_H_
@@ -16,13 +17,13 @@ class Edge
 {
 private:
 	T value;
-	bool isConnected;	// For dropoff, i.e. assume not connected.
+	bool is_connected;	// For dropoff, i.e. assume not connected.
 
 public:
 	Edge();
 	Edge(T value);
-	void setValue(T edge_value);
-	T getValue();
+	void set_value(T edge_value);
+	T get_value();
 	Node<T> *n;	// Link to next nodes
 	Node<T> *p;	// Link to previous node.
 };

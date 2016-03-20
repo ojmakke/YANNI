@@ -18,18 +18,18 @@ Randomizer<T>::Randomizer()
 }
 
 template<typename T>
-T Randomizer<T>::getRand()
+T Randomizer<T>::get_rand()
 {
 	return ((T) rand())/((T) RAND_MAX);
 }
 
 template<typename T>
-T Randomizer<T>::getRand(T min, T max)
+T Randomizer<T>::get_rand(T min, T max)
 {
 	return 	( ((T) rand())/((T) RAND_MAX) * (max - min) + min);
 }
 
-// force instentiation
+// force instantiation
 template class Randomizer<double>;
 template class Randomizer<float>;
 template class Randomizer<int>;

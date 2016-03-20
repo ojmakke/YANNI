@@ -2,7 +2,7 @@
  * gnunet.cpp
  *
  *  Created on: Mar 17, 2016
- *      Author: Omar Makke
+ *      Author: Omar Makke (O jMakke)
  */
 #include <iostream>
 
@@ -12,15 +12,14 @@
 #include "activation/rectify.hpp"
 #include "helper/nnhelper.hpp"
 
- NNHelper<double> nnhelper;
+NNHelper<double> nnhelper;
+
+extern void run_tests();
 
 int main(int argc, char* argv[])
 {
-
-	Tanh<double> f;
-	std::cout<<f.f(1.0)<<" "<<f.df(1.0);
-
-
+	run_tests();
+	fprintf(stdout, "Tests complete");
 	return 0;
 }
 

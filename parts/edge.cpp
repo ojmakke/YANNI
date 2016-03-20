@@ -2,7 +2,8 @@
  * edge.cpp
  *
  *  Created on: Mar 17, 2016
- *      Author: Omar Makke
+ *      Author: Omar Makke (O jMakke)
+ *
  */
 
 #include <random>
@@ -16,9 +17,9 @@
 extern NNHelper<double> nnhelper;
 
 template<typename T>
-T Edge<T>::getValue()
+T Edge<T>::get_value()
 {
-	if(this->isConnected)
+	if(this->is_connected)
 	{
 		return this->value;
 	}
@@ -26,9 +27,9 @@ T Edge<T>::getValue()
 }
 
 template<typename T>
-void Edge<T>::setValue(T edge_value)
+void Edge<T>::set_value(T edge_value)
 {
-	if(this->isConnected)
+	if(this->is_connected)
 	{
 		this->value = edge_value;
 	}
@@ -39,13 +40,17 @@ void Edge<T>::setValue(T edge_value)
 template<typename T>
 Edge<T>::Edge()
 {
-	if(this->isConnected)
-		this->value = nnhelper.randomizer.getRand();
+	this->value = nnhelper.randomizer.get_rand();
+	this->is_connected = true;
 }
 
 template<typename T>
 Edge<T>::Edge(T v)
 {
 	this->value = v;
-	this->isConnected = true;
+	this->is_connected = true;
 }
+
+// Tell compiler what to build
+template class Edge<double>;
+template class Edge<float>;

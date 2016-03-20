@@ -2,7 +2,8 @@
  * step.hpp
  *
  *  Created on: Mar 17, 2016
- *      Author: omakke
+ *      Author: Omar Makke (Omar jMakke)
+ *      ojQuote: "Freedom of speech? More like freedom to impeach!"
  */
 
 #ifndef STEP_HPP_

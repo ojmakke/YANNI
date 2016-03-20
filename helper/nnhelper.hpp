@@ -2,7 +2,8 @@
  * helper.cpp
  *
  *  Created on: Mar 17, 2016
- *      Author: Omar Makke
+ *      Author: Omar Makke (O jMakke)
+ *      ojQuote: "At this rate, new  born children will not be law abiding by default!"
  */
 
 #ifndef NNHELPER_HPP_

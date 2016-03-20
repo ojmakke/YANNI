@@ -2,7 +2,8 @@
  * rectify.hpp
  *
  *  Created on: Mar 17, 2016
- *      Author: Omar Makke
+ *      Author: Omar Makke(O jMakke)
+ *      ojQuote: "If you cannot beat them, write GNU software "
  */
 
 #ifndef RECTIFY_HPP_

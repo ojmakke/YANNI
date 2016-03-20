@@ -2,7 +2,8 @@
  * logistic.hpp
  *
  *  Created on: Mar 17, 2016
- *      Author: Omar Makke
+ *      Author: Omar Makke (O jMakke)
+ *      ojQuote: "Freedom is like a bootloader. Without it, we cannot operate."
  */
 
 #ifndef LOGISTIC_HPP_

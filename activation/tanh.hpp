@@ -2,7 +2,8 @@
  * tanh.cpp
  *
  *  Created on: Mar 17, 2016
- *      Author: Omar Makke
+ *      Author: Omar Makke (O jMakke)
+ *      ojQuote: "A: How many meanings does "free" have? B: Which year?"
  */
 
 #ifndef TANH_HPP_
