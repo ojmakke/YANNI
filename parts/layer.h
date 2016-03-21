@@ -33,13 +33,19 @@ public:
 	// This will affect back propagation. The errors will not be propagated
 	// beyond the input arrays.
 	// Hey! You can fix inputs in some middle layer! How about that!
-	int fix_layer_inputs(T *input_array, size_t input_size);
+	int fix_layer_inputs(T *input_array);
 
 	// Same as set_layer_inputs, but instead selectively fix some of the inputs.
 	// Why? MOA INTELLIGENCE. This is not in the research literature yet. It is
 	// in the GNU literature, as of today :)
 	int fix_some_layer_inputs(T *input_array_values, size_t *input_array_index, size_t input_size);
 	std::vector<Node<T> *> nodes;
+
+	void add_bias(ActivationEnum switching_function); // Adds a bias to the layer.
+	void calc_node_delta();
+
+
+private:
 
 };
 

@@ -28,6 +28,7 @@ Node<T>::Node(ActivationEnum type)
 {
 	is_input=false;
 	is_output=false;
+	delta = (T) 0.0;
 	switch(type)
 	{
 		case LOGISTIC:
@@ -59,16 +60,16 @@ Node<T>::~Node()
 	// Remember, as you see in connectTo(), edges are created in node. Therefore, node clears them.
 	// The "Next edge
 
-	fprintf(stdout, "Node destructor called\n");
+//	fprintf(stdout, "Node destructor called\n");
 	if(forward.size() == 0)
 	{
-		fprintf(stdout, "No forward edges to delete\n");
+//		fprintf(stdout, "No forward edges to delete\n");
 	}
 	else
 	{
 		for(size_t i = 0; i < forward.size(); i++)
 		{
-			fprintf(stdout, "Deleting forwad edge %d\n", (int) i);
+//			fprintf(stdout, "Deleting forwad edge %d\n", (int) i);
 			Edge<T> *edge = forward.at(i);
 			delete(edge);
 		}
@@ -84,22 +85,24 @@ Node<T>::~Node()
 template<typename T>
 void Node<T>::connect_to(Node<T> *node)
 {
-	fprintf(stdout, "Creating edge\n");
+//	fprintf(stdout, "Creating edge\n");
 	// Create an edge
 	Edge<T> *edge = new Edge<T>();
 
 	edge->set_value((T) nnhelper.randomizer.get_rand());
-	fprintf(stdout, "Some random number: %f\n", (float) edge->get_value());
+//	fprintf(stdout, "Some random number: %f\n", (float) edge->get_value());
 	edge->n = node;
 	edge->p = this;
 
 	// Store the edge in both nodes
 	forward.push_back(edge);
-	fprintf(stdout, "Setting edge in next node\n");
-	std::vector<Edge<T> *> *backward = &(node->backward); 		// This node is behind the next node
-	fprintf(stdout, "Edge obtained\n");
+//	fprintf(stdout, "Setting edge in next node\n");
+
+	// This node is behind the next node
+	std::vector<Edge<T> *> *backward = &(node->backward);
+//	fprintf(stdout, "Edge obtained\n");
 	backward->push_back(edge);
-	fprintf(stdout, "Edge connected\n");
+//	fprintf(stdout, "Edge connected\n");
 	return;
 }
 
@@ -121,6 +124,50 @@ void Node<T>::set_output(T output)
 	y = output;
 }
 
+//TODO
+// Abstract calculation method to allow parallel computing
+// Add dirty flag to avoid re-calculation if nothing has changed.
+// Dirty flag will go into the node and is set when edge states are updated
+template<typename T>
+T Node<T>::calc_new_output()
+{
+	// Input doesn't have input edges.
+	if(is_input)
+	{
+//		fprintf(stdout, "Returning y = %f\n", y);
+		return y;
+	}
+
+	fnet = (T) 0.0;
+	// Loop through call edges
+	for(size_t i = 0; i < backward.size(); i++)
+	{
+		Edge<T> *i_edge = backward.at(i);
+		// previous node connecting to current node through the edge
+		Node<T>  *i_node = i_edge->p;
+		fnet += i_edge->get_value() * i_node->get_output();
+	}
+	y = F->f(fnet);
+	return (T) y;	// Optional. Doesn't have to be used.
+}
+
+template<typename T>
+T Node<T>::get_delta()
+{
+	return delta;
+}
+
+template<typename T>
+void Node<T>::set_delta(T _delta)
+{
+	if(!is_output)
+	{
+		fprintf(stderr, "Attempting to control delta of hidden neuron\n");
+		return;
+	}
+
+	this->delta = _delta;
+}
 
 // Tell compiler which classes to compile
 template class Node<double>;

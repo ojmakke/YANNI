@@ -36,15 +36,19 @@ public:
 	~Node();
 	T get_output();
 	T get_net();
+	T calc_new_output(); // Calculates new output from input (forward propagation);
 	void set_output(T output);
 	/*
 	 * This will modify next nodes edge "backward" vector, and this->forward edge vector
 	 */
 	void connect_to(Node *next_node);
+	T get_delta();
+	void set_delta(T delta);	// for output neurons
 
 private:
 	T y;
 	T fnet;
+	T delta;
 };
 
 

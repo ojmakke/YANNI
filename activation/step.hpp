@@ -40,7 +40,7 @@ public:
 	}
 	~Step<T>(){}
 };
-
-
+template class Step<double>;
+template class Step<float>;
 
 #endif /* STEP_HPP_ */

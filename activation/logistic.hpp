@@ -43,6 +43,6 @@ private:
 	T y;
 };
 
-
-
+template class Logistic<double>;
+template class Logistic<float>;
 #endif /* LOGISTIC_HPP_ */

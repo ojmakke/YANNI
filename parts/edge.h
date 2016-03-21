@@ -26,6 +26,7 @@ public:
 	T get_value();
 	Node<T> *n;	// Link to next nodes
 	Node<T> *p;	// Link to previous node.
+
 };
 
 

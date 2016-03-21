@@ -40,6 +40,8 @@ void Edge<T>::set_value(T edge_value)
 template<typename T>
 Edge<T>::Edge()
 {
+	p = nullptr;
+	n = nullptr;
 	this->value = nnhelper.randomizer.get_rand();
 	this->is_connected = true;
 }
@@ -47,6 +49,8 @@ Edge<T>::Edge()
 template<typename T>
 Edge<T>::Edge(T v)
 {
+	p = nullptr;
+	n = nullptr;
 	this->value = v;
 	this->is_connected = true;
 }

@@ -38,6 +38,7 @@ public:
 	~Rectify<T>(){}
 };
 
-
+template class Rectify<double>;
+template class Rectify<float>;
 
 #endif /* RECTIFY_HPP_ */

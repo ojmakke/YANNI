@@ -41,6 +41,8 @@ public:
 	}
 	~Tanh<T>(){}
 };
+template class Tanh<double>;
+template class Tanh<float>;
 #endif /* TANH_HPP_ */
 
 
