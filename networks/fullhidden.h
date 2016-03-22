@@ -1,9 +1,25 @@
 /*
  * fullhidden.h
  *
- *  Created on: Mar 19, 2016
- *      Author: Omar Makke (O jMakke)
- *      ojQutoe: "One day generations will look back and thank the founding hackers"
+ *  Created on : Mar 19, 2016
+ *      Author : Omar Makke (O jMakke)
+ *      ojQutoe: "One day generations will look back
+ *      		  and thank the founding hackers"
+ *      Email  : ojmakke@yahoo.com
+
+This file is part of GNU Nets also known as GNUNets
+
+GNU Nets is free software: you can redistribute it and/or modify
+it under the terms of the Affero GNU General Public License as published by
+the Free Software Foundation, version 3 of the License.
+
+GNU Nets is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the Affero
+GNU General Public License for more details.
+
+You should have received a copy of the Affero GNU General Public License
+along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #ifndef NETWORKS_FULLHIDDEN_H_
@@ -26,11 +42,14 @@ class FullHidden
 {
 public:
 	/* Note: hidden_layers can be 0
-	 * layer_count: Number of layers which must be >= 2. It includes hidden and output
+	 * layer_count: Number of layers which must be >= 2.
+	 * It includes hidden and output
 	 * *layers: Array for the size of each layer.
 	 */
 	FullHidden();
-	FullHidden(size_t *layers, size_t layer_count, ActivationEnum *swtiching_functions);
+	FullHidden(size_t *layers,
+			   size_t layer_count,
+			   ActivationEnum *swtiching_functions);
 	~FullHidden();
 
 	/*
@@ -38,15 +57,18 @@ public:
 	 * Returns error achieved after end of training
 	 */
 	T train(__training_struct<T> *training_data);
-	T train(__training_struct<T>  *training_data, T target_error, T epoch, T learning_rate);
+	T train(__training_struct<T>  *training_data,
+			T target_error,
+			T epoch,
+			T learning_rate);
 	void forward_propagate();
 	// Assumed to be equal to all_layers - 1, due to bias
 	void set_inputs(T *inputs);
 	void dump_everything();
 	void dump_outputs();
 	void dump_layer(size_t n);
-	T calc_error(T *target);	// size will be assumed to equal the output layer.
-
+	// size will be assumed to equal the output layer.
+	T calc_error(T *target);
 
 private:
 	void back_propagate(T rate);

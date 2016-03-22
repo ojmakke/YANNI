@@ -41,39 +41,6 @@ void delete_2d(float **pointer, const float X)
 
 void run_tests()
 {
-//	fprintf(stdout, "Creating 1x1x1 network\n");
-//	size_t size = 3;
-//	size_t layers[] = {1, 1, 1};
-//	ActivationEnum switching[] = {TANH, LOGISTIC, STEP};
-//	size_t *l;
-//	l = layers;
-//	FullHidden<double> s(l, size, switching);
-//	fprintf(stdout, "Creation of 1x1x1 network complete\n");
-//	s.dump_everything();
-
-//	fprintf(stdout, "Creating 10x10x10 network\n");
-//
-//	size = 5;
-//	size_t layers3[] = {3, 3, 3, 3, 3};
-//	float inputs3[] = {0.3, 0.8, -0.1};
-//	ActivationEnum switching3[] = {TANH, LOGISTIC, TANH, TANH, TANH};
-//	FullHidden<float> s3(layers3, size, switching3);
-//	s3.set_inputs(inputs3);
-////	s3.dump_everything();
-//	fprintf(stdout, "Current outputs1 are:\n");
-//	s3.dump_outputs();
-//	s3.forward_propagate();
-//	fprintf(stdout, "Current outputs2 are:\n");
-//	s3.dump_outputs();
-//	inputs3[0] = 0.1f; inputs3[1] = 0.1f; inputs3[2] = -0.5f;
-//	s3.set_inputs(inputs3);
-//
-////	s3.dump_everything();
-//	fprintf(stdout, "Current outputs3 are:\n");
-//	s3.forward_propagate();
-//	s3.dump_outputs();
-
-
 	fprintf(stdout, "Creating 2D arrays:\n");
 	float **input;
 	float **desired;
@@ -83,30 +50,21 @@ void run_tests()
 	input = construct_2d(X, Y1);
 	desired = construct_2d(X, Y2);
 
-
-//	input = new float*[X]; // dynamic `array (size 4) of pointers to int`
-//	fprintf(stdout, "First D\n");
-//	for (size_t i = 0; i < X; i++)
-//	{
-//		fprintf(stdout, "2nd D\n");
-//	  	input[i] = new float[Y];
-//	}
-
 	fprintf(stdout, "Initializing:\n");
 	for(size_t i = 0; i < X; i++)
 	{
 		for(size_t j = 0; j < Y1; j++)
 		{
 			fprintf(stdout, "Writing:\n");
-			input[i][j] = ((float) i*5.1f)/X;
+			input[i][j] = ((float) i*3.1f)/X;
 		}
 	}
 	fprintf(stdout, "Initializing desired:\n");
 	for(size_t i = 0; i < X; i++)
 	{
 
-		desired[i][0] = (float) sin(((float) i*5.1f)/X);
-		desired[i][1] = (float) cos(((float) i*5.1f)/X);
+		desired[i][0] = (float) sin(((float) i*3.1f)/X);
+		desired[i][1] = (float) cos(((float) i*3.1f)/X);
 	}
 
 	__training_struct<float> data_struct;
@@ -126,12 +84,12 @@ void run_tests()
 	fprintf(stdout, "Creating 1x10x1 network\n");
 
 	size_t size = 3;
-	size_t layers3[] = {1, 10, 1};
+	size_t layers3[] = {1, 8, 2};
 
-	ActivationEnum switching3[] = {TANH, TANH, TANH};
+	ActivationEnum switching3[] = {TANH, TANH,TANH};
 	FullHidden<float> s3(layers3, size, switching3);
 
-	float error = s3.train(&data_struct, 0.0000001f, 20000, 0.05f);
+	float error = s3.train(&data_struct, 0.11f, 10500, 0.00251f);
 	fprintf(stdout, "Achieved %f error\n", error);
 
 
@@ -140,7 +98,9 @@ void run_tests()
 		s3.set_inputs(input[i]);
 		s3.forward_propagate();
 		s3.dump_outputs();
-		fprintf(stdout, "values should be close to %f, %f\n", desired[i][0]);
+		fprintf(stdout, "values should be close to %f, %f\n",
+				desired[i][0],
+				desired[i][1]);
 	}
 
 

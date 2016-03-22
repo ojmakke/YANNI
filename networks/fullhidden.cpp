@@ -1,8 +1,23 @@
 /*
  * fullhidden.cpp
  *
- *  Created on: Mar 19, 2016
- *      Author: Omar Makke (O jMakke)
+ *  Created on : Mar 19, 2016
+ *      Author : Omar Makke (O jMakke)
+ *      Email  : ojmakke@yahoo.com
+
+This file is part of GNU Nets also known as GNUNets
+
+GNU Nets is free software: you can redistribute it and/or modify
+it under the terms of the Affero GNU General Public License as published by
+the Free Software Foundation, version 3 of the License.
+
+GNU Nets is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the Affero
+GNU General Public License for more details.
+
+You should have received a copy of the Affero GNU General Public License
+along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <stdlib.h>
@@ -23,19 +38,24 @@ FullHidden<T>::FullHidden()
  * layer_count: How many layers, i.e, layers size and switching functions size
  */
 template<typename T>
-FullHidden<T>::FullHidden(size_t *layers, size_t layer_count, ActivationEnum *switching_functions)
+FullHidden<T>::FullHidden(size_t *layers,
+						  size_t layer_count,
+						  ActivationEnum *switching_functions)
 {
 	fprintf(stdout, "Creating the hidden network\n");
 	if(layer_count < 2)
 	{
-		fprintf(stderr, "Need at least 2 layers (input, output) for Full Hidden network\n");
+		fprintf(stderr,
+				"Need at least 2 layers for Full Hidden network\n");
 		return;
 	}
 
 	// Create layers and make last layer output,and first layer input
 	for(size_t i = 0; i < layer_count; i++)
 	{
-		fprintf(stdout, "Creating layer %d of size %d\n", (int) i, (int) layers[i]);
+		fprintf(stdout, "Creating layer %d of size %d\n",
+						(int) i,
+						(int) layers[i]);
 		Layer<T> *i_layer = new Layer<T>(layers[i], switching_functions[i]);
 
 		if(i == 0) // make input
@@ -67,11 +87,9 @@ FullHidden<T>::FullHidden(size_t *layers, size_t layer_count, ActivationEnum *sw
 	// connect the layers
 	for(size_t i = 0; i < layer_count-1; i++)
 	{
-//		fprintf(stdout, "Connecting layer %d to %d\n", (int) i, (int) i+1);
 		Layer<T> *i_layer = all_layers.at(i);
 		Layer<T> *i_next_layer = all_layers.at(i+1);
 		i_layer->connect_to(*i_next_layer);
-//		fprintf(stdout, "Layer connection from %d to %d is complete\n", (int) i, (int) i+1);
 	}
 
 }
@@ -97,14 +115,18 @@ T FullHidden<T>::train(__training_struct<T>  *training_data)
 }
 
 template<typename T>
-T FullHidden<T>::train(__training_struct<T>  *training_data, T target_error, T epoch, T learning_rate)
+T FullHidden<T>::train(__training_struct<T>  *training_data,
+					   T target_error,
+					   T epoch,
+					   T learning_rate)
 {
 	T error;
 	for(size_t study = 0; study < epoch; study++)
 	{
-		error = (T) 0.0;	// We will calculate error as we go. Not the true error, but
-							// much more efficient. The proper way is to evaluate the error
-							// for all the inputs after training. Imagine a huge training set!
+		// We will calculate error as we go. Not the true error, but
+		// more efficient. The proper way is to evaluate the error
+		// for all the inputs after training. Imagine a huge training set!
+		error = (T) 0.0;
 
 		//TODO
 		// Create a stochastic approach to select inputs.
@@ -120,9 +142,10 @@ T FullHidden<T>::train(__training_struct<T>  *training_data, T target_error, T e
 			// Important. Run this first to get the first delta to propagate
 			error += calc_error((training_data->target_set)[i]);
 			back_propagate(learning_rate);
-			update_weights(learning_rate);	// Does this have to be part of back_propagate?
+			// Does this have to be part of back_propagate?
+			update_weights(learning_rate);
 		}
-		fprintf(stdout, "Error in %d is %f\n", study, error);
+		fprintf(stdout, "Error in %d is %f\n", (int) study, (float) error);
 		if(error <= target_error)
 		{
 			return error;
@@ -147,7 +170,10 @@ void FullHidden<T>::dump_everything()
 		for(size_t j = 0; j < i_all_nodes.size(); j++)
 		{
 			Node<T> *j_node = i_all_nodes.at(j);
-			fprintf(stdout, "Node %d: \t\tValue: %f\tNet: %f\n", (int) j, (float) j_node->get_output(), (float) j_node->get_net());
+			fprintf(stdout, "Node %d: \t\tValue: %f\tNet: %f\n",
+							(int) j,
+							(float) j_node->get_output(),
+							(float) j_node->get_net());
 			// Get the edges of the node input. Input layer doesn't have them
 			if(j_node->is_input)
 			{
@@ -158,7 +184,9 @@ void FullHidden<T>::dump_everything()
 			for(size_t k = 0; k <j_all_edges.size(); k++)
 			{
 				Edge<T> *k_edge = j_all_edges.at(k);
-				fprintf(stdout, "Edge %d: \t\tValue: %f\n", (int) k, (float) k_edge->get_value() );
+				fprintf(stdout, "Edge %d: \t\tValue: %f\n",
+								(int) k,
+								(float) k_edge->get_value() );
 			}
 		}
 	}
@@ -200,11 +228,14 @@ template<typename T>
 void FullHidden<T>::dump_outputs()
 {
 	Layer<T> *output_layer = all_layers.at(all_layers.size()-1);
-	fprintf(stdout, "Last layer has size:%d\n", output_layer->nodes.size());
+	fprintf(stdout, "Last layer has size:%d\n",
+			(int) output_layer->nodes.size());
 	for(size_t i = 0; i < (output_layer->nodes).size(); i++)
 	{
 		Node<T> *i_node = (output_layer->nodes).at(i);
-		fprintf(stdout, "Output %d  :\tValue  :%f\n",(int) i, (float) i_node->get_output());
+		fprintf(stdout, "Output %d  :\tValue  :%f\n",
+				(int) i,
+				(float) i_node->get_output());
 	}
 }
 
@@ -217,7 +248,7 @@ void FullHidden<T>::back_propagate(T rate)
 	// Calc delta weight and update weights.
 	for(size_t i = 0; i < all_layers.size()-1; i++)
 	{
-		// backwards. size_t cannot go below 0, hence will not reverse the loop
+		// backwards. size_t cannot go below 0, cannot do < size_t
 		size_t j = all_layers.size()-2 - i;	//skip output.
 		Layer<T> *layer = all_layers.at(j);
 		layer->calc_node_delta();
@@ -265,7 +296,8 @@ void FullHidden<T>::update_weights(T rate)
 			{
 				k_edge = (j_node->forward).at(k);
 				k_node = k_edge->n;
-				T w = k_edge->get_value() - (rate*k_node->get_delta()*j_node->get_output());
+				T w = k_edge->get_value() -
+						(rate*k_node->get_delta()*j_node->get_output());
 				k_edge->set_value(w);
 			}
 		}

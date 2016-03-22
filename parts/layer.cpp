@@ -1,8 +1,23 @@
 /*
  * layer.cpp
  *
- *  Created on: Mar 19, 2016
- *      Author: Omar Makke (O jMakke)
+ *  Created on : Mar 19, 2016
+ *      Author : Omar Makke (O jMakke)
+ *      Email  : ojmakke@yahoo.com
+
+This file is part of GNU Nets also known as GNUNets
+
+GNU Nets is free software: you can redistribute it and/or modify
+it under the terms of the Affero GNU General Public License as published by
+the Free Software Foundation, version 3 of the License.
+
+GNU Nets is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the Affero
+GNU General Public License for more details.
+
+You should have received a copy of the Affero GNU General Public License
+along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <stdlib.h>
@@ -18,7 +33,8 @@ Layer<T>::Layer(size_t size, ActivationEnum switching_function)
 {
 	if(size == 0)
 	{
-		fprintf(stderr, "Error in initializing Layer. Size is 0. Expect crash...\n");
+		fprintf(stderr, "Error in initializing Layer. Size is 0.\
+ Expect crash...\n");
 		return;
 	}
 	for(size_t i = 0; i < size; i++)
@@ -31,13 +47,10 @@ Layer<T>::Layer(size_t size, ActivationEnum switching_function)
 template<typename T>
 Layer<T>::~Layer()
 {
-//	fprintf(stdout, "Layer destructor called\n");
 	if(nodes.size() == 0)
 	{
-//		fprintf(stderr, "Attempting to destroy an incorrectly initialized layer.\nLuckily, you avoided crash!..\n");
 		return;
 	}
-//	fprintf(stdout, "Deleting layer nodes\n");
 	// YAY, C++11
 	for(auto *node : nodes)
 	{
@@ -68,14 +81,12 @@ void Layer<T>::connect_to(Layer<T> &next_layer)
 		Node<T> *i_node = nodes.at(i);
 		for(size_t j = 0; j < next_layer.nodes.size(); j++)
 		{
-//			fprintf(stdout, "Connecting node %d to %d\n", (int) i, (int) i+1);
 			Node<T> *j_node = next_layer.nodes.at(j);
 			if(j_node->is_input)
 			{
 				continue;	// Ignore any input such as bias.
 			}
 			i_node->connect_to(j_node);
-//			fprintf(stdout, "Connection complete from node %d to %d\n", (int) i, (int) i+1);
 		}
 	}
 }
@@ -116,7 +127,9 @@ int Layer<T>::fix_layer_inputs(T *input_array)
 }
 
 template<typename T>
-int Layer<T>::fix_some_layer_inputs(T* input_array_values, size_t *input_array_index, size_t input_size)
+int Layer<T>::fix_some_layer_inputs(T* input_array_values,
+									size_t *input_array_index,
+									size_t input_size)
 {
 	if(input_size > nodes.size() || nodes.size() == 0)
 	{
@@ -143,7 +156,8 @@ void Layer<T>::add_bias()
 {
 		// Now create bias
 	Node<T> *node = new Node<T>(FIXEDINPUT);
-	node->is_input = true;		// yay, nice use of is input! Didn't think about it then.
+	// yay, nice use of is input! Didn't think about it then.
+	node->is_input = true;
 	node->set_output((T) 1.0);
 	nodes.push_back(node);		// This will also add bias to the output
 }
@@ -171,7 +185,8 @@ void Layer<T>::calc_node_delta()
 		for(size_t j = 0; j < (i_node->forward).size(); j++)
 		{
 			j_edge = (i_node->forward).at(j);
-			// summation( w_exiting_edges*delta_of_next_neuron*this_neuron_derivative
+
+// summation( w_exiting_edges*delta_of_next_neuron*this_neuron_derivative
 			Node<T> *j_node = j_edge->n;
 			delta += j_edge->get_value() * (j_node->get_delta());
 		}
