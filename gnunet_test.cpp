@@ -93,7 +93,7 @@ void run_tests()
 	fprintf(stdout, "Achieved %f error\n", error);
 
 
-	for(int i = 0; i < X; i++)
+	for(size_t i = 0; i < X; i++)
 	{
 		s3.set_inputs(input[i]);
 		s3.forward_propagate();
