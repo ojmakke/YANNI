@@ -32,7 +32,7 @@ FullHidden<T>::FullHidden(size_t *layers, size_t layer_count, ActivationEnum *sw
 		return;
 	}
 
-	// Create layers and make last layer ouput,and first layer input
+	// Create layers and make last layer output,and first layer input
 	for(size_t i = 0; i < layer_count; i++)
 	{
 		fprintf(stdout, "Creating layer %d of size %d\n", (int) i, (int) layers[i]);
@@ -57,6 +57,14 @@ FullHidden<T>::FullHidden(size_t *layers, size_t layer_count, ActivationEnum *sw
 		all_layers.push_back(i_layer);
 	}
 
+	// Create bias bias nodes as input.
+	for(size_t i = 0; i < layer_count-1; i++)
+	{
+		Layer<T> *i_layer = all_layers.at(i);
+		i_layer->add_bias();
+	}
+
+	// connect the layers
 	for(size_t i = 0; i < layer_count-1; i++)
 	{
 //		fprintf(stdout, "Connecting layer %d to %d\n", (int) i, (int) i+1);
@@ -66,15 +74,6 @@ FullHidden<T>::FullHidden(size_t *layers, size_t layer_count, ActivationEnum *sw
 //		fprintf(stdout, "Layer connection from %d to %d is complete\n", (int) i, (int) i+1);
 	}
 
-	// Add bias to all except output and input
-	for(size_t i = 0; i < layer_count-2; i++)
-	{
-		fprintf(stdout, "Creating bias in layer %d\n", (int) i);
-		Layer<T> *i_layer = all_layers.at(i+1);
-		i_layer->add_bias(switching_functions[i]);
-		fprintf(stdout, "Layer connection from %d to %d is complete\n", (int) i, (int) i+1);
-	}
-	// This will also add bias to the output
 }
 
 template<typename T>
@@ -111,6 +110,11 @@ T FullHidden<T>::train(__training_struct<T>  *training_data, T target_error, T e
 		// Create a stochastic approach to select inputs.
 		for(size_t i = 0; i < training_data->x; i++)
 		{
+			if(study == 1000)
+			{
+				int y = 0;
+				y++;	// debugging break point
+			}
 			set_inputs((training_data->input_set)[i]);
 			forward_propagate();
 			// Important. Run this first to get the first delta to propagate
@@ -211,7 +215,7 @@ void FullHidden<T>::back_propagate(T rate)
 	// The output layer nodes must already have its delta calculated
 	// Update delta.
 	// Calc delta weight and update weights.
-	for(size_t i = 0; i < all_layers.size()-2; i++)
+	for(size_t i = 0; i < all_layers.size()-1; i++)
 	{
 		// backwards. size_t cannot go below 0, hence will not reverse the loop
 		size_t j = all_layers.size()-2 - i;	//skip output.

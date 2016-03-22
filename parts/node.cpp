@@ -14,6 +14,7 @@
 #include "../activation/step.hpp"
 #include "../activation/rectify.hpp"
 #include "../activation/tanh.hpp"
+#include "../activation/fixedinput.hpp"
 #include "../helper/nnhelper.hpp"
 
 
@@ -49,6 +50,11 @@ Node<T>::Node(ActivationEnum type)
 		case STEP:
 		{
 			F = new Step<T>();
+			break;
+		}
+		case FIXEDINPUT:
+		{
+			F = new FixedInput<T>();
 			break;
 		}
 	}
@@ -139,7 +145,7 @@ T Node<T>::calc_new_output()
 	}
 
 	fnet = (T) 0.0;
-	// Loop through call edges
+	// Loop through all edges
 	for(size_t i = 0; i < backward.size(); i++)
 	{
 		Edge<T> *i_edge = backward.at(i);
@@ -160,11 +166,11 @@ T Node<T>::get_delta()
 template<typename T>
 void Node<T>::set_delta(T _delta)
 {
-	if(!is_output)
-	{
-		fprintf(stderr, "Attempting to control delta of hidden neuron\n");
-		return;
-	}
+//	if(!is_output)
+//	{
+//		fprintf(stderr, "Attempting to control delta of hidden neuron\n");
+//		return;
+//	}
 
 	this->delta = _delta;
 }

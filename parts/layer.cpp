@@ -45,6 +45,8 @@ Layer<T>::~Layer()
 	}
 }
 
+// Note: If the next node has an input node, like a bias,
+// nodes from previous layers will not be connected to it.
 template<typename T>
 void Layer<T>::connect_to(Layer<T> &next_layer)
 {
@@ -61,12 +63,17 @@ void Layer<T>::connect_to(Layer<T> &next_layer)
 		{
 			fprintf(stderr, "Next layer has size of 0\n");
 			return;
+
 		}
+		Node<T> *i_node = nodes.at(i);
 		for(size_t j = 0; j < next_layer.nodes.size(); j++)
 		{
 //			fprintf(stdout, "Connecting node %d to %d\n", (int) i, (int) i+1);
-			Node<T> *i_node = nodes.at(i);
 			Node<T> *j_node = next_layer.nodes.at(j);
+			if(j_node->is_input)
+			{
+				continue;	// Ignore any input such as bias.
+			}
 			i_node->connect_to(j_node);
 //			fprintf(stdout, "Connection complete from node %d to %d\n", (int) i, (int) i+1);
 		}
@@ -132,10 +139,10 @@ int Layer<T>::fix_some_layer_inputs(T* input_array_values, size_t *input_array_i
 }
 
 template<typename T>
-void Layer<T>::add_bias(ActivationEnum switching_function)
+void Layer<T>::add_bias()
 {
 		// Now create bias
-	Node<T> *node = new Node<T>(switching_function);
+	Node<T> *node = new Node<T>(FIXEDINPUT);
 	node->is_input = true;		// yay, nice use of is input! Didn't think about it then.
 	node->set_output((T) 1.0);
 	nodes.push_back(node);		// This will also add bias to the output
@@ -170,7 +177,9 @@ void Layer<T>::calc_node_delta()
 		}
 		Activation<T> *f = i_node->F;
 		delta *= f->df(i_node->get_net());
+		i_node->set_delta(delta);
 	}
+
 	return;
 }
 

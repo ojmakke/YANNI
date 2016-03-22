@@ -41,7 +41,7 @@ public:
 	int fix_some_layer_inputs(T *input_array_values, size_t *input_array_index, size_t input_size);
 	std::vector<Node<T> *> nodes;
 
-	void add_bias(ActivationEnum switching_function); // Adds a bias to the layer.
+	void add_bias(); // Adds a bias to the layer.
 	void calc_node_delta();
 
 

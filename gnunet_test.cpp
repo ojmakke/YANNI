@@ -77,7 +77,7 @@ void run_tests()
 	fprintf(stdout, "Creating 2D arrays:\n");
 	float **input;
 	float **desired;
-	const size_t X = 20;
+	const size_t X = 40;
 	const size_t Y1 = 1;
 	const size_t Y2 = 2;
 	input = construct_2d(X, Y1);
@@ -98,15 +98,15 @@ void run_tests()
 		for(size_t j = 0; j < Y1; j++)
 		{
 			fprintf(stdout, "Writing:\n");
-			input[i][j] = ((float) i*5.1f)/50.0f;
+			input[i][j] = ((float) i*5.1f)/X;
 		}
 	}
 	fprintf(stdout, "Initializing desired:\n");
 	for(size_t i = 0; i < X; i++)
 	{
 
-		desired[i][0] = (float) sin(((float) i*5.1f)/10.0f);
-		desired[i][1] = (float) cos(((float) i*5.1f)/10.0f);
+		desired[i][0] = (float) sin(((float) i*5.1f)/X);
+		desired[i][1] = (float) cos(((float) i*5.1f)/X);
 	}
 
 	__training_struct<float> data_struct;
@@ -131,15 +131,18 @@ void run_tests()
 	ActivationEnum switching3[] = {TANH, TANH, TANH};
 	FullHidden<float> s3(layers3, size, switching3);
 
-	float error = s3.train(&data_struct, 0.001f, 10000, 0.15f);
+	float error = s3.train(&data_struct, 0.0000001f, 20000, 0.05f);
 	fprintf(stdout, "Achieved %f error\n", error);
 
-	float test = 15.1f;
-	s3.set_inputs(&test);
-	s3.forward_propagate();
-	s3.dump_outputs();
 
-	fprintf(stdout, "values should be close to %f, %f\n", sin(test), cos(test));
+	for(int i = 0; i < X; i++)
+	{
+		s3.set_inputs(input[i]);
+		s3.forward_propagate();
+		s3.dump_outputs();
+		fprintf(stdout, "values should be close to %f, %f\n", desired[i][0]);
+	}
+
 
 	delete_2d(input, X);
 	delete_2d(desired, X);

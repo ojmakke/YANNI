@@ -31,6 +31,7 @@ enum ActivationEnum
 	RECTIFY,
 	STEP,
 	TANH,
+	FIXEDINPUT,
 };
 
 // Tell compiler which classes to build
