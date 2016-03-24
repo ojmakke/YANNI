@@ -84,7 +84,7 @@ void run_tests()
 	fprintf(stdout, "Creating 1x10x1 network\n");
 
 	size_t size = 3;
-	size_t layers3[] = {1, 8, 2};
+	size_t layers3[] = {1, 150, 2};
 
 	ActivationEnum switching3[] = {TANH, TANH,TANH};
 	FullHidden<float> s3(layers3, size, switching3);

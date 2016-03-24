@@ -37,6 +37,14 @@ public:
 	{
 
 		y = (T) 1.0/(1.0 + exp(-1.0 * ((double) -fnet)));
+		if(y > (T) 0.995)
+		{
+			y = (T) 0.995;
+		}
+		else if(y < (T) -0.995)
+		{
+			y = (T) -0.995;
+		}
 		fnet_old = fnet;
 		return y;
 	}
@@ -47,8 +55,7 @@ public:
 	{
 		if(fnet != fnet_old)
 		{
-			y = (T) tanh((double) fnet);
-			fnet_old = fnet;
+			y = f(fnet);
 		}
 		return (T) y*(1.0-y);
 	}
