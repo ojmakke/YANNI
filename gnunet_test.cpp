@@ -94,10 +94,10 @@ void run_tests()
     {
       s3.set_inputs(input[i]);
       s3.forward_propagate();
-      s3.dump_outputs();
-      fprintf(stdout, "values should be close to %f, %f\n",
-              desired[i][0],
-          desired[i][1]);
+   //   s3.dump_outputs();
+  //    fprintf(stdout, "values should be close to %f, %f\n",
+  //            desired[i][0],
+   //       desired[i][1]);
     }
 
 

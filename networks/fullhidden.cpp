@@ -23,6 +23,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "../common.h"
 #include "../parts/edge.h"
 #include "../parts/node.h"
 #include "../parts/layer.h"
@@ -145,12 +146,14 @@ T FullHidden<T>::train(struct Classic_Dataset<T>  *training_data,
           // Does this have to be part of back_propagate?
           update_weights(learning_rate);
         }
-      fprintf(stdout, "Error in %d is %f\n", (int) study, (float) error);
+      fprintf(stdout,ANSI_COLOR_GREEN "Error in %d is %f\r" ANSI_COLOR_RESET, (int) study, (float) error);
       if(error <= target_error)
         {
           return error;
         }
     }
+
+  fprintf(stdout, "\n");
   return error;
 }
 

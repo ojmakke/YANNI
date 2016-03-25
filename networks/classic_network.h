@@ -54,7 +54,7 @@ public:
    * Returns error achieved after end of training
    */
   virtual T train() = 0;
-  virtual forward_propagate() = 0;
+  virtual void forward_propagate() = 0;
   // Assumed to be equal to all_layers - 1, due to bias
   virtual void set_inputs(T *inputs) = 0;
   virtual void get_outputs(T* out_you_allocate) = 0;
