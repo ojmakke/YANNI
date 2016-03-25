@@ -109,13 +109,13 @@ FullHidden<T>::~FullHidden()
 }
 
 template<typename T>
-T FullHidden<T>::train(__training_struct<T>  *training_data)
+T FullHidden<T>::train(struct Classic_Dataset<T>  *training_data)
 {
   return (T) 0.01; 		// not implemented
 }
 
 template<typename T>
-T FullHidden<T>::train(__training_struct<T>  *training_data,
+T FullHidden<T>::train(struct Classic_Dataset<T>  *training_data,
 		       T target_error,
 		       T epoch,
 		       T learning_rate)

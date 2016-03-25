@@ -27,9 +27,9 @@ template<typename T>
 class Randomizer
 {
 public:
-	Randomizer();
-	T get_rand(T in, T max);
-	T get_rand();		// Between 0 and 1
+  Randomizer();
+  T get_rand(T in, T max);
+  T get_rand();		// Between 0 and 1
 
 };
 

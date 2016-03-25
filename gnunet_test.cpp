@@ -66,7 +66,7 @@ void run_tests()
       desired[i][1] = (float) cos(((float) i*3.1f)/X);
     }
 
-  __training_struct<float> data_struct;
+  struct Classic_Dataset <float> data_struct;
   data_struct.input_set = input;
   data_struct.target_set = desired;
 

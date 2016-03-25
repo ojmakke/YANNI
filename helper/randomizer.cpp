@@ -41,7 +41,7 @@ T Randomizer<T>::get_rand()
 template<typename T>
 T Randomizer<T>::get_rand(T min, T max)
 {
-  return 	( ((T) rand())/((T) RAND_MAX) * (max - min) + min);
+  return ( ((T) rand())/((T) RAND_MAX) * (max - min) + min);
 }
 
 // force instantiation

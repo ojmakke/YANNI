@@ -30,38 +30,38 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 template <typename T>
 class  Tanh : public Activation<T>
 {
-	private:
-	T fnet_old ;
-	T y;
+private:
+  T fnet_old ;
+  T y;
 
 public:
-	/* <T> is casted to double and then back to <T> */
-	T f(T fnet)
-	{
-		y = (T) tanh((double) fnet);
-		if(y > (T) 0.995)
-		{
-			y = (T) 0.995;
-		}
-		else if(y < (T) -0.995)
-		{
-			y = (T) -0.995;
-		}
-		fnet_old  = fnet;
-		return y;
-	}
-	/**
-	 *  Derivative of tanh. T will be casted double and back from double
-	 *   */
-	T df(T fnet)
-	{
-		if(fnet != fnet_old )
-		{
-			y = f(fnet);
-		}
-		return (T) (1 - y*y);
-	}
-	~Tanh<T>(){}
+  /* <T> is casted to double and then back to <T> */
+  T f(T fnet)
+  {
+    y = (T) tanh((double) fnet);
+    if(y > (T) 0.995)
+      {
+        y = (T) 0.995;
+      }
+    else if(y < (T) -0.995)
+      {
+        y = (T) -0.995;
+      }
+    fnet_old  = fnet;
+    return y;
+  }
+  /**
+         *  Derivative of tanh. T will be casted double and back from double
+         *   */
+  T df(T fnet)
+  {
+    if(fnet != fnet_old )
+      {
+        y = f(fnet);
+      }
+    return (T) (1 - y*y);
+  }
+  ~Tanh<T>(){}
 };
 template class Tanh<double>;
 template class Tanh<float>;
