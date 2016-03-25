@@ -29,19 +29,19 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 template<typename T>
 Randomizer<T>::Randomizer()
 {
-	srand(time(0));
+  srand(time(0));
 }
 
 template<typename T>
 T Randomizer<T>::get_rand()
 {
-	return ((T) rand())/((T) RAND_MAX);
+  return ((T) rand())/((T) RAND_MAX);
 }
 
 template<typename T>
 T Randomizer<T>::get_rand(T min, T max)
 {
-	return 	( ((T) rand())/((T) RAND_MAX) * (max - min) + min);
+  return 	( ((T) rand())/((T) RAND_MAX) * (max - min) + min);
 }
 
 // force instantiation

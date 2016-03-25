@@ -28,46 +28,45 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "edge.h"
 #include "../helper/nnhelper.hpp"
 
-
 extern NNHelper<double> nnhelper;
 
 template<typename T>
 T Edge<T>::get_value()
 {
-	if(this->is_connected)
-	{
-		return this->value;
-	}
-	return (T) 0.0;
+  if(this->is_connected)
+    {
+      return this->value;
+    }
+  return (T) 0.0;
 }
 
 template<typename T>
 void Edge<T>::set_value(T edge_value)
 {
-	if(this->is_connected)
-	{
-		this->value = edge_value;
-	}
-	// else do nothing
+  if(this->is_connected)
+    {
+      this->value = edge_value;
+    }
+  // else do nothing
 
 }
 
 template<typename T>
 Edge<T>::Edge()
 {
-	p = nullptr;
-	n = nullptr;
-	this->value = nnhelper.randomizer.get_rand();
-	this->is_connected = true;
+  p = nullptr;
+  n = nullptr;
+  this->value = nnhelper.randomizer.get_rand();
+  this->is_connected = true;
 }
 
 template<typename T>
 Edge<T>::Edge(T v)
 {
-	p = nullptr;
-	n = nullptr;
-	this->value = v;
-	this->is_connected = true;
+  p = nullptr;
+  n = nullptr;
+  this->value = v;
+  this->is_connected = true;
 }
 
 // Tell compiler what to build

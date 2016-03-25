@@ -17,9 +17,9 @@ NNHelper<double> nnhelper;
 extern void run_tests();
 
 int main(int argc, char* argv[])
-{
-	run_tests();
-	fprintf(stdout, "Tests complete");
-	return 0;
-}
+  {
+    run_tests();
+    fprintf(stdout, "Tests complete");
+    return 0;
+  }
 
