@@ -31,16 +31,16 @@ template <typename T>
 class  FixedInput : public Activation<T>
 {
 public:
-	/* <T> is casted to double and then back to <T> */
-	T f(T fnet)
-	{
-		return (T) 1.0;
-	}
-	T df(T fnet)
-	{
-		return (T) 0.0;
-	}
-	~FixedInput<T>(){}
+  /* <T> is casted to double and then back to <T> */
+  T f(T fnet)
+  {
+    return (T) 1.0;
+  }
+  T df(T fnet)
+  {
+    return (T) 0.0;
+  }
+  ~FixedInput<T>(){}
 };
 template class FixedInput<double>;
 template class FixedInput<float>;
