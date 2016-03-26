@@ -146,7 +146,7 @@ T FullHidden<T>::train(struct Classic_Dataset<T>  *training_data,
           // Does this have to be part of back_propagate?
           update_weights(learning_rate);
         }
-      fprintf(stdout,ANSI_COLOR_GREEN "Error in %d is %f\r" ANSI_COLOR_RESET, (int) study, (float) error);
+      fprintf(stdout,"Error in %d is %f\r", (int) study, (float) error);
       if(error <= target_error)
         {
           return error;

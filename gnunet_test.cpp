@@ -81,12 +81,12 @@ void run_tests()
   fprintf(stdout, "Creating 1x10x1 network\n");
 
   size_t size = 3;
-  size_t layers3[] = {1, 150, 2};
+  size_t layers3[] = {1, 4, 4, 2};
 
-  ActivationEnum switching3[] = {TANH, TANH,TANH};
+  ActivationEnum switching3[] = {TANH, TANH,TANH, TANH};
   FullHidden<float> s3(layers3, size, switching3);
 
-  float error = s3.train(&data_struct, 0.11f, 10500, 0.00251f);
+  float error = s3.train(&data_struct, 0.11f, 10500, 0.0251f);
   fprintf(stdout, "Achieved %f error\n", error);
 
 
@@ -94,10 +94,10 @@ void run_tests()
     {
       s3.set_inputs(input[i]);
       s3.forward_propagate();
-   //   s3.dump_outputs();
-  //    fprintf(stdout, "values should be close to %f, %f\n",
-  //            desired[i][0],
-   //       desired[i][1]);
+      s3.dump_outputs();
+      fprintf(stdout, "values should be close to %f, %f\n",
+              desired[i][0],
+          desired[i][1]);
     }
 
 

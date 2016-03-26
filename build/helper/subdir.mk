@@ -4,13 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../helper/randomizer.cpp 
+../helper/randomizer.cpp \
+../helper/console_printer.cpp
 
 OBJS += \
-./helper/randomizer.o 
+./helper/randomizer.o \
+./helper/console_printer.o
 
 CPP_DEPS += \
-./helper/randomizer.d 
+./helper/randomizer.d \
+./helper/console_printer.d
 
 
 # Each subdirectory must supply rules for building sources it contributes
