@@ -8,5 +8,5 @@
 #define ANSI_COLOR_MAGENTA "\x1b[35m"
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
-
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 #endif // COMMON_H

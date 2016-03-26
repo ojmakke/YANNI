@@ -17,104 +17,48 @@
 #include "activation/rectify.hpp"
 #include "helper/nnhelper.hpp"
 
+#define BUFFERSIZE 80
 #define CONTROL 0
 #define INPUT 1
 #define INPUT_LOCATION 1
 
+
 NNHelper<double> nnhelper;
 
 extern void run_tests();
+extern void destroy_screen();
+extern void init_screen();
+extern void draw_input();
+extern void draw_feedback1();
+extern void draw_network();
 
-WINDOW *create_newwin(int height, int width, int starty, int startx);
-void destroy_win(WINDOW *local_win);
 void switch_state(unsigned *state);
 
 WINDOW *w_input;
 WINDOW *w_network;
 WINDOW *w_feedback;
 
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
-char *feedback1[] =
-                {
-                 "F1 to quit anytime",
-                 "F2 to rescale window",
-                 "i to insert command",
-                 "s to save network parameters",
-                 "v for basic network parameters",
-                 "h for more help",
-                };
 
-void print_feedback1()
+void clear_command(char *command)
 {
-  for(size_t i = 0; i < ARRAY_SIZE(feedback1); i++)
+  memset(command, 0, BUFFERSIZE);
+}
+
+size_t insert_char(char *command, char c, size_t index)
+{
+  if( c < 32 || c > 126)
     {
-      mvwprintw(w_feedback, i+1, 2, feedback1[i]);
+      return index; // Ignore non-ascii characters
     }
-  wrefresh(w_feedback);
+  if(index >= BUFFERSIZE - 2)
+    {
+      command[BUFFERSIZE - 2] = c;
+      return (BUFFERSIZE - 2);
+    }
+  command[index++] = c;
+  return index;
 }
 
-void draw_input()
-{
-  wattron(w_input, COLOR_PAIR(2));
-  werase(w_input);
-  box(w_input, 0, 0);
-  mvwprintw(w_input, 0, 3, "User Input");
-  mvwprintw(w_input, 1, 1, ">");
-  keypad(w_input, true);
-  noecho();
-  wrefresh(w_input);
-}
-
-void draw_feedback()
-{
-  wattron(w_feedback, COLOR_PAIR(1));
-  werase(w_feedback);
-  box(w_feedback, 0, 0);
-  mvwprintw(w_feedback, 0, 3, "Feedback");
-  print_feedback1();
-  wrefresh(w_feedback);
-}
-
-void draw_network()
-{
-  wattron(w_network, COLOR_PAIR(3));
-  werase(w_network);
-  box(w_network, 0, 0);
-  mvwprintw(w_network, 0, 3, "Network Info");
-  wrefresh(w_network);
-}
-
-void init_screen()
-{
-  char f[] = "Feedback\0";
-  int row, col;
-  initscr();
-  clear();
-  cbreak();
-  noecho();
-  refresh();
-  getmaxyx(stdscr,row,col);
-  start_color();
-  init_pair(1, COLOR_RED, COLOR_BLACK);
-  init_pair(2, COLOR_GREEN, COLOR_BLACK);
-  init_pair(3, COLOR_CYAN, COLOR_BLACK);
-
-  w_input = create_newwin(4, col, row-4, 0);
-  w_feedback = create_newwin(row-4, col/2-1,0,0);
-  w_network = create_newwin(row-4, col/2+1, 0,col/2-1);
-  draw_feedback();
-  draw_network();
-  draw_input();
-
-}
-
-void destroy_screen()
-{
-  destroy_win(w_input);
-  destroy_win(w_network);
-  destroy_win(w_feedback);
-  endwin();
-}
 
 int main(int argc, char* argv[])
 {
@@ -127,6 +71,9 @@ int main(int argc, char* argv[])
   // input: RELEVANT keys are used for inputting.
 
   unsigned int state = CONTROL;
+  size_t ii = 0; // Buffer index
+  char commands[80];
+  clear_command(commands);
   while(1)
     {
       ch = wgetch(w_input);
@@ -134,17 +81,21 @@ int main(int argc, char* argv[])
         {
         // Never allowed in input. This quits
         case KEY_F(1):
-          return 0;
-          break;
-        // Never allowed in input.
+          {
+            return 0;
+            break;
+          }
+        // Reset everything
         case KEY_F(2):
           {
             destroy_screen();
             init_screen();
+            ii = 0;
+            clear_command(commands);
             state = CONTROL;
           }
           break;
-         // Allow only in input
+         // In control mode, do nothing. Otherwise, insert \0
         case 10:
         case 13:
           {
@@ -152,33 +103,47 @@ int main(int argc, char* argv[])
               {
                 continue;
               }
-  //          switch_state(&state);
+            commands[ii] = 0; // Terminating null.
+                             // ii points to last index by design
+            ii = 0;
+            // parse_command
+            clear_command(commands);
             draw_input();
-            echo();
 
           }
           break;
-        // Escape
+        // Escape resets everything
         case 27:
           {
             if(state == CONTROL)
               {
                 continue;
               }
+            clear_command(commands);
+            ii = 0;
             switch_state(&state);
           }
           break;
         case 'i':
-          if(state == CONTROL)
-            {
-              switch_state(&state);
-            }
+          {
+            if(state == CONTROL)
+              {
+                ii = 0;
+                clear_command(commands);
+                switch_state(&state);
+                break;
+              }
+            mvwprintw(w_input, 1, ii+2, "%c", ch);
+            ii = insert_char(commands, ch, ii);
+          }
           break;
         default:
           if(state == CONTROL)
             {
               continue;
             }
+          mvwprintw(w_input, 1, ii+2, "%c", ch);
+          ii = insert_char(commands, ch, ii);
           break;
         }
     }
@@ -187,21 +152,6 @@ int main(int argc, char* argv[])
   return 0;
 }
 
-WINDOW *create_newwin(int height, int width, int starty, int startx)
-{
-  WINDOW *local_win;
-  local_win = newwin(height, width, starty, startx);
-  box(local_win, 0 , 0);
-  wrefresh(local_win);
-  return local_win;
-}
-
-void destroy_win(WINDOW *local_win)
-{
-  wborder(local_win, ' ', ' ', ' ',' ',' ',' ',' ',' ');
-  wrefresh(local_win);
-  delwin(local_win);
-}
 
 void switch_state(unsigned int *state)
 {
