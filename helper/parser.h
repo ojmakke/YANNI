@@ -30,7 +30,7 @@ class Parser
 {
 public:
   Parser();
-  void parse(char *input_command);
+  void parse(std::string input_command);
   ~Parser();
 
 private:

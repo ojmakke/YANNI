@@ -22,6 +22,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 #include <stdlib.h>
+#include <cassert>
 
 #include "parser.h"
 
@@ -33,14 +34,14 @@ Parser::Parser()
 }
 
 // Note: The input to this must be clear of white space
-void Parser::parse(char *input_command, size_t command_size)
+void Parser::parse(std::string input_command)
 {
   // Example: text1(text2(text3, text4(text5, text6), text7), text8)
   // text1 has 2 parameters, text2 and text8
   // text2 has 3 parameters: text3, text4, text7
   // ...
   std::string cmd(input_command);
-  cmd.append(' '); // Makes life much easier in parsing when looping
+  cmd.append(" "); // Makes life much easier in parsing when looping
   int p_opened = 0;   // Number of opened paranthesis
 
   // Search for the breadth of parameters to allocate memory while
@@ -57,8 +58,8 @@ void Parser::parse(char *input_command, size_t command_size)
         }
       // Insure we have ), or )). Nothing like )text or )(
       // After all ) we are good
-      else if(  cmd.att(ii) == ')' && ii < cmd.length() - 1
-             && cmd.at(ii+1) != ',' && cmd.at(ii+) != ')')
+      else if(  cmd.at(ii) == ')' && (ii < cmd.length() - 1)
+             && cmd.at(ii+1) != ',' && cmd.at(ii+1) != ')')
         {
           return;
         }
@@ -94,9 +95,9 @@ void Parser::parse(char *input_command, size_t command_size)
             }
           continue;
         }
-      else if(cmd.at(ii) = ',' && p_opened == 1)
+      else if(cmd.at(ii) == ',' && p_opened == 1)
         {
-          breadth_size++;
+          breadth_width++;
         }
     }
 
@@ -122,9 +123,9 @@ void Parser::parse(char *input_command, size_t command_size)
     }
 
   // Create the parameter tree recursively
-  if(breadth_size > 0)
+  if(breadth_width > 0)
     {
-     parameters = new Parser[breadth_size]();
+     *parameters = new Parser[breadth_width]();
     }
 
   //Find the first (, search for all commas until ). Ignore everything
@@ -144,26 +145,15 @@ void Parser::parse(char *input_command, size_t command_size)
 
   std::string rest = cmd.substr(firstP, cmd.length());  // rest of string
 
-  p_opened = 0; // Redundant, but for clarity
   // Search for the comma that ends the parameter, or end of line.
   // Then get parameter. First & last () will be ignored
-  // Nasty case: parantheis then text follows istead of comma.
-  // Example: text1( text2(text3)text, ). Therefore, except for last ),
-  // there must be a comma.
-  for(int ii = 1; ii < rest.length() - 1; ii++)
+  // We also ran previous algorithms to determine # parameters in this string.
+  p_opened = 0; // Redundant, but for clarity
+  size_t breadth_index = 0;
+  size_t param_begin = 1; // beginning of parameter. Skip first (
+  for(size_t ii = 1; ii < rest.length() - 1; ii++)
     {
-      // Some error checking
-      // parameter separation is critical. Make sure comma is used properly
-      if(rest.at(ii) == ',' && (rest.at(ii+1) == '(' || rest.at(ii+1) == ')'))
-        {
-          return; // Syntax error
-        }
-      else if(  rest.att(ii) == ')'
-             && (rest.at(ii) != ',' && rest.at(i) != ')'))
-        {
-          return; // syntax error
-        }
-      else if(rest.at(ii) == '(')
+      if(rest.at(ii) == '(')
         {
           p_opened++;
           continue;
@@ -177,14 +167,15 @@ void Parser::parse(char *input_command, size_t command_size)
       // now to the conditions which indicate end of parameter
       // 1: a valid , such as text1(text2 COMMA text3 COMMA ..)
       // 2: end of string
-      else if(  (rest.at(ii) == "," && p_opened == 0)
+      else if(  (rest.at(ii) == ',' && p_opened == 0)
               ||(ii == rest.length() - 1))
         {
-          std::string sub_cmd = rest.substr(0, ii);
+          std::string sub_cmd = rest.substr(param_begin, ii);
+          param_begin = ii+1; // Skip this comma
           Parser *parser = new Parser();
-          parser->parse(cmd);
-
-          parse(sub_cmd);
+          parser->parse(sub_cmd);   // Recursive. Creates depth tree
+          assert(breadth_index < breadth_width); // Just to make sure
+          parameters[breadth_index++] = parser;
         }
     }
 }
@@ -205,7 +196,7 @@ void Parser::clean_tree(Parser *parser)
     {
       return; //By design, we clean the children, not self, by returning
     }
-  for(int i = 0; i < parser->p_size; i++)
+  for(size_t i = 0; i < parser->p_size; i++)
     {
       if(parameters[i] != nullptr)  // in case parsing got error.
         {
