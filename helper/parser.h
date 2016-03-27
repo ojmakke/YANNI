@@ -30,7 +30,7 @@ class Parser
 {
 public:
   Parser();
-  void parse(char *input_command, size_t command_size);
+  void parse(char *input_command);
   ~Parser();
 
 private:
