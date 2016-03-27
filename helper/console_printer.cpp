@@ -24,6 +24,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 
 #include "../common.h"
+#include "parser.h"
 #include "console_printer.h"
 
 #define CONTROL 0
@@ -41,8 +42,8 @@ const char *feedback1[] = {
 
 ConsolePrinter::ConsolePrinter()
 {
-  ii_feedback = 0;
-  ii_network = 0;
+  vi_feedback = 0;
+  vi_network = 0;
   ii_input = 0;
   init_screen();
 }
@@ -55,12 +56,14 @@ ConsolePrinter& ConsolePrinter::instance()
 
 void ConsolePrinter::print_feedback1()
 {
-  const int ROWOFFSET = 1;
-  const int COL       = 2;
+
+  const int COL = 2;
   for(size_t i = 0; i < ARRAY_SIZE(feedback1); i++)
     {
-      mvwprintw(w_feedback, i+ROWOFFSET, COL, feedback1[i]);
+      mvwprintw(w_feedback,  vi_feedback++, COL, feedback1[i]);
     }
+
+  vi_feedback++;
   wrefresh(w_feedback);
 }
 
@@ -87,8 +90,8 @@ void ConsolePrinter::draw_feedback()
   werase(w_feedback);
   box(w_feedback, 0, 0);
   mvwprintw(w_feedback, 0, COLOFFSET, "Feedback");
+  vi_feedback = 2;
   print_feedback1();
-  wrefresh(w_feedback);
 }
 
 void ConsolePrinter::draw_network()
@@ -99,6 +102,7 @@ void ConsolePrinter::draw_network()
   box(w_network, 0, 0);
   mvwprintw(w_network, 0, COLOFFSET, "Network Info");
   wrefresh(w_network);
+  vi_network = 1;
 }
 
 void ConsolePrinter::init_screen()
@@ -164,7 +168,7 @@ void ConsolePrinter::reset_input_cursor()
 
 // TODO consider what happens when screen is less than 80
 // What happens if we attempt to write beyond visible limit?
-void ConsolePrinter::input_write(char c)
+void ConsolePrinter::input_write(int c)
 {
   int row, col;
   getmaxyx(stdscr,row,col);
@@ -188,7 +192,10 @@ void ConsolePrinter::input_write(char c)
     {
       commands[ii_input] = 0; // Terminating null.
       ii_input = 0;
-      // parse_command
+
+      std::string command = std::string(commands);
+      Parser parser;
+      parser.parse(command, 1);
       draw_input();
       reset_input_cursor();
       return;
@@ -258,7 +265,7 @@ void ConsolePrinter::interact()
               {
                 continue;
               }
-            // Parse input first
+            // This will get teh command too
             input_write(ch);
           }
           break;
@@ -310,6 +317,22 @@ void ConsolePrinter::switch_console_state(unsigned int *state)
       }
     break;
     }
+}
+
+void ConsolePrinter::feedback_rewrite(std::string feedback)
+{
+  if(vi_feedback > (size_t) LINES - INPUTHEIGHT - 1)
+    {
+      vi_feedback = 10;
+    }
+  mvwprintw(w_feedback, vi_feedback, 2, "%s    ", feedback.c_str());
+  wrefresh(w_feedback);
+}
+
+void ConsolePrinter::feedback_write(std::string feedback)
+{
+  feedback_rewrite(feedback);
+  vi_feedback++;
 }
 
 ConsolePrinter::~ConsolePrinter()

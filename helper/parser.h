@@ -30,12 +30,12 @@ class Parser
 {
 public:
   Parser();
-  void parse(std::string input_command);
+  void parse(std::string input_command, bool is_root);
   ~Parser();
 
 private:
   std::string command;
-  Parser *parameters[]; // Parameters of the command. This is like a tree.
+  Parser **parameters; // Parameters of the command. This is like a tree.
   size_t p_size; // Arguments: Size of parameters
 
   void clean_tree(Parser *parser);

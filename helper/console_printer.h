@@ -32,6 +32,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #define XOFFSET 2
 
 #include <ncurses.h>
+#include <string>
 
 // Singleton
 // Not thread safe.
@@ -44,17 +45,18 @@ public:
 
   static ConsolePrinter& instance();
   void interact();
-  void input_write(char c);
-  void feedback_write(char c);
-  void network_write(char c);
+  void input_write(int c);
+  void feedback_rewrite(std::string feedback);
+  void feedback_write(std::string feedback);
+  void network_write(std::string info);
 
   ~ConsolePrinter();
 
 private:
   char commands[BUFFERSIZE]; //allow commands of 80
   size_t ii_input;    // index to input buffer;
-  size_t ii_feedback; // index to feedback window buffer;
-  size_t ii_network;  // index to network buffer;
+  size_t vi_feedback; // index to feedback window buffer, vertical
+  size_t vi_network;  // index to network buffer, vertical
   ConsolePrinter();
 
   ConsolePrinter(ConsolePrinter const&);        // Don't Implement

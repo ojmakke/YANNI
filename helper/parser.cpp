@@ -22,60 +22,68 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 #include <stdlib.h>
+#include <stdio.h>
 #include <cassert>
 
 #include "parser.h"
+#include "console_printer.h"
 
 Parser::Parser()
 {
   p_size      = 0;
-  *parameters  = nullptr;
+  parameters  = nullptr;
   command     = "";
 }
 
 // Note: The input to this must be clear of white space
-void Parser::parse(std::string input_command)
+void Parser::parse(std::string input_command, bool is_root)
 {
   // Example: text1(text2(text3, text4(text5, text6), text7), text8)
   // text1 has 2 parameters, text2 and text8
   // text2 has 3 parameters: text3, text4, text7
   // ...
-  std::string cmd(input_command);
-  cmd.append(" "); // Makes life much easier in parsing when looping
-  int p_opened = 0;   // Number of opened paranthesis
 
+  std::string cmd = input_command;
+  cmd.append("R"); // Makes life much easier in parsing when looping
+  std::string ddstr = cmd;
+//  ConsolePrinter::instance().feedback_write(ddstr.append("---"));
+  int p_opened = 0;   // Number of opened paranthesis
   // Search for the breadth of parameters to allocate memory while
   // checking syntax.
   // A paramter is detected by counting # of valid commas (p_opened=1)
   // between paranthesis
   size_t breadth_width = 0;
-  for(size_t ii = 0; ii < cmd.length() - 1; ii++) // last is ' ' ii+1 is afe
+  for(size_t ii = 0; ii < cmd.length() - 1; ii++) // last is ' ' ii+1 is safe
     {
       // Verify comma is between parenthesis
-      if(cmd.at(ii) == ',' && p_opened == 0)
+      if(cmd.at(ii) == ',' && p_opened == 0 && is_root)
         {
+          ConsolePrinter::instance().feedback_rewrite("Incorrect Comma");
           return;     // Illegal use of commas. Separating what?
         }
       // Insure we have ), or )). Nothing like )text or )(
       // After all ) we are good
-      else if(  cmd.at(ii) == ')' && (ii < cmd.length() - 1)
+      else if(  cmd.at(ii) == ')' && (ii < cmd.length() - 2)
              && cmd.at(ii+1) != ',' && cmd.at(ii+1) != ')')
         {
+          ConsolePrinter::instance().feedback_rewrite("Incorrect after )");
           return;
         }
       // Insure we have no ,( or ,)
       // After all commas we are good
        else if(  cmd.at(ii) == ','
              && (cmd.at(ii+1) == '(' || cmd.at(ii+1) == ')'))
-         {
-            return;
-         }
+        {
+          ConsolePrinter::instance().feedback_rewrite("Incorrect after ,");
+          return;
+        }
       // Insure have no () or (,
       // After all ( we are good.
       else if(  cmd.at(ii) == '('
             && (cmd.at(ii+1) == ')' || cmd.at(ii+1) == ','))
         {
-           return;
+          ConsolePrinter::instance().feedback_rewrite("Incorrect after (");
+          return;
         }
       // At this point, after all special symbols we are good.
       // Also, the location of all symbols is good (comma inside parenthesis)
@@ -84,6 +92,7 @@ void Parser::parse(std::string input_command)
       else if(cmd.at(ii) == '(')
         {
           p_opened++;
+          breadth_width++; // Next is parameter
           continue;
         }
       else if(cmd.at(ii) == ')')
@@ -91,11 +100,12 @@ void Parser::parse(std::string input_command)
           p_opened--;
           if(p_opened < 0)
             {
+              ConsolePrinter::instance().feedback_rewrite("Too many )");
               return; // Imbalanced
             }
           continue;
         }
-      else if(cmd.at(ii) == ',' && p_opened == 1)
+      else if(cmd.at(ii) == ',' && p_opened == 1) // Next is parameter
         {
           breadth_width++;
         }
@@ -103,10 +113,9 @@ void Parser::parse(std::string input_command)
 
   if(p_opened > 0)
     {
+      ConsolePrinter::instance().feedback_rewrite("Missing )");
       return; // Imbalanced parameters
     }
-
-  cmd.pop_back(); // Get rid of alst ' ' that we inserted.
 
   // Make sure first and last of cmd are valid
   // This also verifies last end. Why?
@@ -119,15 +128,20 @@ void Parser::parse(std::string input_command)
   // or imbalanced ()
   if(cmd.at(0) == '(')
     {
+      ConsolePrinter::instance().feedback_rewrite("Can't start with (");
       return; // Invalid ends
     }
 
+  p_size = breadth_width;
   // Create the parameter tree recursively
   if(breadth_width > 0)
     {
-     *parameters = new Parser[breadth_width]();
+     parameters = new Parser*[breadth_width];
+     for(size_t ii = 0; ii < breadth_width; ii++)
+       {
+         parameters[ii] = nullptr;
+       }
     }
-
   //Find the first (, search for all commas until ). Ignore everything
   // inside embedded ()
   size_t firstP = cmd.find('(');
@@ -136,11 +150,18 @@ void Parser::parse(std::string input_command)
   if(firstP > cmd.length())
     {
       command = cmd;
+      std::string dstr = command;
+      dstr.append(" psize: ").append(std::to_string(p_size)).append(" returning");
+//      ConsolePrinter::instance().feedback_write(dstr);
       return; // we are done, no parameters for this parameter
     }
   else
     {
-      command = cmd.substr(0, firstP - 1);
+      command = cmd.substr(0, firstP);
+      std::string dstr = command;
+      dstr.append(" continuing ");
+      dstr.append(" psize: ").append(std::to_string(p_size));
+ //     ConsolePrinter::instance().feedback_write(dstr);
     }
 
   std::string rest = cmd.substr(firstP, cmd.length());  // rest of string
@@ -151,7 +172,8 @@ void Parser::parse(std::string input_command)
   p_opened = 0; // Redundant, but for clarity
   size_t breadth_index = 0;
   size_t param_begin = 1; // beginning of parameter. Skip first (
-  for(size_t ii = 1; ii < rest.length() - 1; ii++)
+  // Remember, there is an appended ' ' at end
+  for(size_t ii = 1; ii < rest.length(); ii++)
     {
       if(rest.at(ii) == '(')
         {
@@ -167,43 +189,59 @@ void Parser::parse(std::string input_command)
       // now to the conditions which indicate end of parameter
       // 1: a valid , such as text1(text2 COMMA text3 COMMA ..)
       // 2: end of string
-      else if(  (rest.at(ii) == ',' && p_opened == 0)
-              ||(ii == rest.length() - 1))
+      else if(rest.at(ii) == ',' && p_opened == 0)
         {
-          std::string sub_cmd = rest.substr(param_begin, ii);
+
+          std::string sub_cmd = rest.substr(param_begin, ii-param_begin);
+          std::string dstr = sub_cmd;
+          param_begin = ii+1; // Skip this comma next time
+          Parser *parser = new Parser();
+          parser->parse(sub_cmd,0);   // Recursive. Creates depth tree
+          assert(breadth_index < breadth_width); // Just to make sure
+          parameters[breadth_index++] = parser;
+          continue;
+        }
+      else if( ii == rest.length() -1)
+        {
+          std::string sub_cmd = rest.substr(param_begin, ii-param_begin-1);
           param_begin = ii+1; // Skip this comma
           Parser *parser = new Parser();
-          parser->parse(sub_cmd);   // Recursive. Creates depth tree
+          parser->parse(sub_cmd,0);   // Recursive. Creates depth tree
           assert(breadth_index < breadth_width); // Just to make sure
           parameters[breadth_index++] = parser;
         }
+
     }
+//  ConsolePrinter::instance().feedback_write("Done Loop");
 }
 
 Parser::~Parser()
 {
+ //  ConsolePrinter::instance().feedback_write(command);
   // Traverse the tree, depth first, and delete objects recursively
-  for(size_t i = 0; i < p_size; i++)
-    {
-       clean_tree(parameters[i]);
-    }
-  // Now all parameters are deleted. Nothing else is allocated.
+   clean_tree(this);
+   delete[] parameters;
 }
 
 void Parser::clean_tree(Parser *parser)
 {
+//  std::string dstr = "D: ";
+//  dstr.append("p_size");
+//  dstr.append(std::to_string(parser->p_size));
+//  dstr.append(" ");
+//  dstr.append(parser->command);
+//  ConsolePrinter::instance().feedback_write(dstr);
   if(parser->p_size == 0)
     {
+ //     ConsolePrinter::instance().feedback_write("Bounced");
       return; //By design, we clean the children, not self, by returning
     }
   for(size_t i = 0; i < parser->p_size; i++)
     {
-      if(parameters[i] != nullptr)  // in case parsing got error.
+      if(parameters != nullptr)  // in case parsing got error.
         {
-          clean_tree(parameters[i]);
           delete parameters[i];
         }
     }
-  delete[] parser;  // We go to parent node, clean all childen and repeat...
   return;
 }
