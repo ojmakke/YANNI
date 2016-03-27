@@ -6,17 +6,20 @@
 CPP_SRCS += \
 ../helper/randomizer.cpp \
 ../helper/console_printer.cpp \
-../helper/parser.cpp
+../helper/parser.cpp \
+../helper/workspace.cpp
 
 OBJS += \
 ./helper/randomizer.o \
 ./helper/console_printer.o \
-./helper/parser.o
+./helper/parser.o \
+./helper/workspace.o
 
 CPP_DEPS += \
 ./helper/randomizer.d \
 ./helper/console_printer.d \
-./helper/parser.d
+./helper/parser.d \
+./helper/workspace.d
 
 
 # Each subdirectory must supply rules for building sources it contributes

@@ -33,8 +33,8 @@ Layer<T>::Layer(size_t size, ActivationEnum switching_function)
 {
   if(size == 0)
     {
-      fprintf(stderr, "Error in initializing Layer. Size is 0.\
-              Expect crash...\n");
+//      fprintf(stderr, "Error in initializing Layer. Size is 0.\
+//              Expect crash...\n");
               return;
     }
   for(size_t i = 0; i < size; i++)
@@ -67,14 +67,14 @@ void Layer<T>::connect_to(Layer<T> &next_layer)
 
   if(nodes.size() == 0)
     {
-      fprintf(stderr, "Layer has size of 0\n");
+  //    fprintf(stderr, "Layer has size of 0\n");
       return;
     }
   for(size_t i = 0; i < nodes.size(); i++)
     {
       if(next_layer.nodes.size() == 0)
         {
-          fprintf(stderr, "Next layer has size of 0\n");
+ //         fprintf(stderr, "Next layer has size of 0\n");
           return;
 
         }
@@ -111,7 +111,7 @@ int Layer<T>::fix_layer_inputs(T *input_array)
 {
   if(nodes.size() == 0)
     {
-      fprintf(stderr, "Incorrect input layer size\n");
+  //    fprintf(stderr, "Incorrect input layer size\n");
       return 0;
     }
 
@@ -133,7 +133,7 @@ int Layer<T>::fix_some_layer_inputs(T* input_array_values,
 {
   if(input_size > nodes.size() || nodes.size() == 0)
     {
-      fprintf(stderr, "Incorrect input size, too large\n");
+  //    fprintf(stderr, "Incorrect input size, too large\n");
       return 0;
     }
 
@@ -142,7 +142,7 @@ int Layer<T>::fix_some_layer_inputs(T* input_array_values,
     {
       if(input_array_index[i] >= nodes.size())
         {
-          fprintf(stderr, "Incorrect value in input\n");
+      //    fprintf(stderr, "Incorrect value in input\n");
           return 0;
         }
       i_node =nodes.at(input_array_index[i]);

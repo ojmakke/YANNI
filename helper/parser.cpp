@@ -1,5 +1,5 @@
 /*
- * console_printer.cpp
+ * parser.cpp
  *
  *  Created on : Mar 26, 2016
  *      Author : Omar Makke (O jMakke)
@@ -44,7 +44,7 @@ void Parser::parse(std::string input_command, bool is_root)
   // ...
 
   std::string cmd = input_command;
-  cmd.append("R"); // Makes life much easier in parsing when looping
+  cmd.append(" "); // Makes life much easier in parsing when looping
   std::string ddstr = cmd;
 //  ConsolePrinter::instance().feedback_write(ddstr.append("---"));
   int p_opened = 0;   // Number of opened paranthesis
@@ -149,9 +149,11 @@ void Parser::parse(std::string input_command, bool is_root)
   // We have only text, no ()
   if(firstP > cmd.length())
     {
-      command = cmd;
+      command = cmd.substr(0, cmd.length() - 1); // Ignore appended stuff
       std::string dstr = command;
-      dstr.append(" psize: ").append(std::to_string(p_size)).append(" returning");
+      dstr.append(" psize: ")
+          .append(std::to_string(p_size))
+          .append(" returning");
 //      ConsolePrinter::instance().feedback_write(dstr);
       return; // we are done, no parameters for this parameter
     }

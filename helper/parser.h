@@ -1,5 +1,5 @@
 /*
- * parser.cpp
+ * parser.h
  *
  *  Created on : Mar 26, 2016
  *      Author : Omar Makke (O jMakke)
@@ -30,13 +30,14 @@ class Parser
 {
 public:
   Parser();
+  std::string command;
+  Parser **parameters; // Parameters of the command. This is like a tree.
+  size_t p_size; // Arguments: Size of parameters
   void parse(std::string input_command, bool is_root);
   ~Parser();
 
 private:
-  std::string command;
-  Parser **parameters; // Parameters of the command. This is like a tree.
-  size_t p_size; // Arguments: Size of parameters
+
 
   void clean_tree(Parser *parser);
 };

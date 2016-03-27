@@ -26,6 +26,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "../common.h"
 #include "parser.h"
 #include "console_printer.h"
+#include "workspace.h"
 
 #define CONTROL 0
 #define INPUT 1
@@ -196,6 +197,7 @@ void ConsolePrinter::input_write(int c)
       std::string command = std::string(commands);
       Parser parser;
       parser.parse(command, 1);
+      Workspace::execute(parser);
       draw_input();
       reset_input_cursor();
       return;
