@@ -191,6 +191,7 @@ void ConsolePrinter::input_write(char c)
       // parse_command
       draw_input();
       reset_input_cursor();
+      return;
     }
   // Escape
   else if(c == 27)
