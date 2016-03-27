@@ -23,9 +23,11 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "../common.h"
 #include "../parts/edge.h"
 #include "../parts/node.h"
 #include "../parts/layer.h"
+#include "../helper/console_printer.h"
 #include "fullhidden.h"
 
 template<typename T>
@@ -42,20 +44,14 @@ FullHidden<T>::FullHidden(size_t *layers,
 			  size_t layer_count,
 			  ActivationEnum *switching_functions)
 {
-  fprintf(stdout, "Creating the hidden network\n");
   if(layer_count < 2)
     {
-      fprintf(stderr,
-              "Need at least 2 layers for Full Hidden network\n");
       return;
     }
 
   // Create layers and make last layer output,and first layer input
   for(size_t i = 0; i < layer_count; i++)
     {
-      fprintf(stdout, "Creating layer %d of size %d\n",
-              (int) i,
-              (int) layers[i]);
       Layer<T> *i_layer = new Layer<T>(layers[i], switching_functions[i]);
 
       if(i == 0) // make input
@@ -97,14 +93,11 @@ FullHidden<T>::FullHidden(size_t *layers,
 template<typename T>
 FullHidden<T>::~FullHidden()
 {
-  //	fprintf(stdout, "Full Hidden Network destructor called\n");
   for(size_t i = 0; i <  all_layers.size(); i++)
     {
-      fprintf(stdout, "Deleting layer %d\n", (int) i);
       Layer<T> *last_layer = all_layers.at(i);
       delete last_layer;
     }
-  fprintf(stdout, "Deleting layers is complete\n");
   all_layers.clear();
 }
 
@@ -145,12 +138,18 @@ T FullHidden<T>::train(struct Classic_Dataset<T>  *training_data,
           // Does this have to be part of back_propagate?
           update_weights(learning_rate);
         }
-      fprintf(stdout, "Error in %d is %f\n", (int) study, (float) error);
+      std::string result = "Error in ";
+      result.append(std::to_string(study)
+                    .append(" is ")
+                    .append(std::to_string(error)));
+      ConsolePrinter::instance().feedback_rewrite(result);
       if(error <= target_error)
         {
           return error;
         }
     }
+
+//  fprintf(stdout, "\n");
   return error;
 }
 
@@ -160,7 +159,7 @@ void FullHidden<T>::dump_everything()
   // For each layer
   for(size_t i = 0; i < all_layers.size(); i++)
     {
-      fprintf(stdout, "\n\nLayer %d:\n", (int) i);
+//      fprintf(stdout, "\n\nLayer %d:\n", (int) i);
       Layer<T> *i_layer = all_layers.at(i);
 
       // Get the nodes
@@ -170,10 +169,10 @@ void FullHidden<T>::dump_everything()
       for(size_t j = 0; j < i_all_nodes.size(); j++)
         {
           Node<T> *j_node = i_all_nodes.at(j);
-          fprintf(stdout, "Node %d: \t\tValue: %f\tNet: %f\n",
-                  (int) j,
-                  (float) j_node->get_output(),
-                  (float) j_node->get_net());
+//         fprintf(stdout, "Node %d: \t\tValue: %f\tNet: %f\n",
+//                  (int) j,
+//                  (float) j_node->get_output(),
+//                  (float) j_node->get_net());
           // Get the edges of the node input. Input layer doesn't have them
           if(j_node->is_input)
             {
@@ -184,9 +183,9 @@ void FullHidden<T>::dump_everything()
           for(size_t k = 0; k <j_all_edges.size(); k++)
             {
               Edge<T> *k_edge = j_all_edges.at(k);
-              fprintf(stdout, "Edge %d: \t\tValue: %f\n",
-                      (int) k,
-                      (float) k_edge->get_value() );
+//              fprintf(stdout, "Edge %d: \t\tValue: %f\n",
+//                      (int) k,
+//                      (float) k_edge->get_value() );
             }
         }
     }
@@ -214,7 +213,6 @@ void FullHidden<T>::set_inputs(T *inputs)
 {
   if(all_layers.size() <= 1)
     {
-      fprintf(stderr, "Network does not have input and output layers\n");
       return;
     }
 
@@ -227,16 +225,16 @@ void FullHidden<T>::set_inputs(T *inputs)
 template<typename T>
 void FullHidden<T>::dump_outputs()
 {
-  Layer<T> *output_layer = all_layers.at(all_layers.size()-1);
-  fprintf(stdout, "Last layer has size:%d\n",
-          (int) output_layer->nodes.size());
-  for(size_t i = 0; i < (output_layer->nodes).size(); i++)
-    {
-      Node<T> *i_node = (output_layer->nodes).at(i);
-      fprintf(stdout, "Output %d  :\tValue  :%f\n",
-              (int) i,
-              (float) i_node->get_output());
-    }
+//  Layer<T> *output_layer = all_layers.at(all_layers.size()-1);
+//  fprintf(stdout, "Last layer has size:%d\n",
+//          (int) output_layer->nodes.size());
+//  for(size_t i = 0; i < (output_layer->nodes).size(); i++)
+//    {
+//      Node<T> *i_node = (output_layer->nodes).at(i);
+//      fprintf(stdout, "Output %d  :\tValue  :%f\n",
+//              (int) i,
+//              (float) i_node->get_output());
+//    }
 }
 
 template<typename T>

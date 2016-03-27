@@ -1,10 +1,8 @@
 /*
- * nnhelper.hpp
+ * workspace.cpp
  *
- *  Created on : Mar 17, 2016
+ *  Created on : Mar 26, 2016
  *      Author : Omar Makke (O jMakke)
- *      ojQuote: "At this rate, new  born children will not
- *      		  be law abiding by default!"
  *      Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets
@@ -21,34 +19,32 @@ GNU General Public License for more details.
 You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <string>
 
-#ifndef NNHELPER_HPP_
-#define NNHELPER_HPP_
+#include "workspace.h"
+#include "console_printer.h"
 
-#include "randomizer.h"
+extern void run_tests();
 
-template <typename T>
-class NNHelper
-{
-public:
-  Randomizer<T> randomizer;
-
-  NNHelper();
-  ~NNHelper();
-};
-
-template<typename T>
-NNHelper<T>::NNHelper()
-{
-  Randomizer<T> x;
-  randomizer = x;
-}
-
-template<typename T>
-NNHelper<T>::~NNHelper()
+Workspace::Workspace()
 {
 
 }
 
-#endif /* NNHELPER_HPP_ */
+void Workspace::execute(Parser &parser)
+{
+  size_t layer_size;
 
+  if(parser.command.compare("demo") == 0)
+    {
+      ConsolePrinter::instance().feedback_rewrite(
+            "Starting Demo...                   ");
+      run_tests();
+    }
+  else
+    {
+      std::string result = "Unrecognized command: ";
+      result.append(parser.command).append(". Try demo");
+      ConsolePrinter::instance().feedback_rewrite(result);
+    }
+}

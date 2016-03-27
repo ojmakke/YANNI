@@ -1,10 +1,9 @@
 /*
- * nnhelper.hpp
+ * parser.h
  *
- *  Created on : Mar 17, 2016
+ *  Created on : Mar 26, 2016
  *      Author : Omar Makke (O jMakke)
- *      ojQuote: "At this rate, new  born children will not
- *      		  be law abiding by default!"
+ *      ojQuote: "Math is simply a numeric implementation of Logic."
  *      Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets
@@ -22,33 +21,25 @@ You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NNHELPER_HPP_
-#define NNHELPER_HPP_
+#ifndef PARSER_H
+#define PARSER_H
 
-#include "randomizer.h"
+#include <string>
 
-template <typename T>
-class NNHelper
+class Parser
 {
 public:
-  Randomizer<T> randomizer;
+  Parser();
+  std::string command;
+  Parser **parameters; // Parameters of the command. This is like a tree.
+  size_t p_size; // Arguments: Size of parameters
+  void parse(std::string input_command, bool is_root);
+  ~Parser();
 
-  NNHelper();
-  ~NNHelper();
+private:
+
+
+  void clean_tree(Parser *parser);
 };
 
-template<typename T>
-NNHelper<T>::NNHelper()
-{
-  Randomizer<T> x;
-  randomizer = x;
-}
-
-template<typename T>
-NNHelper<T>::~NNHelper()
-{
-
-}
-
-#endif /* NNHELPER_HPP_ */
-
+#endif // PARSER_H

@@ -1,10 +1,10 @@
 /*
- * nnhelper.hpp
+ * common.h
  *
  *  Created on : Mar 17, 2016
  *      Author : Omar Makke (O jMakke)
- *      ojQuote: "At this rate, new  born children will not
- *      		  be law abiding by default!"
+ *      ojQuote: "Hacking is surgery while cracking is robbery"
+ *
  *      Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets
@@ -22,33 +22,8 @@ You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef NNHELPER_HPP_
-#define NNHELPER_HPP_
+#ifndef COMMON_H
+#define COMMON_H
 
-#include "randomizer.h"
-
-template <typename T>
-class NNHelper
-{
-public:
-  Randomizer<T> randomizer;
-
-  NNHelper();
-  ~NNHelper();
-};
-
-template<typename T>
-NNHelper<T>::NNHelper()
-{
-  Randomizer<T> x;
-  randomizer = x;
-}
-
-template<typename T>
-NNHelper<T>::~NNHelper()
-{
-
-}
-
-#endif /* NNHELPER_HPP_ */
-
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+#endif // COMMON_H

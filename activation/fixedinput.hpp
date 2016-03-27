@@ -1,5 +1,5 @@
 /*
- * fixedinput.cpp
+ * fixedinput.hpp
  *
  *  Created on : Mar 17, 2016
  *      Author : Omar Makke (O jMakke)
