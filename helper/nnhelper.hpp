@@ -1,5 +1,5 @@
 /*
- * helper.cpp
+ * nnhelper.hpp
  *
  *  Created on : Mar 17, 2016
  *      Author : Omar Makke (O jMakke)
@@ -31,17 +31,17 @@ template <typename T>
 class NNHelper
 {
 public:
-	Randomizer<T> randomizer;
+  Randomizer<T> randomizer;
 
-	NNHelper();
-	~NNHelper();
+  NNHelper();
+  ~NNHelper();
 };
 
 template<typename T>
 NNHelper<T>::NNHelper()
 {
-	Randomizer<T> x;
-	randomizer = x;
+  Randomizer<T> x;
+  randomizer = x;
 }
 
 template<typename T>

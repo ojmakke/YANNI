@@ -32,28 +32,28 @@ template <typename T>
 class  Step : public Activation<T>
 {
 public:
-	/* <T> is casted to double and then back to <T> */
-	T f(T fnet)
-	{
-		if((double) fnet < 0.0)
-		{
-			return (T) 0.0;
-		}
-		return (T) 1.0;
-	}
-	/**
-	 *  Derivative. T will be casted double and back from double
-	 *   */
-	T df(T fnet)
-	{
-		if((double) fnet == 0.0)
-		{
-			fprintf(stderr, "Invalid derivative for Step\n");
-			return (T) 0.0;
-		}
-		return (T) 0.0;
-	}
-	~Step<T>(){}
+  /* <T> is casted to double and then back to <T> */
+  T f(T fnet)
+  {
+    if((double) fnet < 0.0)
+      {
+        return (T) 0.0;
+      }
+    return (T) 1.0;
+  }
+  /**
+         *  Derivative. T will be casted double and back from double
+         *   */
+  T df(T fnet)
+  {
+    if((double) fnet == 0.0)
+      {
+        fprintf(stderr, "Invalid derivative for Step\n");
+        return (T) 0.0;
+      }
+    return (T) 0.0;
+  }
+  ~Step<T>(){}
 };
 template class Step<double>;
 template class Step<float>;

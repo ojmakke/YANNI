@@ -32,31 +32,38 @@ template <typename T>
 class  Logistic : public Activation<T>
 {
 public:
-	/* <T> is casted to double and then back to <T> */
-	T f(T fnet)
-	{
+  /* <T> is casted to double and then back to <T> */
+  T f(T fnet)
+  {
 
-		y = (T) 1.0/(1.0 + exp(-1.0 * ((double) -fnet)));
-		fnet_old = fnet;
-		return y;
-	}
-	/**
-	 *  Derivative of tanh. T will be casted double and back from double
-	 *   */
-	T df(T fnet)
-	{
-		if(fnet != fnet_old)
-		{
-			y = (T) tanh((double) fnet);
-			fnet_old = fnet;
-		}
-		return (T) y*(1.0-y);
-	}
-	~Logistic<T>(){}
+    y = (T) 1.0/(1.0 + exp(-1.0 * ((double) -fnet)));
+    if(y > (T) 0.995)
+      {
+        y = (T) 0.995;
+      }
+    else if(y < (T) -0.995)
+      {
+        y = (T) -0.995;
+      }
+    fnet_old = fnet;
+    return y;
+  }
+  /**
+         *  Derivative of tanh. T will be casted double and back from double
+         *   */
+  T df(T fnet)
+  {
+    if(fnet != fnet_old)
+      {
+        y = f(fnet);
+      }
+    return (T) y*(1.0-y);
+  }
+  ~Logistic<T>(){}
 
 private:
-	T fnet_old;
-	T y;
+  T fnet_old;
+  T y;
 };
 
 template class Logistic<double>;

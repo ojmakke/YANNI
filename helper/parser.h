@@ -1,8 +1,9 @@
 /*
- * randomizer.cpp
+ * parser.h
  *
- *  Created on : Mar 17, 2016
- *      Author : Omar Makke
+ *  Created on : Mar 26, 2016
+ *      Author : Omar Makke (O jMakke)
+ *      ojQuote: "Math is simply a numeric implementation of Logic."
  *      Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets
@@ -20,31 +21,25 @@ You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <random>
-#include <ctime>
-#include <cstdlib>
+#ifndef PARSER_H
+#define PARSER_H
 
-#include "randomizer.h"
+#include <string>
 
-template<typename T>
-Randomizer<T>::Randomizer()
+class Parser
 {
-  srand(time(0));
-}
+public:
+  Parser();
+  std::string command;
+  Parser **parameters; // Parameters of the command. This is like a tree.
+  size_t p_size; // Arguments: Size of parameters
+  void parse(std::string input_command, bool is_root);
+  ~Parser();
 
-template<typename T>
-T Randomizer<T>::get_rand()
-{
-  return ((T) rand())/((T) RAND_MAX);
-}
+private:
 
-template<typename T>
-T Randomizer<T>::get_rand(T min, T max)
-{
-  return ( ((T) rand())/((T) RAND_MAX) * (max - min) + min);
-}
 
-// force instantiation
-template class Randomizer<double>;
-template class Randomizer<float>;
-template class Randomizer<int>;
+  void clean_tree(Parser *parser);
+};
+
+#endif // PARSER_H

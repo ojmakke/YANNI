@@ -31,26 +31,26 @@ template <typename T>
 class  Rectify : public Activation<T>
 {
 public:
-	T f(T fnet)
-	{
-		if((double) fnet < 0.0)
-		{
-			return (T) 0.0;
-		}
-		return (T) fnet;
-	}
-	/**
-	 *  Derivative. T will be casted double and back from double
-	 *   */
-	T df(T fnet)
-	{
-		if((double) fnet == 0.0)
-		{
-			return (T) 0.0;
-		}
-		return (T) 1.0;
-	}
-	~Rectify<T>(){}
+  T f(T fnet)
+  {
+    if((double) fnet < 0.0)
+      {
+        return (T) 0.0;
+      }
+    return (T) fnet;
+  }
+  /**
+         *  Derivative. T will be casted double and back from double
+         *   */
+  T df(T fnet)
+  {
+    if((double) fnet == 0.0)
+      {
+        return (T) 0.0;
+      }
+    return (T) 1.0;
+  }
+  ~Rectify<T>(){}
 };
 
 template class Rectify<double>;

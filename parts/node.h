@@ -39,33 +39,33 @@ class Node
 {
 public:
 
-	Activation<T> *F;
+  Activation<T> *F;
 
-	std::vector<Edge<T> *> forward;  // Forward Edges. Normally only 1 edge
-	std::vector<Edge<T> *> backward; // Backward edges
-	bool is_input;	// Used to mark the neuron as input neuron.
-	bool is_output; // Used to mark the neuron as output neuron.
+  std::vector<Edge<T> *> forward;  // Forward Edges. Normally only 1 edge
+  std::vector<Edge<T> *> backward; // Backward edges
+  bool is_input;	// Used to mark the neuron as input neuron.
+  bool is_output; // Used to mark the neuron as output neuron.
 
-//	Node(size_t outputs, size_t inputs, ActivationEnum type);
-	Node(ActivationEnum type);
-	~Node();
-	T get_output();
-	T get_net();
-	T calc_new_output(); // Calculates new output from input
-						 // (forward propagation);
-	void set_output(T output);
-	/*
-	 * This will modify next nodes edge "backward" vector,
-	 * and this->forward edge vector
-	 */
-	void connect_to(Node *next_node);
-	T get_delta();
-	void set_delta(T delta);	// for output neurons
+  //	Node(size_t outputs, size_t inputs, ActivationEnum type);
+  Node(ActivationEnum type);
+  ~Node();
+  T get_output();
+  T get_net();
+  T calc_new_output(); // Calculates new output from input
+  // (forward propagation);
+  void set_output(T output);
+  /*
+         * This will modify next nodes edge "backward" vector,
+         * and this->forward edge vector
+         */
+  void connect_to(Node *next_node);
+  T get_delta();
+  void set_delta(T delta);	// for output neurons
 
 private:
-	T y;
-	T fnet;
-	T delta;
+  T y;
+  T fnet;
+  T delta;
 };
 
 

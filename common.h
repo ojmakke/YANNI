@@ -1,8 +1,10 @@
 /*
- * randomizer.cpp
+ * common.h
  *
  *  Created on : Mar 17, 2016
- *      Author : Omar Makke
+ *      Author : Omar Makke (O jMakke)
+ *      ojQuote: "Hacking is surgery while cracking is robbery"
+ *
  *      Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets
@@ -20,31 +22,8 @@ You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <random>
-#include <ctime>
-#include <cstdlib>
+#ifndef COMMON_H
+#define COMMON_H
 
-#include "randomizer.h"
-
-template<typename T>
-Randomizer<T>::Randomizer()
-{
-  srand(time(0));
-}
-
-template<typename T>
-T Randomizer<T>::get_rand()
-{
-  return ((T) rand())/((T) RAND_MAX);
-}
-
-template<typename T>
-T Randomizer<T>::get_rand(T min, T max)
-{
-  return ( ((T) rand())/((T) RAND_MAX) * (max - min) + min);
-}
-
-// force instantiation
-template class Randomizer<double>;
-template class Randomizer<float>;
-template class Randomizer<int>;
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+#endif // COMMON_H
