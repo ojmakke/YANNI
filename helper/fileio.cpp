@@ -45,9 +45,10 @@ unsigned int char_count(std::string string, char c)
 std::string get_first_entry(std::string *str, char d)
 {
   // Get the string from the beginning until delimiter, not including it.
-
-  std::string substr = str->substr(0, str->find(d)-1);
-  *str = str->substr(str->find(d)-1, str->length());
+  std::string dstr = "";
+  dstr.push_back(d);
+  std::string substr = str->substr(0, str->find(dstr));
+  *str = str->substr(str->find(dstr)+1, str->length());
   return substr;
 }
 
@@ -60,8 +61,9 @@ FileIO::FileIO()
 // Returns 0 if fails. Otherwise, returns lines read
 int FileIO::get_text_1D(std::string filename,
                         unsigned int dimension,
-                        double** you_own_data)
+                        double*** you_own_data)
 {
+  double **data;
   std::string line_read;
   std::ifstream infile(filename);
   if(!infile.is_open())
@@ -80,7 +82,7 @@ int FileIO::get_text_1D(std::string filename,
       line_count++;
   }
 
-  you_own_data = new double*[line_count];
+  data = new double*[line_count];
 
   infile.seekg(0, std::ios_base::beg);
   line_count = 0;
@@ -88,17 +90,18 @@ int FileIO::get_text_1D(std::string filename,
   {
       getline(infile,line_read);
       // Parse the line into the input
-      you_own_data[line_count] = new double[dimension];
+      data[line_count] = new double[dimension];
       std::string entry = line_read;
       for(size_t ii = 0; ii < dimension; ii++)
       {
-        entry = get_first_entry(&entry, DELIMITER);
-        you_own_data[line_count][ii] = atof(entry.c_str());
+        entry = get_first_entry(&line_read, DELIMITER);
+        data[line_count][ii] = atof(entry.c_str());
       }
       line_count++;
   }
   infile.close();
 //  system ("pause");
+  *you_own_data = data;
   return line_count;
 }
 

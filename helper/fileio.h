@@ -3,7 +3,7 @@
  *
  *  Created on : Mar 28, 2016
  *      Author : Omar Makke (O jMakke)
- *      ojQuote: "The the programming tool ever is coffee"
+ *      ojQuote: "The best programming tool ever is coffee"
  *      Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets
@@ -34,7 +34,7 @@ public:
   // dimension is to help the program identify input dimension
   static int get_text_1D(std::string filename,
                          unsigned int dimension,
-                         double** you_own_data);
+                         double*** you_own_data);
 private:
   FileIO();
 };

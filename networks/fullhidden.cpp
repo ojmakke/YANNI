@@ -225,16 +225,20 @@ void FullHidden<T>::set_inputs(T *inputs)
 template<typename T>
 void FullHidden<T>::dump_outputs()
 {
-//  Layer<T> *output_layer = all_layers.at(all_layers.size()-1);
+  Layer<T> *output_layer = all_layers.at(all_layers.size()-1);
 //  fprintf(stdout, "Last layer has size:%d\n",
 //          (int) output_layer->nodes.size());
-//  for(size_t i = 0; i < (output_layer->nodes).size(); i++)
-//    {
-//      Node<T> *i_node = (output_layer->nodes).at(i);
-//      fprintf(stdout, "Output %d  :\tValue  :%f\n",
-//              (int) i,
-//              (float) i_node->get_output());
-//    }
+
+  for(size_t i = 0; i < (output_layer->nodes).size(); i++)
+    {
+      std::string outstr = "Output ";
+      Node<T> *i_node = (output_layer->nodes).at(i);
+      outstr.append(std::to_string(i))
+          .append(": Value: ")
+          .append(std::to_string(i_node->get_output()));
+
+      ConsolePrinter::instance().feedback_write(outstr);
+    }
 }
 
 template<typename T>
