@@ -1,10 +1,9 @@
 /*
- * workspace.h
+ * fileio.hpp
  *
- *  Created on : Mar 17, 2016
+ *  Created on : Mar 28, 2016
  *      Author : Omar Makke (O jMakke)
- *      ojQuote: "We must construct additional GNU software"
- *
+ *      ojQuote: "The best programming tool ever is coffee"
  *      Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets
@@ -22,19 +21,22 @@ You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WORKSPACE_H
-#define WORKSPACE_H
+#ifndef FILEIO_H
+#define FILEIO_H
 
-#include "parser.h"
+#include <string>
 
-class Workspace
+class FileIO
 {
 public:
 
-  static void execute(Parser& parser);
-
+  // reads input, each line is d1, d2, d3, ... where di is the ith dimension
+  // dimension is to help the program identify input dimension
+  static int get_text_1D(std::string filename,
+                         unsigned int dimension,
+                         double*** you_own_data);
 private:
-   Workspace();
+  FileIO();
 };
 
-#endif // WORKSPACE_H
+#endif // FILEIO_H
