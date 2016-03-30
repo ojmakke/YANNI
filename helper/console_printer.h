@@ -33,6 +33,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <ncurses.h>
 #include <string>
+#include "../networks/fullhidden.h"
 
 // Singleton
 // Not thread safe.
@@ -49,6 +50,8 @@ public:
   void feedback_rewrite(std::string feedback);
   void feedback_write(std::string feedback);
   void network_write(std::string info);
+  void network_write_nets(std::vector<FullHidden<double> *>& nets);
+  void network_write_active(FullHidden<double> *nets);
 
   ~ConsolePrinter();
 

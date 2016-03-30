@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
 {
   // Experimental use of singletons. This singleton changes console's global state.
   // Might be dangerous and confusing. Let us see.
-//  ConsolePrinter::instance().interact();
+  ConsolePrinter::instance().interact();
   double **indata, **outdata;
 
   unsigned int in_length = FileIO::get_text_1D("../logicinput.txt", 2, &indata);

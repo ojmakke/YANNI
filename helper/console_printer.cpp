@@ -197,7 +197,7 @@ void ConsolePrinter::input_write(int c)
       std::string command = std::string(commands);
       Parser parser;
       parser.parse(command, 1);
-      Workspace::execute(parser);
+      Workspace::instance().execute(parser);
       draw_input();
       reset_input_cursor();
       return;
@@ -335,6 +335,22 @@ void ConsolePrinter::feedback_write(std::string feedback)
 {
   feedback_rewrite(feedback);
   vi_feedback++;
+}
+
+void
+ConsolePrinter::network_write_nets(std::vector<FullHidden<double> *>& nets)
+{
+  for(size_t ii = 0; ii < nets.size(); ii++)
+    {
+      mvwprintw(w_network, 5+ii, 2, "%d FullHidden", nets.at(ii)->id);
+    }
+  wrefresh(w_network);
+}
+
+void ConsolePrinter::network_write_active(FullHidden<double> *net)
+{
+  mvwprintw(w_network, 2, 2, "%d is Active", net->id);
+  wrefresh(w_network);
 }
 
 ConsolePrinter::~ConsolePrinter()

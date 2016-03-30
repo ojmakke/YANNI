@@ -31,8 +31,12 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "fullhidden.h"
 
 template<typename T>
+int FullHidden<T>::id = 0;
+
+template<typename T>
 FullHidden<T>::FullHidden()
 {
+  FullHidden::id++;
 }
 
 /**
@@ -48,7 +52,7 @@ FullHidden<T>::FullHidden(size_t *layers,
     {
       return;
     }
-
+  FullHidden::id++;
   // Create layers and make last layer output,and first layer input
   for(size_t i = 0; i < layer_count; i++)
     {

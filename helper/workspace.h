@@ -25,16 +25,26 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef WORKSPACE_H
 #define WORKSPACE_H
 
+#include <vector>
+
 #include "parser.h"
+#include "../networks/fullhidden.h"
 
 class Workspace
 {
 public:
 
-  static void execute(Parser& parser);
+  static Workspace& instance();
+  void execute(Parser& parser);
+  void activate_network(int net_id);
+  ~Workspace();
 
 private:
    Workspace();
+   Workspace(Workspace const&);
+   void operator=(Workspace const&);
+   std::vector<FullHidden<double> *> networks;
+   FullHidden<double> *current_network;
 };
 
 #endif // WORKSPACE_H

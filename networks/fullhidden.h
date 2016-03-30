@@ -49,6 +49,7 @@ public:
          * Default training (incremental).
          * Returns error achieved after end of training
          */
+  static int id;
   T train(struct Classic_Dataset<T> *training_data);
   T train(struct Classic_Dataset<T>  *training_data,
           T target_error,
