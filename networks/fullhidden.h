@@ -64,8 +64,17 @@ public:
   void dump_layer(size_t n);
   // size will be assumed to equal the output layer.
   T calc_error(T *target);
+  //TODO move to interface
+  void input_file_alloc(std::string filename);
+  void output_file_alloc(std::string filename);
 
 private:
+  T** input_set; // Tripple because allocation happens in function.
+                  // The reference is passed by value :)
+  T** output_set;
+  bool input_allocated;
+  bool output_allocated;
+  size_t data_length;
   void back_propagate(T rate);
   void update_weights(T rate);
   std::vector<Layer<T> *> all_layers;

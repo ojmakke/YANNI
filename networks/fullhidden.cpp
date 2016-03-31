@@ -28,7 +28,11 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "../parts/node.h"
 #include "../parts/layer.h"
 #include "../helper/console_printer.h"
+#include "../helper/fileio.h"
 #include "fullhidden.h"
+
+void clear_2d(double** data, size_t dim);
+void clear_2d(float** data, size_t dim);
 
 template<typename T>
 int FullHidden<T>::id = 0;
@@ -37,7 +41,9 @@ template<typename T>
 FullHidden<T>::FullHidden()
 {
   FullHidden::id++;
-  self_id = FullHidden::id;
+  self_id     = FullHidden::id;
+  input_allocated = false;
+  output_allocated = false;
 }
 
 /**
@@ -49,6 +55,8 @@ FullHidden<T>::FullHidden(size_t *layers,
 			  size_t layer_count,
 			  ActivationEnum *switching_functions)
 {
+  input_allocated = false;
+  output_allocated = false;
   if(layer_count < 2)
     {
       return;
@@ -94,17 +102,6 @@ FullHidden<T>::FullHidden(size_t *layers,
       i_layer->connect_to(*i_next_layer);
     }
 
-}
-
-template<typename T>
-FullHidden<T>::~FullHidden()
-{
-  for(size_t i = 0; i <  all_layers.size(); i++)
-    {
-      Layer<T> *last_layer = all_layers.at(i);
-      delete last_layer;
-    }
-  all_layers.clear();
 }
 
 template<typename T>
@@ -310,6 +307,97 @@ void FullHidden<T>::update_weights(T rate)
             }
         }
     }
+}
+
+template<typename T>
+void FullHidden<T>::input_file_alloc(std::string filename)
+{
+  Layer<T> *layer = all_layers.at(0);
+
+  if(input_allocated)
+    {
+      // don't forget that input layer has bias!
+      clear_2d(input_set, layer->nodes.size()-1);
+    }
+  // ASSUMPTION
+  // This function is read before output.
+  data_length = FileIO<T>::get_text_1D(filename,
+                                       layer->nodes.size()-1,
+                                       &input_set);
+
+  if(data_length > 0)
+    {
+      input_allocated = true;
+    }
+}
+
+template<typename T>
+void FullHidden<T>::output_file_alloc(std::string filename)
+{
+  Layer<T> *layer = all_layers.at(0);
+
+  if(output_allocated)
+    {
+      clear_2d(output_set, layer->nodes.size());
+    }
+  // ASSUMPTION
+  // input_file_alloc called first
+  size_t local_length;
+  local_length = FileIO<T>::get_text_1D(filename,
+                                        layer->nodes.size(),
+                                        &output_set );
+  if(local_length != data_length)
+    {
+      ConsolePrinter::instance().feedback_rewrite(
+            "File mistaches. Using minimum     ");
+    }
+  if(data_length < local_length)
+    {
+      data_length = local_length;
+    }
+  output_allocated = true;
+}
+
+void clear_2d(double** data, size_t dim)
+{
+  for(size_t ii = 0; ii < dim; ii++)
+    {
+      delete[] data[dim];
+    }
+  delete [] data;
+}
+void clear_2d(float** data, size_t dim)
+{
+  for(size_t ii = 0; ii < dim; ii++)
+    {
+      delete[] data[dim];
+    }
+  delete [] data;
+}
+template<typename T>
+FullHidden<T>::~FullHidden()
+{
+  // Important to make sure not to allocate these until it is checked
+  // that input matches input and output dimensions matches output
+  if(input_allocated)
+    {
+      Layer<T> *layer = all_layers.at(0);
+      clear_2d(input_set, layer->nodes.size());
+      input_allocated = false;
+    }
+  if(output_allocated)
+    {
+      Layer<T> *layer = all_layers.at(all_layers.size()-1);
+      clear_2d(output_set, layer->nodes.size());
+      output_allocated = false;
+    }
+
+  for(size_t i = 0; i <  all_layers.size(); i++)
+    {
+      Layer<T> *last_layer = all_layers.at(i);
+      delete last_layer;
+    }
+  all_layers.clear();
 }
 
 // Tell compiler which classes will be used

@@ -36,7 +36,7 @@ public:
 
   static Workspace& instance();
   void execute(Parser& parser);
-  void activate_network(int net_id);
+  bool activate_network(int net_id);
   ~Workspace();
 
 private:

@@ -47,7 +47,7 @@ void Workspace::execute(Parser &parser)
       run_tests();
     }
   // classic network
-  else if(parser.command.compare("cn")==0)
+  else if(parser.command.compare("cn") == 0)
     {
       size_t layers = parser.p_size;
       if(layers < 3)
@@ -105,6 +105,62 @@ void Workspace::execute(Parser &parser)
       delete[] layers_size;
       delete[] switching;
     }
+
+  else if(parser.command.compare("use") == 0)
+    {
+      size_t params = parser.p_size;
+      if(params  != 1)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "Use takes 1 parmeter only ");
+          return;
+        }
+      if(parser.parameters == nullptr)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "Error in input ");
+          return;
+        }
+      int id = atoi(parser.parameters[0]->command.c_str());
+      if(!activate_network(id))
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "Network is not found         ");
+        }
+      ConsolePrinter::instance().network_write_active(current_network);
+      return;
+    }
+
+  else if(parser.command.compare("set_io") == 0)
+    {
+      size_t params = parser.p_size;
+      if(params  != 2)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "input takes 1 parmeter only      ");
+          return;
+        }
+      if(parser.parameters == nullptr)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "Error in input           ");
+          return;
+        }
+      if(current_network == nullptr)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "No active networks           ");
+          return;
+        }
+      current_network->input_file_alloc(parser.parameters[0]->command);
+      ConsolePrinter::instance().feedback_rewrite(
+            "Input loaded...           ");
+      current_network->output_file_alloc(parser.parameters[1]->command);
+      ConsolePrinter::instance().feedback_rewrite(
+            "Output loaded...           ");
+      return;
+    }
+
   else
     {
       std::string result = "Unrecognized command: ";
@@ -113,15 +169,17 @@ void Workspace::execute(Parser &parser)
     }
 }
 
-void Workspace::activate_network(int net_id)
+bool Workspace::activate_network(int net_id)
 {
   for(size_t ii = 0; ii < networks.size(); ii++)
     {
-      if(networks.at(ii)->id == net_id)
+      if(networks.at(ii)->self_id == net_id)
         {
           current_network = networks.at(ii);
+          return true;
         }
     }
+  return false;
 }
 
 Workspace::~Workspace()
