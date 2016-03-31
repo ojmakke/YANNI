@@ -39,6 +39,7 @@ public:
          * It includes hidden and output
          * *layers: Array for the size of each layer.
          */
+  int self_id;
   FullHidden();
   FullHidden(size_t *layers,
              size_t layer_count,

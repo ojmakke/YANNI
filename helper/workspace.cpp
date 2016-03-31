@@ -57,7 +57,7 @@ void Workspace::execute(Parser &parser)
           return;
         }
       // loop to make sure structure is good
-      for(size_t ii = 0; ii < layers-1; ii++)
+      for(size_t ii = 0; ii < layers; ii++)
         {
           if(atoi(parser.parameters[ii]->command.c_str()) < 1)
             {
@@ -83,7 +83,7 @@ void Workspace::execute(Parser &parser)
       // Up to here, good. Create
       size_t *layers_size = new size_t[layers];
       ActivationEnum *switching = new ActivationEnum[layers];
-      for(size_t ii = 0; ii < layers-1; ii++)
+      for(size_t ii = 0; ii < layers; ii++)
         {
           layers_size[ii] = atoi(parser.parameters[ii]->command.c_str());
           // get switching function

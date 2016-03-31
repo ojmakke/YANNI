@@ -37,6 +37,7 @@ template<typename T>
 FullHidden<T>::FullHidden()
 {
   FullHidden::id++;
+  self_id = FullHidden::id;
 }
 
 /**
@@ -53,6 +54,7 @@ FullHidden<T>::FullHidden(size_t *layers,
       return;
     }
   FullHidden::id++;
+  self_id = FullHidden::id;
   // Create layers and make last layer output,and first layer input
   for(size_t i = 0; i < layer_count; i++)
     {
