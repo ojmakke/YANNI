@@ -65,6 +65,10 @@ void Workspace::execute(Parser &parser)
                     "Incorrect layer size       ");
               return;
             }
+          // All but input need activation function
+          // Below checks are not for the input layer, skip.
+          if(ii == 0) { continue; }
+
           if(parser.parameters[ii]->p_size != 1)
             {
               ConsolePrinter::instance().feedback_rewrite(
@@ -86,6 +90,8 @@ void Workspace::execute(Parser &parser)
       for(size_t ii = 0; ii < layers; ii++)
         {
           layers_size[ii] = atoi(parser.parameters[ii]->command.c_str());
+          // below do not apply for i = 0 (input layer)
+          if(ii == 0){ continue; }
           // get switching function
           std::string sf = parser.parameters[ii]->parameters[0]->command;
           if(sf.compare("tanh") == 0)
@@ -160,6 +166,89 @@ void Workspace::execute(Parser &parser)
             "Output loaded...           ");
       return;
     }
+
+  else if(parser.command.compare("train") == 0)
+    {
+      size_t params = parser.p_size;
+      if(params  != 3)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "train(error,epoch,rate)           ");
+          return;
+        }
+      if(parser.parameters == nullptr)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "Error in input           ");
+          return;
+        }
+      if(   current_network == nullptr
+         || current_network->input_allocated == false
+         || current_network->output_allocated == false)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "Network not active and ready           ");
+          return;
+        }
+      double error = atof(parser.parameters[0]->command.c_str());
+      unsigned int epoch = atoi(parser.parameters[1]->command.c_str());
+      double rate = atof(parser.parameters[2]->command.c_str());
+      if(error < 0.0 || rate < 0.0000000001 || epoch > 500000)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "Invalid training parameters          ");
+          return;
+        }
+
+      current_network->train(NULL, error, epoch, rate);
+      return;
+    }
+
+  else if(parser.command.compare("eval") == 0)
+    {
+      size_t params = parser.p_size;
+      if(   current_network == nullptr
+         || current_network->input_allocated == false
+         || current_network->output_allocated == false)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "Network not active and ready           ");
+          return;
+        }
+
+      if(params  != current_network->input_layer_size)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "wrong input size           ");
+          return;
+        }
+      if(parser.parameters == nullptr)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "Error in input           ");
+          return;
+        }
+      if(   current_network == nullptr
+         || current_network->input_allocated == false
+         || current_network->output_allocated == false)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "Network not active and ready           ");
+          return;
+        }
+
+      double *in = new double[parser.p_size];
+      for(size_t ii = 0; ii < parser.p_size; ii++)
+        {
+          in[ii] = atof(parser.parameters[ii]->command.c_str());
+        }
+
+      current_network->set_inputs(in);
+      current_network->forward_propagate();
+      current_network->dump_outputs();
+      return;
+    }
+
 
   else
     {

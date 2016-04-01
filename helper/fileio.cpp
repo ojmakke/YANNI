@@ -108,6 +108,7 @@ int FileIO<T>::get_text_1D(std::string filename,
   infile.close();
 //  system ("pause");
   *you_own_data = data;
+
   return line_count;
 }
 

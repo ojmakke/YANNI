@@ -67,14 +67,16 @@ public:
   //TODO move to interface
   void input_file_alloc(std::string filename);
   void output_file_alloc(std::string filename);
+  size_t input_layer_size;
+  bool input_allocated;
+  bool output_allocated;
 
 private:
   T** input_set; // Tripple because allocation happens in function.
                   // The reference is passed by value :)
   T** output_set;
-  bool input_allocated;
-  bool output_allocated;
-  size_t data_length;
+  size_t data_in_length;
+  size_t data_out_length;
   void back_propagate(T rate);
   void update_weights(T rate);
   std::vector<Layer<T> *> all_layers;

@@ -57,6 +57,8 @@ FullHidden<T>::FullHidden(size_t *layers,
 {
   input_allocated = false;
   output_allocated = false;
+  // count before bias
+  input_layer_size = layers[0];
   if(layer_count < 2)
     {
       return;
@@ -124,19 +126,16 @@ T FullHidden<T>::train(struct Classic_Dataset<T>  *training_data,
       // for all the inputs after training. Imagine a huge training set!
       error = (T) 0.0;
 
+      size_t set =
+          (data_in_length <= data_out_length?data_in_length:data_out_length);
       //TODO
       // Create a stochastic approach to select inputs.
-      for(size_t i = 0; i < training_data->x; i++)
+      for(size_t i = 0; i < set; i++)
         {
-          if(study == 1000)
-            {
-              int y = 0;
-              y++;	// debugging break point
-            }
-          set_inputs((training_data->input_set)[i]);
+          set_inputs((input_set)[i]);
           forward_propagate();
           // Important. Run this first to get the first delta to propagate
-          error += calc_error((training_data->target_set)[i]);
+          error += calc_error(output_set[i]);
           back_propagate(learning_rate);
           // Does this have to be part of back_propagate?
           update_weights(learning_rate);
@@ -317,15 +316,15 @@ void FullHidden<T>::input_file_alloc(std::string filename)
   if(input_allocated)
     {
       // don't forget that input layer has bias!
-      clear_2d(input_set, layer->nodes.size()-1);
+      clear_2d(input_set, data_in_length);
     }
   // ASSUMPTION
   // This function is read before output.
-  data_length = FileIO<T>::get_text_1D(filename,
+  data_in_length = FileIO<T>::get_text_1D(filename,
                                        layer->nodes.size()-1,
                                        &input_set);
 
-  if(data_length > 0)
+  if(data_in_length > 0)
     {
       input_allocated = true;
     }
@@ -334,26 +333,21 @@ void FullHidden<T>::input_file_alloc(std::string filename)
 template<typename T>
 void FullHidden<T>::output_file_alloc(std::string filename)
 {
-  Layer<T> *layer = all_layers.at(0);
+  Layer<T> *layer = all_layers.at(all_layers.size()-1);
 
   if(output_allocated)
     {
-      clear_2d(output_set, layer->nodes.size());
+      clear_2d(output_set, data_out_length);
     }
   // ASSUMPTION
   // input_file_alloc called first
-  size_t local_length;
-  local_length = FileIO<T>::get_text_1D(filename,
+  data_out_length = FileIO<T>::get_text_1D(filename,
                                         layer->nodes.size(),
                                         &output_set );
-  if(local_length != data_length)
+  if(data_out_length != data_in_length)
     {
-      ConsolePrinter::instance().feedback_rewrite(
-            "File mistaches. Using minimum     ");
-    }
-  if(data_length < local_length)
-    {
-      data_length = local_length;
+      ConsolePrinter::instance().feedback_write(
+            "File mistaches. Future looks grim     ");
     }
   output_allocated = true;
 }
@@ -362,7 +356,7 @@ void clear_2d(double** data, size_t dim)
 {
   for(size_t ii = 0; ii < dim; ii++)
     {
-      delete[] data[dim];
+      delete[] data[ii];
     }
   delete [] data;
 }
@@ -370,7 +364,7 @@ void clear_2d(float** data, size_t dim)
 {
   for(size_t ii = 0; ii < dim; ii++)
     {
-      delete[] data[dim];
+      delete[] data[ii];
     }
   delete [] data;
 }
