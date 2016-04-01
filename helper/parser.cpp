@@ -92,7 +92,10 @@ void Parser::parse(std::string input_command, bool is_root)
       else if(cmd.at(ii) == '(')
         {
           p_opened++;
-          breadth_width++; // Next is parameter
+          if(p_opened == 1)
+            {
+              breadth_width++; // Next is parameter only at first
+            }
           continue;
         }
       else if(cmd.at(ii) == ')')

@@ -1,11 +1,52 @@
 # GNUNets
-The GNU Neural Network Library
-Pleased to announce version 0.0.2
+The GNU Neural Network Library, created by Omar J Makke
+Pleased to announce version 0.0.3
 
-You can simply use include the header files under activation, network, and parts. Version 0.0.2 allows you to run the gnunets_test file as a demo in the ui.
+You can simply use include the header files under activation, network, and parts.
 
-To come in version 0.0.3:
+Push i to enter edit mode. When in edit mode, type demo. Not all items in the menu are implemented yet.
 
-   Creating network with paraeters as user input
-   
-   Save parameters to file
+Demo will create input as time axis (size 1), output as sine and cosine waves (size 2). 
+
+Short manual:
+Create comma delimited text files for inputs and outputs. Make sure they have same number of rows. For reference, check the logicinput.txt and logicoutput.txt files. 
+
+These files are the inputs and outputs for an XOR with 2 inputs.
+
+Once created, run GNUNets.
+
+Type:
+
+    cn(2,5(tanh),5(tanh),1(tanh))
+
+This will create a classic fully connected network (cn) with 4 layers, 2 of which are hidden. All layers have TANH as activation function.
+
+Type:
+
+    use(1)
+
+This will use network labeled as #1. You should select your network label. You can have many networks created, but can only use 1 network at a time.
+
+
+Type:
+
+    set_io(../logicinput,../logicoutput)
+
+This will load the inputs and outputs to the network. If the network warns about errors, double check to make sure that your input layer (2) matches the input file columns, and the output layer (1) matches the output rows
+
+
+Type:
+
+    train(0.1, 20000, 0.01)
+
+Basically, train(target error, epoch, learning rate). Watch the network learn.
+
+
+Type:
+
+    eval(0.2, 0.9) 
+
+To evaluate the network output for the input vector [0.2, 0.9]
+
+# Next Release
+Refactor the code structure. Since basic capabilities are now available and provide a use, it is good time to organize the code to allow addition of features quickly.
