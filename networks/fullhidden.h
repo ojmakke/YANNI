@@ -51,9 +51,8 @@ public:
          * Returns error achieved after end of training
          */
   static int id;
-  T train(struct Classic_Dataset<T> *training_data);
-  T train(struct Classic_Dataset<T>  *training_data,
-          T target_error,
+  T train();
+  T train(T target_error,
           T epoch,
           T learning_rate);
   void forward_propagate();

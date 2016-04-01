@@ -45,6 +45,7 @@ void Workspace::execute(Parser &parser)
       ConsolePrinter::instance().feedback_rewrite(
             "Starting Demo...                   ");
       run_tests();
+      return;
     }
   // classic network
   else if(parser.command.compare("cn") == 0)
@@ -132,6 +133,7 @@ void Workspace::execute(Parser &parser)
         {
           ConsolePrinter::instance().feedback_rewrite(
                 "Network is not found         ");
+          return;
         }
       ConsolePrinter::instance().network_write_active(current_network);
       return;
@@ -200,7 +202,7 @@ void Workspace::execute(Parser &parser)
           return;
         }
 
-      current_network->train(NULL, error, epoch, rate);
+      current_network->train(error, epoch, rate);
       return;
     }
 
