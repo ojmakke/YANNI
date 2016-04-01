@@ -66,7 +66,4 @@ private:
 
 };
 
-
-
-
 #endif /* PARTS_LAYER_H_ */

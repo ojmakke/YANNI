@@ -26,6 +26,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 
+template<typename T>
 class FileIO
 {
 public:
@@ -34,9 +35,12 @@ public:
   // dimension is to help the program identify input dimension
   static int get_text_1D(std::string filename,
                          unsigned int dimension,
-                         double*** you_own_data);
+                         T*** you_own_data);
 private:
   FileIO();
 };
+
+template class FileIO<double>;
+template class FileIO<float>;
 
 #endif // FILEIO_H

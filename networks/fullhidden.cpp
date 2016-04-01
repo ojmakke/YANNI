@@ -28,11 +28,22 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "../parts/node.h"
 #include "../parts/layer.h"
 #include "../helper/console_printer.h"
+#include "../helper/fileio.h"
 #include "fullhidden.h"
+
+void clear_2d(double** data, size_t dim);
+void clear_2d(float** data, size_t dim);
+
+template<typename T>
+int FullHidden<T>::id = 0;
 
 template<typename T>
 FullHidden<T>::FullHidden()
 {
+  FullHidden::id++;
+  self_id     = FullHidden::id;
+  input_allocated = false;
+  output_allocated = false;
 }
 
 /**
@@ -44,11 +55,16 @@ FullHidden<T>::FullHidden(size_t *layers,
 			  size_t layer_count,
 			  ActivationEnum *switching_functions)
 {
+  input_allocated = false;
+  output_allocated = false;
+  // count before bias
+  input_layer_size = layers[0];
   if(layer_count < 2)
     {
       return;
     }
-
+  FullHidden::id++;
+  self_id = FullHidden::id;
   // Create layers and make last layer output,and first layer input
   for(size_t i = 0; i < layer_count; i++)
     {
@@ -91,25 +107,13 @@ FullHidden<T>::FullHidden(size_t *layers,
 }
 
 template<typename T>
-FullHidden<T>::~FullHidden()
-{
-  for(size_t i = 0; i <  all_layers.size(); i++)
-    {
-      Layer<T> *last_layer = all_layers.at(i);
-      delete last_layer;
-    }
-  all_layers.clear();
-}
-
-template<typename T>
-T FullHidden<T>::train(struct Classic_Dataset<T>  *training_data)
+T FullHidden<T>::train()
 {
   return (T) 0.01; 		// not implemented
 }
 
 template<typename T>
-T FullHidden<T>::train(struct Classic_Dataset<T>  *training_data,
-		       T target_error,
+T FullHidden<T>::train(T target_error,
 		       T epoch,
 		       T learning_rate)
 {
@@ -121,19 +125,16 @@ T FullHidden<T>::train(struct Classic_Dataset<T>  *training_data,
       // for all the inputs after training. Imagine a huge training set!
       error = (T) 0.0;
 
+      size_t set =
+          (data_in_length <= data_out_length?data_in_length:data_out_length);
       //TODO
       // Create a stochastic approach to select inputs.
-      for(size_t i = 0; i < training_data->x; i++)
+      for(size_t i = 0; i < set; i++)
         {
-          if(study == 1000)
-            {
-              int y = 0;
-              y++;	// debugging break point
-            }
-          set_inputs((training_data->input_set)[i]);
+          set_inputs((input_set)[i]);
           forward_propagate();
           // Important. Run this first to get the first delta to propagate
-          error += calc_error((training_data->target_set)[i]);
+          error += calc_error(output_set[i]);
           back_propagate(learning_rate);
           // Does this have to be part of back_propagate?
           update_weights(learning_rate);
@@ -304,6 +305,92 @@ void FullHidden<T>::update_weights(T rate)
             }
         }
     }
+}
+
+template<typename T>
+void FullHidden<T>::input_file_alloc(std::string filename)
+{
+  Layer<T> *layer = all_layers.at(0);
+
+  if(input_allocated)
+    {
+      // don't forget that input layer has bias!
+      clear_2d(input_set, data_in_length);
+    }
+  // ASSUMPTION
+  // This function is read before output.
+  data_in_length = FileIO<T>::get_text_1D(filename,
+                                       layer->nodes.size()-1,
+                                       &input_set);
+
+  if(data_in_length > 0)
+    {
+      input_allocated = true;
+    }
+}
+
+template<typename T>
+void FullHidden<T>::output_file_alloc(std::string filename)
+{
+  Layer<T> *layer = all_layers.at(all_layers.size()-1);
+
+  if(output_allocated)
+    {
+      clear_2d(output_set, data_out_length);
+    }
+  // ASSUMPTION
+  // input_file_alloc called first
+  data_out_length = FileIO<T>::get_text_1D(filename,
+                                        layer->nodes.size(),
+                                        &output_set );
+  if(data_out_length != data_in_length)
+    {
+      ConsolePrinter::instance().feedback_write(
+            "File mistaches. Future looks grim     ");
+    }
+  output_allocated = true;
+}
+
+void clear_2d(double** data, size_t dim)
+{
+  for(size_t ii = 0; ii < dim; ii++)
+    {
+      delete[] data[ii];
+    }
+  delete [] data;
+}
+void clear_2d(float** data, size_t dim)
+{
+  for(size_t ii = 0; ii < dim; ii++)
+    {
+      delete[] data[ii];
+    }
+  delete [] data;
+}
+template<typename T>
+FullHidden<T>::~FullHidden()
+{
+  // Important to make sure not to allocate these until it is checked
+  // that input matches input and output dimensions matches output
+  if(input_allocated)
+    {
+      Layer<T> *layer = all_layers.at(0);
+      clear_2d(input_set, layer->nodes.size());
+      input_allocated = false;
+    }
+  if(output_allocated)
+    {
+      Layer<T> *layer = all_layers.at(all_layers.size()-1);
+      clear_2d(output_set, layer->nodes.size());
+      output_allocated = false;
+    }
+
+  for(size_t i = 0; i <  all_layers.size(); i++)
+    {
+      Layer<T> *last_layer = all_layers.at(i);
+      delete last_layer;
+    }
+  all_layers.clear();
 }
 
 // Tell compiler which classes will be used

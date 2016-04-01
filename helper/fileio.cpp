@@ -25,6 +25,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 
 #include "fileio.h"
+#include "../helper/console_printer.h"
 
 #define DELIMITER ','
 
@@ -52,22 +53,25 @@ std::string get_first_entry(std::string *str, char d)
   return substr;
 }
 
-
-FileIO::FileIO()
+template<typename T>
+FileIO<T>::FileIO()
 {
 
 }
 
 // Returns 0 if fails. Otherwise, returns lines read
-int FileIO::get_text_1D(std::string filename,
-                        unsigned int dimension,
-                        double*** you_own_data)
+template<typename T>
+int FileIO<T>::get_text_1D(std::string filename,
+                           unsigned int dimension,
+                           T*** you_own_data)
 {
-  double **data;
+  T **data;
   std::string line_read;
   std::ifstream infile(filename);
   if(!infile.is_open())
     {
+      ConsolePrinter::instance().feedback_rewrite(
+            "Cannot open file               ");
       return 0; // error
     }
   unsigned int line_count = 0;
@@ -77,12 +81,14 @@ int FileIO::get_text_1D(std::string filename,
       getline(infile,line_read); // Saves the line in STRING.
       if(char_count(line_read, ',') != dimension - 1)
         {
+          ConsolePrinter::instance().feedback_rewrite(
+                "Incorrect dimesnion              ");
           return 0;
         }
       line_count++;
   }
 
-  data = new double*[line_count];
+  data = new T*[line_count];
 
   infile.seekg(0, std::ios_base::beg);
   line_count = 0;
@@ -90,7 +96,7 @@ int FileIO::get_text_1D(std::string filename,
   {
       getline(infile,line_read);
       // Parse the line into the input
-      data[line_count] = new double[dimension];
+      data[line_count] = new T[dimension];
       std::string entry = line_read;
       for(size_t ii = 0; ii < dimension; ii++)
       {
@@ -102,6 +108,7 @@ int FileIO::get_text_1D(std::string filename,
   infile.close();
 //  system ("pause");
   *you_own_data = data;
+
   return line_count;
 }
 

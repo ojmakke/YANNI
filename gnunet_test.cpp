@@ -59,73 +59,14 @@ void delete_2d(float **pointer, const float X)
 void run_tests()
 {
 //  fprintf(stdout, "Creating 2D arrays:\n");
-  float **input;
-  float **desired;
-  const size_t X = 40;
-  const size_t Y1 = 1;
-  const size_t Y2 = 2;
-  input = construct_2d(X, Y1);
-  desired = construct_2d(X, Y2);
+  size_t layers_sizes[] = {2,5,5,1};
 
-//  fprintf(stdout, "Initializing:\n");
-  for(size_t i = 0; i < X; i++)
-    {
-      for(size_t j = 0; j < Y1; j++)
-        {
-  //        fprintf(stdout, "Writing:\n");
-          input[i][j] = ((float) i*3.1f)/X;
-        }
-    }
-//  fprintf(stdout, "Initializing desired:\n");
-  for(size_t i = 0; i < X; i++)
-    {
-      desired[i][0] = (float) sin(((float) i*3.1f)/X);
-      desired[i][1] = (float) cos(((float) i*3.1f)/X);
-    }
+  ActivationEnum switching[] = {TANH, TANH, TANH, TANH};
 
-  struct Classic_Dataset <float> data_struct;
-  data_struct.input_set = input;
-  data_struct.target_set = desired;
+  FullHidden<double> network(layers_sizes, 4, switching);
+  network.input_file_alloc("../logicinput.txt");
+  network.output_file_alloc("../logicoutput.txt");
+  network.train(0.001,20000,0.01);
 
-  data_struct.x = X;
- // fprintf(stdout, "Looping:\n");
-//  for(size_t i = 0; i < X; i++)
- //   fprintf(stdout, "Value is %f, %f, %f\n",
- //           (float) data_struct.input_set[i][0],
-//        data_struct.target_set[i][0],
- //       data_struct.target_set[i][1]);
-
- // fprintf(stdout, "Creating 1x10x1 network\n");
-
-  size_t size = 3;
-  size_t layers3[] = {1, 4, 4, 2};
-
-  ActivationEnum switching3[] = {TANH, TANH,TANH, TANH};
-  FullHidden<float> s3(layers3, size, switching3);
-
-  float error = s3.train(&data_struct, 0.11f, 10500, 0.0251f);
-  std::string result = "Achieved error: ";
-  result.append(std::to_string(error));
-  ConsolePrinter::instance().feedback_write(result);
-
-
-//  for(size_t i = 0; i < X; i++)
-//    {
-//      s3.set_inputs(input[i]);
-//      s3.forward_propagate();
-//      s3.dump_outputs();
-//      fprintf(stdout, "values should be close to %f, %f\n",
-//              desired[i][0],
-//          desired[i][1]);
-//    }
-
-
-  delete_2d(input, X);
-  delete_2d(desired, X);
-
-
-
-  //FullHidden<double> smallest(layers, size);
-  //smallest.dump_everything();
 }
 

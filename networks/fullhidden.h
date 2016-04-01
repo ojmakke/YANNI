@@ -39,6 +39,7 @@ public:
          * It includes hidden and output
          * *layers: Array for the size of each layer.
          */
+  int self_id;
   FullHidden();
   FullHidden(size_t *layers,
              size_t layer_count,
@@ -49,9 +50,9 @@ public:
          * Default training (incremental).
          * Returns error achieved after end of training
          */
-  T train(struct Classic_Dataset<T> *training_data);
-  T train(struct Classic_Dataset<T>  *training_data,
-          T target_error,
+  static int id;
+  T train();
+  T train(T target_error,
           T epoch,
           T learning_rate);
   void forward_propagate();
@@ -62,8 +63,19 @@ public:
   void dump_layer(size_t n);
   // size will be assumed to equal the output layer.
   T calc_error(T *target);
+  //TODO move to interface
+  void input_file_alloc(std::string filename);
+  void output_file_alloc(std::string filename);
+  size_t input_layer_size;
+  bool input_allocated;
+  bool output_allocated;
 
 private:
+  T** input_set; // Tripple because allocation happens in function.
+                  // The reference is passed by value :)
+  T** output_set;
+  size_t data_in_length;
+  size_t data_out_length;
   void back_propagate(T rate);
   void update_weights(T rate);
   std::vector<Layer<T> *> all_layers;
