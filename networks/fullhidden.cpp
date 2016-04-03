@@ -115,7 +115,8 @@ T FullHidden<T>::train()
 template<typename T>
 T FullHidden<T>::train(T target_error,
 		       T epoch,
-		       T learning_rate)
+		       T learning_rate,
+		       double dropoff)
 {
   T error;
   for(size_t study = 0; study < epoch; study++)
@@ -124,6 +125,26 @@ T FullHidden<T>::train(T target_error,
       // more efficient. The proper way is to evaluate the error
       // for all the inputs after training. Imagine a huge training set!
       error = (T) 0.0;
+
+      // dropoff enable
+      Layer<T> *i_layer;
+      Node<T> *j_node;
+      Edge<T> *k_edge;
+
+      for(size_t ii = 0; ii < all_layers.size()-1; ii++)
+        {
+          i_layer = all_layers.at(ii);
+          for(size_t j = 0; j < i_layer->nodes.size(); j++)
+            {
+              j_node = i_layer->nodes.at(j);
+
+              for(size_t k = 0; k < (j_node->forward).size(); k++)
+                {
+                  k_edge = (j_node->forward).at(k);
+                  k_edge->req_rand_drop_off(dropoff); // for next loop
+                }
+            }
+        }
 
       size_t set =
           (data_in_length <= data_out_length?data_in_length:data_out_length);
@@ -149,6 +170,27 @@ T FullHidden<T>::train(T target_error,
           return error;
         }
     }
+
+  Layer<T> *i_layer;
+  Node<T> *j_node;
+  Edge<T> *k_edge;
+
+  for(size_t ii = 0; ii < all_layers.size()-1; ii++)
+    {
+      i_layer = all_layers.at(ii);
+      for(size_t j = 0; j < i_layer->nodes.size(); j++)
+        {
+          j_node = i_layer->nodes.at(j);
+
+          for(size_t k = 0; k < (j_node->forward).size(); k++)
+            {
+              k_edge = (j_node->forward).at(k);
+              k_edge->req_drop_off(false); // for next loop
+            }
+        }
+    }
+    // reset drop_off
+
 
 //  fprintf(stdout, "\n");
   return error;
@@ -195,6 +237,8 @@ void FullHidden<T>::dump_everything()
 template<typename T>
 void FullHidden<T>::forward_propagate()
 {
+    // reset drop_off
+
   for(size_t i = 0; i < all_layers.size(); i++)
     {
       Layer<T> *i_layer = all_layers.at(i);
@@ -285,7 +329,7 @@ void FullHidden<T>::update_weights(T rate)
   Layer<T> *i_layer;
   Node<T> *j_node;
   Edge<T> *k_edge;
-  Node<T> *k_node;
+
   for(size_t i = 0; i < all_layers.size() - 1; i++)
     {
       // work backwards
@@ -298,10 +342,10 @@ void FullHidden<T>::update_weights(T rate)
           for(size_t k = 0; k < (j_node->forward).size(); k++)
             {
               k_edge = (j_node->forward).at(k);
-              k_node = k_edge->n;
-              T w = k_edge->get_value() -
+              const Node<T> *k_node = k_edge->n_;
+              T w = k_edge->value_ -
                   (rate*k_node->get_delta()*j_node->get_output());
-              k_edge->set_value(w);
+              k_edge->req_value(w);
             }
         }
     }
@@ -368,7 +412,10 @@ void clear_2d(double** data, size_t dim)
     {
       delete[] data[ii];
     }
-  delete [] data;
+  if(dim > 0)
+    {
+      delete [] data;
+    }
 }
 void clear_2d(float** data, size_t dim)
 {
@@ -376,7 +423,10 @@ void clear_2d(float** data, size_t dim)
     {
       delete[] data[ii];
     }
-  delete [] data;
+  if(dim > 0)
+    {
+      delete [] data;
+    }
 }
 template<typename T>
 FullHidden<T>::~FullHidden()

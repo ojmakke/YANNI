@@ -113,8 +113,8 @@ void Node<T>::connect_to(Node<T> *node)
 
   edge->set_value((T) nnhelper.randomizer.get_rand());
   //	fprintf(stdout, "Some random number: %f\n", (float) edge->get_value());
-  edge->n = node;
-  edge->p = this;
+  edge->set_next(node);
+  edge->set_prev(this);
 
   // Store the edge in both nodes
   forward.push_back(edge);
@@ -129,7 +129,7 @@ void Node<T>::connect_to(Node<T> *node)
 }
 
 template<typename T>
-T Node<T>::get_output()
+T Node<T>::get_output() const
 {
   return y;
 }
@@ -166,15 +166,15 @@ T Node<T>::calc_new_output()
     {
       Edge<T> *i_edge = backward.at(i);
       // previous node connecting to current node through the edge
-      Node<T>  *i_node = i_edge->p;
-      fnet += i_edge->get_value() * i_node->get_output();
+      const Node<T>* i_node = i_edge->p_;
+      fnet += i_edge->value_ * i_node->get_output();
     }
   y = F->f(fnet);
   return (T) y;	// Optional. Doesn't have to be used.
 }
 
 template<typename T>
-T Node<T>::get_delta()
+T Node<T>::get_delta() const
 {
   return delta;
 }

@@ -54,7 +54,8 @@ public:
   T train();
   T train(T target_error,
           T epoch,
-          T learning_rate);
+          T learning_rate,
+          double dropoff);
   void forward_propagate();
   // Assumed to be equal to all_layers - 1, due to bias
   void set_inputs(T *inputs);

@@ -35,7 +35,16 @@ template<typename T>
 class Edge;
 
 template<typename T>
-class Node
+class Edge_Phantom;
+
+template<typename T>
+class Node_Phantom
+{
+  // Trick to make friends only access protected!
+};
+
+template<typename T>
+class Node : Node_Phantom<T>
 {
 public:
 
@@ -49,7 +58,7 @@ public:
   //	Node(size_t outputs, size_t inputs, ActivationEnum type);
   Node(ActivationEnum type);
   ~Node();
-  T get_output();
+  T get_output() const;
   T get_net();
   T calc_new_output(); // Calculates new output from input
   // (forward propagation);
@@ -59,7 +68,7 @@ public:
          * and this->forward edge vector
          */
   void connect_to(Node *next_node);
-  T get_delta();
+  T get_delta() const;
   void set_delta(T delta);	// for output neurons
 
 private:

@@ -187,8 +187,8 @@ void Layer<T>::calc_node_delta()
           j_edge = (i_node->forward).at(j);
 
           // summation( w_exiting_edges*delta_of_next_neuron*this_neuron_derivative
-          Node<T> *j_node = j_edge->n;
-          delta += j_edge->get_value() * (j_node->get_delta());
+          const Node<T> *j_node = j_edge->n_;
+          delta += j_edge->value_ * (j_node->get_delta());
         }
       Activation<T> *f = i_node->F;
       delta *= f->df(i_node->get_net());

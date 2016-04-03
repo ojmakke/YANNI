@@ -32,6 +32,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "helper/console_printer.h"
 #include "helper/fileio.h"
 #include "networks/fullhidden.h"
+#include "parts/edge.h"
 
 #define CONTROL 0
 #define INPUT 1

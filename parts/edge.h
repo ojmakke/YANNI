@@ -25,23 +25,37 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef PARTS_EDGE_H_
 #define PARTS_EDGE_H_
 
-template<typename T>
-class Node;
+#include "edge_phantom.h"
 
 template<typename T>
-class Edge
+class Edge: Edge_Phantom<T>
 {
-private:
-  T value;
-  bool is_connected;	// For dropoff, i.e. assume not connected.
+  // This class ecapsulates Node class. Hence it knows about it.
+  friend class Node<T>;
 
-public:
+protected:
   Edge();
   Edge(T value);
   void set_value(T edge_value);
-  T get_value();
-  Node<T> *n;	// Link to next nodes
-  Node<T> *p;	// Link to previous node.
+
+  // randomizes the edge connection
+  void set_drop_off(bool state);
+  void set_next(Node<T>* const next);
+  void set_prev(Node<T>* const prev);
+
+public:
+  // Allow the world to observe.
+  const Node<T>* n_;
+  const Node<T>* p_;
+
+  // Refernces to the private effective_value;
+  // rids of the get_value() (experimental)
+  T& value_;
+
+  // Request set value. Not necessarily honored
+  void req_value(T value);
+  void req_drop_off(bool state);
+  void req_rand_drop_off(T percentage);
 
 };
 
