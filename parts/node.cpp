@@ -23,6 +23,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 
 #include "node.h"
+#include "node_phantom.h"
 #include "edge.h"
 #include "../activation/activation.h"
 #include "../activation/logistic.hpp"
@@ -40,11 +41,15 @@ extern NNHelper<double> nnhelper;
 //
 //}
 template<typename T>
-Node<T>::Node(ActivationEnum type)
+Node<T>::Node(ActivationEnum type):
+  Node_Phantom<T>(),
+  y_(this->y),
+  fnet_(this->fnet),
+  delta_(this->delta)
 {
   is_input=false;
   is_output=false;
-  delta = (T) 0.0;
+  this->delta = (T) 0.0;
   switch(type)
     {
     case LOGISTIC:
@@ -128,22 +133,18 @@ void Node<T>::connect_to(Node<T> *node)
   return;
 }
 
-template<typename T>
-T Node<T>::get_output() const
-{
-  return y;
-}
-
-template<typename T>
-T Node<T>::get_net()
-{
-  return fnet;
-}
 
 template<typename T>
 void Node<T>::set_output(T output)
 {
-  y = output;
+  this->y = output;
+}
+
+// TODO ask molecule
+template<typename T>
+void Node<T>::req_output(T output)
+{
+  set_output(output);
 }
 
 //TODO
@@ -157,38 +158,33 @@ T Node<T>::calc_new_output()
   if(is_input)
     {
       //		fprintf(stdout, "Returning y = %f\n", y);
-      return y;
+      return y_;
     }
 
-  fnet = (T) 0.0;
+  this->fnet = (T) 0.0;
   // Loop through all edges
   for(size_t i = 0; i < backward.size(); i++)
     {
       Edge<T> *i_edge = backward.at(i);
       // previous node connecting to current node through the edge
       const Node<T>* i_node = i_edge->p_;
-      fnet += i_edge->value_ * i_node->get_output();
+      this->fnet += i_edge->value_ * i_node->y_;
     }
-  y = F->f(fnet);
-  return (T) y;	// Optional. Doesn't have to be used.
-}
-
-template<typename T>
-T Node<T>::get_delta() const
-{
-  return delta;
+  this->y = F->f(this->fnet);
+  return (T) this->y;	// Optional. Doesn't have to be used.
 }
 
 template<typename T>
 void Node<T>::set_delta(T _delta)
 {
-  //	if(!is_output)
-  //	{
-  //		fprintf(stderr, "Attempting to control delta of hidden neuron\n");
-  //		return;
-  //	}
-
   this->delta = _delta;
+}
+
+//TODO ask molecule
+template<typename T>
+void Node<T>::req_delta(T _delta)
+{
+  set_delta(_delta);
 }
 
 // Tell compiler which classes to compile

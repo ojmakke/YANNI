@@ -280,7 +280,7 @@ void FullHidden<T>::dump_outputs()
       Node<T> *i_node = (output_layer->nodes).at(i);
       outstr.append(std::to_string(i))
           .append(": Value: ")
-          .append(std::to_string(i_node->get_output()));
+          .append(std::to_string(i_node->y_));
 
       ConsolePrinter::instance().feedback_write(outstr);
     }
@@ -315,10 +315,10 @@ T FullHidden<T>::calc_error(T *target)
   for(size_t i = 0; i < output->nodes.size(); i++)
     {
       Node<T> *i_node = output->nodes.at(i);
-      diff = target[i] - i_node->get_output();
+      diff = target[i] - i_node->y_;
       sum += diff*diff;
       // delta local to the node. This will be summed up later.
-      i_node->set_delta((T) -1.0f*diff*i_node->F->df(i_node->get_net()));
+      i_node->req_delta((T) -1.0f*diff*i_node->F->df(i_node->fnet_));
     }
   return sum;
 }
@@ -344,7 +344,7 @@ void FullHidden<T>::update_weights(T rate)
               k_edge = (j_node->forward).at(k);
               const Node<T> *k_node = k_edge->n_;
               T w = k_edge->value_ -
-                  (rate*k_node->get_delta()*j_node->get_output());
+                  (rate*k_node->delta_*j_node->y_);
               k_edge->req_value(w);
             }
         }

@@ -27,6 +27,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <stdlib.h>
 
+#include "node_phantom.h"
 #include "../activation/activation.h"
 #include "../activation/logistic.hpp"
 #include "../activation/step.hpp"
@@ -38,17 +39,14 @@ template<typename T>
 class Edge_Phantom;
 
 template<typename T>
-class Node_Phantom
-{
-  // Trick to make friends only access protected!
-};
-
-template<typename T>
 class Node : Node_Phantom<T>
 {
 public:
 
   Activation<T> *F;
+  const T& y_;
+  const T& fnet_;
+  const T& delta_;
 
   std::vector<Edge<T> *> forward;  // Forward Edges. Normally only 1 edge
   std::vector<Edge<T> *> backward; // Backward edges
@@ -58,23 +56,22 @@ public:
   //	Node(size_t outputs, size_t inputs, ActivationEnum type);
   Node(ActivationEnum type);
   ~Node();
-  T get_output() const;
-  T get_net();
+
   T calc_new_output(); // Calculates new output from input
-  // (forward propagation);
-  void set_output(T output);
+
   /*
          * This will modify next nodes edge "backward" vector,
          * and this->forward edge vector
          */
   void connect_to(Node *next_node);
-  T get_delta() const;
-  void set_delta(T delta);	// for output neurons
 
-private:
-  T y;
-  T fnet;
-  T delta;
+  void req_delta(T delta);
+  void req_output(T output);
+
+protected:
+  void set_delta(T delta);	// for output neurons
+  // (forward propagation);
+  void set_output(T output);
 };
 
 
