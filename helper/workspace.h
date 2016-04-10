@@ -27,24 +27,31 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <vector>
 
+#include "console_printer.h"
 #include "parser.h"
 #include "../networks/fullhidden.h"
 
 class Workspace
 {
+  friend class ConsolePrinter;
+  friend class Parser;
 public:
 
+  void start();
   static Workspace& instance();
-  void execute(Parser& parser);
-  bool activate_network(int net_id);
   ~Workspace();
 
 private:
-   Workspace();
-   Workspace(Workspace const&);
-   void operator=(Workspace const&);
-   std::vector<FullHidden<double> *> networks;
-   FullHidden<double> *current_network;
+
+  bool hasStarted;
+  std::vector<FullHidden<double> *> networks;
+  FullHidden<double> *current_network;
+
+  Workspace();
+  Workspace(Workspace const&);
+  void operator=(Workspace const&);
+  bool activate_network(int net_id);
+  void execute(Parser& parser);
 };
 
 #endif // WORKSPACE_H

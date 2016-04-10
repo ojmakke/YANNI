@@ -28,7 +28,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 
 extern void run_tests();
 
-Workspace::Workspace()
+Workspace::Workspace():hasStarted(false)
 {
 }
 
@@ -277,6 +277,15 @@ bool Workspace::activate_network(int net_id)
         }
     }
   return false;
+}
+
+void Workspace::start()
+{
+  if(hasStarted)
+    {
+      return;
+    }
+  while(ConsolePrinter::instance().interact());
 }
 
 Workspace::~Workspace()

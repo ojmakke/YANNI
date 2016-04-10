@@ -45,7 +45,7 @@ public:
   WINDOW *w_feedback;
 
   static ConsolePrinter& instance();
-  void interact();
+  bool interact();
   void input_write(int c);
   void feedback_rewrite(std::string feedback);
   void feedback_write(std::string feedback);

@@ -33,6 +33,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "helper/fileio.h"
 #include "networks/fullhidden.h"
 #include "parts/edge.h"
+#include "helper/workspace.h"
 
 #define CONTROL 0
 #define INPUT 1
@@ -44,60 +45,7 @@ void switch_state(unsigned *state);
 
 int main(int argc, char* argv[])
 {
-  // Experimental use of singletons. This singleton changes console's global state.
-  // Might be dangerous and confusing. Let us see.
-  ConsolePrinter::instance().interact();
-//  double **indata, **outdata;
-
-//  unsigned int in_length = FileIO<T>::get_text_1D("../logicinput.txt", 2, &indata);
-//  unsigned int out_length = FileIO<T>::get_text_1D("../logicoutput.txt",1, &outdata);
-
-//  struct Classic_Dataset <double> data_struct;
-//  data_struct.input_set = indata;
-//  data_struct.target_set = outdata;
-//  data_struct.x = in_length;
-//  size_t size = 4;
-//  size_t layers3[] = {2, 3,3, 1};
-
-//  ActivationEnum switching3[] = {TANH, TANH,TANH, TANH};
-//  FullHidden<double> s3(layers3, size, switching3);
-
-//  float error = s3.train(&data_struct, 0.001f, 120000, 0.0151f);
-//  std::string result = "Achieved error: ";
-//  result.append(std::to_string(error));
-//  ConsolePrinter::instance().feedback_write(result);
-
-//  {
-//  double testin[] = {0.3, 0.21};
-//  s3.set_inputs(testin);
-//  s3.forward_propagate();
-//  s3.dump_outputs();
-//  }
-//  {
-//  double testin[] = {0.7, 0.3};
-//  s3.set_inputs(testin);
-//  s3.forward_propagate();
-//  s3.dump_outputs();
-//  }
-//  {
-//  double testin[] = {0.7, 0.7};
-//  s3.set_inputs(testin);
-//  s3.forward_propagate();
-//  s3.dump_outputs();
-//  }
-//  {
-//  double testin[] = {0.3, 0.7};
-//  s3.set_inputs(testin);
-//  s3.forward_propagate();
-//  s3.dump_outputs();
-//  }
-//  while(1);
-
-
-
-  // Apply state machine.
-  // control: keys are for control, not inputting command
-  // input: RELEVANT keys are used for inputting.
+  Workspace::instance().start();
 }
 
 
