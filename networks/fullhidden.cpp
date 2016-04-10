@@ -327,6 +327,10 @@ void FullHidden<T>::input_file_alloc(std::string filename)
     {
       input_allocated = true;
     }
+  else
+    {
+      input_allocated = false; // in case bad file was loaded after
+    }
 }
 
 template<typename T>
@@ -348,7 +352,14 @@ void FullHidden<T>::output_file_alloc(std::string filename)
       ConsolePrinter::instance().feedback_write(
             "File mistaches. Future looks grim     ");
     }
-  output_allocated = true;
+  if(data_out_length > 0)
+    {
+      output_allocated = true;
+    }
+  else
+    {
+      output_allocated = false;
+    }
 }
 
 void clear_2d(double** data, size_t dim)
