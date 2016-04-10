@@ -100,7 +100,7 @@ std::vector<T> Layer<T>::get_layer_outputs()
   for(unsigned int i = 0; i < nodes.size(); i++)
     {
       Node<T> *i_node = nodes.at(i);
-      node_vector.push_back(i_node->get_output());
+      node_vector.push_back(i_node->y_);
     }
   return node_vector;
 }
@@ -120,7 +120,7 @@ int Layer<T>::fix_layer_inputs(T *input_array)
     {
       //i_node = dynamic_cast<Node<T> *>(nodes.at(i));
       i_node = nodes.at(i);
-      i_node->set_output(input_array[i]);
+      i_node->req_output(input_array[i]);
       i_node->is_input = true;
     }
   return 1;
@@ -146,7 +146,7 @@ int Layer<T>::fix_some_layer_inputs(T* input_array_values,
           return 0;
         }
       i_node =nodes.at(input_array_index[i]);
-      i_node->set_output(input_array_values[i]);
+      i_node->req_output(input_array_values[i]);
     }
   return 1; // success
 }
@@ -158,7 +158,7 @@ void Layer<T>::add_bias()
   Node<T> *node = new Node<T>(FIXEDINPUT);
   // yay, nice use of is input! Didn't think about it then.
   node->is_input = true;
-  node->set_output((T) 1.0);
+  node->req_output((T) 1.0);
   nodes.push_back(node);		// This will also add bias to the output
 }
 
@@ -187,12 +187,12 @@ void Layer<T>::calc_node_delta()
           j_edge = (i_node->forward).at(j);
 
           // summation( w_exiting_edges*delta_of_next_neuron*this_neuron_derivative
-          Node<T> *j_node = j_edge->n;
-          delta += j_edge->get_value() * (j_node->get_delta());
+          const Node<T> *j_node = j_edge->n_;
+          delta += j_edge->value_ * (j_node->delta_);
         }
       Activation<T> *f = i_node->F;
-      delta *= f->df(i_node->get_net());
-      i_node->set_delta(delta);
+      delta *= f->df(i_node->fnet_);
+      i_node->req_delta(delta);
     }
 
   return;

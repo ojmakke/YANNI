@@ -79,7 +79,15 @@ int FileIO<T>::get_text_1D(std::string filename,
   while(!infile.eof()) // To get you all the lines.
   {
       getline(infile,line_read); // Saves the line in STRING.
-      if(char_count(line_read, ',') != dimension - 1)
+      if(line_read.compare("") == 0)
+        {
+          continue;
+        }
+      else if(line_read.at(0) == '#')
+        {
+          continue;
+        }
+      else if(char_count(line_read, ',') != dimension - 1)
         {
           ConsolePrinter::instance().feedback_rewrite(
                 "Incorrect dimesnion              ");
@@ -90,11 +98,20 @@ int FileIO<T>::get_text_1D(std::string filename,
 
   data = new T*[line_count];
 
+  infile.clear();
   infile.seekg(0, std::ios_base::beg);
   line_count = 0;
   while(!infile.eof()) // To get you all the lines.
   {
       getline(infile,line_read);
+      if(line_read.compare("") == 0)
+        {
+          continue;
+        }
+      else if(line_read.at(0) == '#')
+        {
+          continue;
+        }
       // Parse the line into the input
       data[line_count] = new T[dimension];
       std::string entry = line_read;

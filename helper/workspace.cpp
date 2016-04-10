@@ -28,7 +28,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 
 extern void run_tests();
 
-Workspace::Workspace()
+Workspace::Workspace():hasStarted(false)
 {
 }
 
@@ -172,10 +172,10 @@ void Workspace::execute(Parser &parser)
   else if(parser.command.compare("train") == 0)
     {
       size_t params = parser.p_size;
-      if(params  != 3)
+      if(params  != 3 && params != 4)
         {
           ConsolePrinter::instance().feedback_rewrite(
-                "train(error,epoch,rate)           ");
+                "train(error,epoch,rate, drop%)          ");
           return;
         }
       if(parser.parameters == nullptr)
@@ -195,14 +195,20 @@ void Workspace::execute(Parser &parser)
       double error = atof(parser.parameters[0]->command.c_str());
       unsigned int epoch = atoi(parser.parameters[1]->command.c_str());
       double rate = atof(parser.parameters[2]->command.c_str());
-      if(error < 0.0 || rate < 0.0000000001 || epoch > 500000)
+      double dropoff = 0.0;
+      if(params == 4)
+        {
+          dropoff = atof(parser.parameters[3]->command.c_str());
+        }
+      if(error < 0.0 || rate < 0.0000000001 || epoch > 500000
+         || dropoff < 0.0 || dropoff >  0.99 )
         {
           ConsolePrinter::instance().feedback_rewrite(
                 "Invalid training parameters          ");
           return;
         }
 
-      current_network->train(error, epoch, rate);
+      current_network->train(error, epoch, rate, dropoff);
       return;
     }
 
@@ -271,6 +277,15 @@ bool Workspace::activate_network(int net_id)
         }
     }
   return false;
+}
+
+void Workspace::start()
+{
+  if(hasStarted)
+    {
+      return;
+    }
+  while(ConsolePrinter::instance().interact());
 }
 
 Workspace::~Workspace()

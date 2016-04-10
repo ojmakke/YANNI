@@ -1,9 +1,11 @@
 /*
- * gnunet.cpp
+ * node_phantom.h
  *
- *  Created on : Mar 19, 2016
+ *  Created on : Apr 03, 2016
  *      Author : Omar Makke (O jMakke)
- *      Email  : ojmakke@yahoo.com
+ *		ojQuote: "There are 3 kinds of people:
+ *                        the rich, the poor, and the programmers"
+ *		Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets
 
@@ -19,33 +21,22 @@ GNU General Public License for more details.
 You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef NODE_PHANTOM_H
+#define NODE_PHANTOM_H
 
-#include <string.h>
-#include <stdlib.h>
-#include <iostream>
+template<typename T>
+class Node;
 
-#include "activation/tanh.hpp"
-#include "activation/logistic.hpp"
-#include "activation/step.hpp"
-#include "activation/rectify.hpp"
-#include "helper/nnhelper.hpp"
-#include "helper/console_printer.h"
-#include "helper/fileio.h"
-#include "networks/fullhidden.h"
-#include "parts/edge.h"
-#include "helper/workspace.h"
-
-#define CONTROL 0
-#define INPUT 1
-
-NNHelper<double> nnhelper;
-extern void run_tests();
-
-void switch_state(unsigned *state);
-
-int main(int argc, char* argv[])
+// Trick; Befriend the inherited. Then friends of the inherited
+// can only see protected (not privates) of the inherited
+template<typename T>
+class Node_Phantom
 {
-  Workspace::instance().start();
-}
+  friend class Node<T>;
+private:
+  T y;
+  T fnet;
+  T delta;
+};
 
-
+#endif // NODE_PHANTOM_H
