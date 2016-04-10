@@ -26,19 +26,10 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include <ctime>
 
 #include "edge.h"
+#include "node.h"
 #include "../helper/nnhelper.hpp"
 
 extern NNHelper<double> nnhelper;
-
-template<typename T>
-T Edge<T>::get_value()
-{
-  if(this->is_connected)
-    {
-      return this->value;
-    }
-  return (T) 0.0;
-}
 
 template<typename T>
 void Edge<T>::set_value(T edge_value)
@@ -46,27 +37,97 @@ void Edge<T>::set_value(T edge_value)
   if(this->is_connected)
     {
       this->value = edge_value;
+      this->effective_value = this->value;
     }
-  // else do nothing
-
 }
 
 template<typename T>
-Edge<T>::Edge()
+void Edge<T>::set_drop_off(bool state)
 {
-  p = nullptr;
-  n = nullptr;
-  this->value = nnhelper.randomizer.get_rand();
+  this->is_connected = !state;
+  if(this->is_connected)
+    {
+      this->effective_value = this->value;
+    }
+  else
+    {
+      this->effective_value = (T) 0.0;
+    }
+}
+
+//TODO ask molecule
+template<typename T>
+void Edge<T>::req_drop_off(bool state)
+{
+  set_drop_off(state);
+}
+
+//TODO ask molecule
+template<typename T>
+void Edge<T>::req_rand_drop_off(T percentage)
+{
+  if(percentage < (T) 0.0 || percentage > (T) 0.99)
+    {
+      return;
+    }
+  if(this->p->is_input)
+    {
+      return;
+    }
+  T v = nnhelper.randomizer.get_rand();
+  if(v < (T) percentage)
+    {
+      set_drop_off(true);
+    }
+  else
+    {
+      set_drop_off(false);
+    }
+}
+
+
+
+template<typename T>
+void Edge<T>::req_value(T edge_value)
+{
+  //TODO: Ask molecule
+  set_value(edge_value);
+}
+
+template<typename T>
+Edge<T>::Edge():value_(this->effective_value)
+{
+  this->p = nullptr;
+  this->n = nullptr;
+  p_ = this->p;
+  n_ = this->n;
   this->is_connected = true;
+  set_value(nnhelper.randomizer.get_rand());
 }
 
 template<typename T>
-Edge<T>::Edge(T v)
+Edge<T>::Edge(T v):value_(this->effective_value)
 {
-  p = nullptr;
-  n = nullptr;
+  this->p = nullptr;
+  this->n = nullptr;
+  p_ = this->p;
+  n_ = this->n;
   this->value = v;
   this->is_connected = true;
+}
+
+template<typename T>
+void Edge<T>::set_next(Node<T> * const next)
+{
+  this->n = next;
+  n_ = this->n;
+}
+
+template<typename T>
+void Edge<T>::set_prev(Node<T> * const prev)
+{
+  this->p = prev;
+  p_ = this->p;
 }
 
 // Tell compiler what to build

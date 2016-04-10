@@ -66,7 +66,7 @@ void run_tests()
   FullHidden<double> network(layers_sizes, 4, switching);
   network.input_file_alloc("../logicinput.txt");
   network.output_file_alloc("../logicoutput.txt");
-  network.train(0.001,20000,0.01);
+  network.train(0.001,20000,0.01, 0.0);
 
 }
 

@@ -236,7 +236,7 @@ void ConsolePrinter::clear_command()
   memset(commands, 0, BUFFERSIZE);
 }
 
-void ConsolePrinter::interact()
+bool ConsolePrinter::interact()
 {
   int ch;
   unsigned int state = CONTROL;
@@ -249,7 +249,7 @@ void ConsolePrinter::interact()
         // Never allowed in input. This quits
         case KEY_F(1):
           {
-            return;
+            return false;
             break;
           }
         // Reset everything
@@ -300,7 +300,7 @@ void ConsolePrinter::interact()
           break;
         }
     }
-  return;
+  return false;
 }
 
 
@@ -357,4 +357,3 @@ ConsolePrinter::~ConsolePrinter()
 {
   destroy_screen();
 }
-

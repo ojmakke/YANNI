@@ -27,6 +27,4 @@ SUBDIRS := \
 helper \
 networks \
 parts \
-activation \
-
 

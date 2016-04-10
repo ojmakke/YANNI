@@ -1,10 +1,11 @@
 /*
- * fixedinput.hpp
+ * node_phantom.h
  *
- *  Created on : Mar 17, 2016
+ *  Created on : Apr 03, 2016
  *      Author : Omar Makke (O jMakke)
- *      ojQuote: "Programming is a science while coding is an art"
- *    	Email  : ojmakke@yahoo.com
+ *		ojQuote: "There are 3 kinds of people:
+ *                        the rich, the poor, and the programmers"
+ *		Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets
 
@@ -20,29 +21,22 @@ GNU General Public License for more details.
 You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef NODE_PHANTOM_H
+#define NODE_PHANTOM_H
 
-#ifndef FIXEDINPUT_HPP_
-#define FIXEDINPUT_HPP_
+template<typename T>
+class Node;
 
-#include "activation.h"
-#include <math.h>
-
-template <typename T>
-class  FixedInput : public Activation<T>
+// Trick; Befriend the inherited. Then friends of the inherited
+// can only see protected (not privates) of the inherited
+template<typename T>
+class Node_Phantom
 {
-public:
-  /* <T> is casted to double and then back to <T> */
-  T f(T fnet)
-  {
-    return (T) 1.0;
-  }
-  T df(T fnet)
-  {
-    return (T) 0.0;
-  }
-  ~FixedInput<T>(){}
+  friend class Node<T>;
+private:
+  T y;
+  T fnet;
+  T delta;
 };
-template class FixedInput<double>;
-template class FixedInput<float>;
-#endif /* FIXEDINPUT_HPP_ */
 
+#endif // NODE_PHANTOM_H

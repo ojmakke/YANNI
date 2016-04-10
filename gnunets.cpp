@@ -1,5 +1,5 @@
 /*
- * gnunet.cpp
+ * gnunets.cpp
  *
  *  Created on : Mar 19, 2016
  *      Author : Omar Makke (O jMakke)
@@ -30,16 +30,12 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "activation/rectify.hpp"
 #include "helper/nnhelper.hpp"
 #include "helper/console_printer.h"
-#include "helper/fileio.h"
 #include "networks/fullhidden.h"
 
 #define CONTROL 0
 #define INPUT 1
 
 NNHelper<double> nnhelper;
-extern void run_tests();
-
-void switch_state(unsigned *state);
 
 int main(int argc, char* argv[])
 {
@@ -98,5 +94,4 @@ int main(int argc, char* argv[])
   // control: keys are for control, not inputting command
   // input: RELEVANT keys are used for inputting.
 }
-
 

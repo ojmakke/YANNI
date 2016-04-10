@@ -4,16 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../gnunet.cpp \
-../gnunet_test.cpp 
+../gnunet_test.cpp \
+../gnunets.cpp 
 
 OBJS += \
-./gnunet.o \
-./gnunet_test.o 
+./gnunet_test.o \
+./gnunets.o 
 
 CPP_DEPS += \
-./gnunet.d \
-./gnunet_test.d 
+./gnunet_test.d \
+./gnunets.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
