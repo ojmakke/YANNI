@@ -46,4 +46,3 @@ template class FixedInput<double>;
 template class FixedInput<float>;
 #endif /* FIXEDINPUT_HPP_ */
 
-

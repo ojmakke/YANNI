@@ -30,6 +30,7 @@ extern void run_tests();
 
 Workspace::Workspace():hasStarted(false)
 {
+  current_network = nullptr;
 }
 
 Workspace& Workspace::instance()

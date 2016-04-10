@@ -357,4 +357,3 @@ ConsolePrinter::~ConsolePrinter()
 {
   destroy_screen();
 }
-

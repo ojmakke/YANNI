@@ -44,6 +44,11 @@ FullHidden<T>::FullHidden()
   self_id     = FullHidden::id;
   input_allocated = false;
   output_allocated = false;
+  output_set = nullptr;
+  input_set = nullptr;
+  input_layer_size = 0;
+  data_out_length = 0;
+  data_in_length = 0;
 }
 
 /**
@@ -55,8 +60,13 @@ FullHidden<T>::FullHidden(size_t *layers,
 			  size_t layer_count,
 			  ActivationEnum *switching_functions)
 {
+  output_set = nullptr;
+  input_set = nullptr;
   input_allocated = false;
   output_allocated = false;
+  input_layer_size = 0;
+  data_out_length = 0;
+  data_in_length = 0;
   // count before bias
   input_layer_size = layers[0];
   if(layer_count < 2)
@@ -363,9 +373,9 @@ void FullHidden<T>::input_file_alloc(std::string filename)
     }
   // ASSUMPTION
   // This function is read before output.
-  data_in_length = FileIO<T>::get_text_1D(filename,
+  data_in_length = FileIO::get_text_1D(filename,
                                        layer->nodes.size()-1,
-                                       &input_set);
+                                       (double*** )&input_set);
 
   if(data_in_length > 0)
     {
@@ -388,9 +398,9 @@ void FullHidden<T>::output_file_alloc(std::string filename)
     }
   // ASSUMPTION
   // input_file_alloc called first
-  data_out_length = FileIO<T>::get_text_1D(filename,
+  data_out_length = FileIO::get_text_1D(filename,
                                         layer->nodes.size(),
-                                        &output_set );
+                                        (double*** )&output_set );
   if(data_out_length != data_in_length)
     {
       ConsolePrinter::instance().feedback_write(

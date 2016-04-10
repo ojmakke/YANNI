@@ -51,4 +51,3 @@ NNHelper<T>::~NNHelper()
 }
 
 #endif /* NNHELPER_HPP_ */
-
