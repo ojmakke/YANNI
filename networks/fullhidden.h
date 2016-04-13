@@ -29,11 +29,15 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "../parts/layer.h"
 #include "../activation/activation.h"
 #include "../activation/tanh.hpp"
+#include <memory>
 
 template<typename T>
 class FullHidden
 {
 public:
+  const size_t& input_layer_size_;
+  const size_t& output_layer_size_;
+
   /* Note: hidden_layers can be 0
          * layer_count: Number of layers which must be >= 2.
          * It includes hidden and output
@@ -62,12 +66,12 @@ public:
   void dump_everything();
   void dump_outputs();
   void dump_layer(size_t n);
+  std::unique_ptr<T[]> get_output();
   // size will be assumed to equal the output layer.
   T calc_error(T *target);
   //TODO move to interface
   void input_file_alloc(std::string filename);
   void output_file_alloc(std::string filename);
-  size_t input_layer_size;
   bool input_allocated;
   bool output_allocated;
 
@@ -75,6 +79,11 @@ private:
   T** input_set; // Tripple because allocation happens in function.
                   // The reference is passed by value :)
   T** output_set;
+  size_t input_layer_size;
+  size_t output_layer_size;
+
+  // these are not the dimension of the input. These are the dimension of
+  // the traiing set
   size_t data_in_length;
   size_t data_out_length;
   void back_propagate(T rate);

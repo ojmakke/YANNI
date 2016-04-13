@@ -19,7 +19,8 @@ GNU General Public License for more details.
 You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <string>
+#include <string.h>
+#include <memory>
 
 #include "workspace.h"
 #include "console_printer.h"
@@ -28,7 +29,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 
 extern void run_tests();
 
-Workspace::Workspace():hasStarted(false)
+Workspace::Workspace():hasStarted(false),input_scale(1.0),output_scale(1.0)
 {
   current_network = nullptr;
 }
@@ -225,7 +226,7 @@ void Workspace::execute(Parser &parser)
           return;
         }
 
-      if(params  != current_network->input_layer_size)
+      if(params  != current_network->input_layer_size_)
         {
           ConsolePrinter::instance().feedback_rewrite(
                 "wrong input size           ");
@@ -249,16 +250,64 @@ void Workspace::execute(Parser &parser)
       double *in = new double[parser.p_size];
       for(size_t ii = 0; ii < parser.p_size; ii++)
         {
-          in[ii] = atof(parser.parameters[ii]->command.c_str());
+          in[ii] = atof(parser.parameters[ii]->command.c_str())/input_scale;
         }
 
       current_network->set_inputs(in);
       current_network->forward_propagate();
-      current_network->dump_outputs();
+      std::unique_ptr<double[]> out = current_network->get_output();
+
+      size_t out_len = current_network->output_layer_size_;
+
+      for(size_t ii = 0; ii < out_len; ii++)
+        {
+          std::string outstr = "Output ";
+          double val = out[ii]*this->output_scale;
+          outstr.append(std::to_string(ii))
+              .append(": Value: ")
+              .append(std::to_string(val));
+
+          ConsolePrinter::instance().feedback_write(outstr);
+        }
+
+ //     current_network->dump_outputs();
       return;
     }
+  else if(parser.command.compare("exit") == 0)
+    {
+      abort();
+    }
+  else if(parser.command.compare("scale") == 0)
+    {
+      size_t params = parser.p_size;
+      if(params != 2)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(
+	      "scale takes 2 parameters                ");
+	  return;
+	}
+      if(parser.parameters == nullptr)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "Error in input           ");
+          return;
+        }
 
-
+      input_scale = atof(parser.parameters[0]->command.c_str());
+      if(input_scale == 0.0)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(
+	  	      "input scale set to 1                ");
+	  input_scale = 1.0;
+	}
+      output_scale = atof(parser.parameters[1]->command.c_str());
+      if(output_scale == 0.0)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(
+	  	      "output scale set to 1                ");
+	  output_scale = 1.0;
+	}
+    }
   else
     {
       std::string result = "Unrecognized command: ";

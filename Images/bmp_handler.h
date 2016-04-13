@@ -1,8 +1,10 @@
 /*
- * gnunets.cpp
+ * bmp_handler.h
  *
- *  Created on : Mar 19, 2016
+ *  Created on : Apr 12, 2016
  *      Author : Omar Makke (O jMakke)
+ *      ojQuote: "Good universities don't make good students.
+ *      	  Good students make good universities"
  *      Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets
@@ -20,27 +22,22 @@ You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef BMP_HANDLER_H_
+#define BMP_HANDLER_H_
+
 #include <string.h>
-#include <stdlib.h>
-#include <iostream>
+#include "EasyBMP.h"
 
-#include "activation/tanh.hpp"
-#include "activation/logistic.hpp"
-#include "activation/step.hpp"
-#include "activation/rectify.hpp"
-#include "helper/nnhelper.hpp"
-#include "helper/console_printer.h"
-#include "networks/fullhidden.h"
-
-#include "Images/bmp_handler.h"
-
-#define CONTROL 0
-#define INPUT 1
-
-NNHelper<double> nnhelper;
-
-int main(int argc, char* argv[])
+typedef struct BMPInfo_def
 {
-  ConsolePrinter::instance().interact();
-}
+  int x;
+  int y;
+  double color[3];	// RGB
+} BMPInfo;
 
+void create_square_bmp(std::string filename,
+		const BMPInfo* bmp_color,
+		size_t info_length,
+		size_t side_length);
+
+#endif /* BMP_HANDLER_H_ */

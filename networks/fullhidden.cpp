@@ -22,6 +22,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <memory>
 
 #include "../common.h"
 #include "../parts/edge.h"
@@ -38,17 +39,21 @@ template<typename T>
 int FullHidden<T>::id = 0;
 
 template<typename T>
-FullHidden<T>::FullHidden()
+FullHidden<T>::FullHidden():
+  input_allocated(false),
+  output_allocated(false),
+  input_layer_size_(this->input_layer_size),
+  output_layer_size_(this->output_layer_size)
 {
   FullHidden::id++;
   self_id     = FullHidden::id;
-  input_allocated = false;
-  output_allocated = false;
-  output_set = nullptr;
   input_set = nullptr;
-  input_layer_size = 0;
-  data_out_length = 0;
+  output_set = nullptr;
+  input_layer_size =  0;
+  output_layer_size = 0;
   data_in_length = 0;
+  data_out_length = 0;
+
 }
 
 /**
@@ -58,21 +63,24 @@ FullHidden<T>::FullHidden()
 template<typename T>
 FullHidden<T>::FullHidden(size_t *layers,
 			  size_t layer_count,
-			  ActivationEnum *switching_functions)
+			  ActivationEnum *switching_functions):
+			  input_allocated(false),
+			  output_allocated(false),
+			  input_layer_size_(this->input_layer_size),
+			  output_layer_size_(this->output_layer_size),
+			  input_set(nullptr),
+			  output_set(nullptr),
+			  data_in_length(0),
+			  data_out_length(0)
 {
-  output_set = nullptr;
-  input_set = nullptr;
-  input_allocated = false;
-  output_allocated = false;
-  input_layer_size = 0;
-  data_out_length = 0;
-  data_in_length = 0;
+
   // count before bias
-  input_layer_size = layers[0];
   if(layer_count < 2)
     {
       return;
     }
+  input_layer_size = layers[0];
+  output_layer_size = layers[layer_count-1];
   FullHidden::id++;
   self_id = FullHidden::id;
   // Create layers and make last layer output,and first layer input
@@ -281,19 +289,32 @@ template<typename T>
 void FullHidden<T>::dump_outputs()
 {
   Layer<T> *output_layer = all_layers.at(all_layers.size()-1);
-//  fprintf(stdout, "Last layer has size:%d\n",
-//          (int) output_layer->nodes.size());
 
-  for(size_t i = 0; i < (output_layer->nodes).size(); i++)
+  for(size_t ii = 0; ii < (output_layer->nodes).size(); ii++)
     {
       std::string outstr = "Output ";
-      Node<T> *i_node = (output_layer->nodes).at(i);
-      outstr.append(std::to_string(i))
+      Node<T> *i_node = (output_layer->nodes).at(ii);
+      outstr.append(std::to_string(ii))
           .append(": Value: ")
           .append(std::to_string(i_node->y_));
 
       ConsolePrinter::instance().feedback_write(outstr);
     }
+}
+
+template<typename T>
+std::unique_ptr<T[]> FullHidden<T>::get_output()
+{
+
+  Layer<T> *output_layer = all_layers.at(all_layers.size()-1);
+  std::unique_ptr<T[]> out (new T[(output_layer->nodes).size()]);
+
+  for(size_t ii = 0; ii < (output_layer->nodes).size(); ii++)
+    {
+      Node<T> *i_node = (output_layer->nodes).at(ii);
+      out[ii] = i_node->y_;
+    }
+  return out;
 }
 
 template<typename T>

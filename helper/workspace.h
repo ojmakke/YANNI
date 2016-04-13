@@ -42,8 +42,10 @@ public:
   ~Workspace();
 
 private:
-
   bool hasStarted;
+  double input_scale; // divide input by this
+  double output_scale; // multiply output by this
+
   std::vector<FullHidden<double> *> networks;
   FullHidden<double> *current_network;
 
