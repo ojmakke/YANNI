@@ -1,9 +1,10 @@
 /*
- * tanh.cpp
+ * powern.hpp
  *
  *  Created on : Mar 17, 2016
  *      Author : Omar Makke (O jMakke)
- *      ojQuote: "A: What does "free" mean? B: Which year?"
+ *      ojQuote: "The quality of code is inversely proportional
+ *      	  to the temperature outside."
  *      Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets
@@ -21,49 +22,52 @@ You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TANH_HPP_
-#define TANH_HPP_
+#ifndef POWERN_HPP_
+#define POWERN_HPP_
 
 #include "activation.h"
 #include <math.h>
 
 template <typename T>
-class  Tanh : public Activation<T>
+class  PowerN : public Activation<T>
 {
-private:
-  T fnet_old ;
-  T y;
-
 public:
+  static int N;
+  PowerN()
+  {
+    N_ = N++;
+  }
   /* <T> is casted to double and then back to <T> */
   T f(T fnet)
   {
-    y = (T) tanh((double) fnet);
-    if(y > (T) 0.9995)
-      {
-        y = (T) 0.9995;
-      }
-    else if(y < (T) -0.9995)
-      {
-        y = (T) -0.99995;
-      }
-    fnet_old  = fnet;
+    y = (T) pow(fnet, N_);
+    fnet_old = fnet;
     return y;
   }
   /**
-         *  Derivative of tanh. T will be casted double and back from double
-         *   */
+   *  Derivative of tanh. T will be casted double and back from double
+   *   */
   T df(T fnet)
   {
-    if(fnet != fnet_old )
+    if(fnet != fnet_old)
       {
         y = f(fnet);
       }
-    return (T) (1 - y*y);
-  }
-  ~Tanh<T>(){}
-};
-template class Tanh<double>;
-template class Tanh<float>;
-#endif /* TANH_HPP_ */
+    if(N_ == (T) 0) return (T) 0;
 
+    return (T) ((T) N_)*y/((T) N_);
+  }
+  ~PowerN<T>(){}
+
+private:
+  int N_;
+  T fnet_old;
+  T y;
+};
+
+template<typename T>
+int PowerN<T>::N = 0;
+
+template class PowerN<double>;
+template class PowerN<float>;
+#endif /* POWERN_HPP_ */

@@ -31,6 +31,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "../activation/rectify.hpp"
 #include "../activation/tanh.hpp"
 #include "../activation/fixedinput.hpp"
+#include "../activation/powern.hpp"
 #include "../helper/nnhelper.hpp"
 
 
@@ -76,6 +77,11 @@ Node<T>::Node(ActivationEnum type):
       {
         F = new FixedInput<T>();
         break;
+      }
+    case POWERN:
+      {
+	F = new PowerN<T>();
+	break;
       }
     }
 }
@@ -169,6 +175,39 @@ T Node<T>::calc_new_output()
       // previous node connecting to current node through the edge
       const Node<T>* i_node = i_edge->p_;
       this->fnet += i_edge->value_ * i_node->y_;
+    }
+  this->y = F->f(this->fnet);
+  return (T) this->y;	// Optional. Doesn't have to be used.
+}
+
+template<typename T>
+T Node<T>::calc_new_output_test()
+{
+  // Input doesn't have input edges.
+  if(is_input)
+    {
+      //		fprintf(stdout, "Returning y = %f\n", y);
+      return y_;
+    }
+
+  this->fnet = (T) 0.0;
+  // Loop through all edges
+  for(size_t i = 0; i < backward.size(); i++)
+    {
+      Edge<T> *i_edge = backward.at(i);
+      // previous node connecting to current node through the edge
+      const Node<T>* i_node = i_edge->p_;
+      if(i_edge->get_value_test() == i_edge->value_)
+	{
+	  int breakp = 0;
+	  breakp++;
+	}
+      else
+	{
+	  int breakp = 0;
+	  breakp++;
+	}
+      this->fnet += i_edge->get_value_test() * i_node->y_;
     }
   this->y = F->f(this->fnet);
   return (T) this->y;	// Optional. Doesn't have to be used.

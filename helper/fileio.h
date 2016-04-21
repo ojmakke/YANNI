@@ -20,6 +20,10 @@ GNU General Public License for more details.
 You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#ifndef FILEIO_H_
+#define FILEIO_H_
+
 #include <fstream>
 #include <iostream>
 #include <string.h>
@@ -125,4 +129,5 @@ namespace FileIO
   }
 }
 
+#endif /* FILEIO_H_ */
 

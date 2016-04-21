@@ -37,10 +37,12 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #define CONTROL 0
 #define INPUT 1
 
+extern void run_tests();
 NNHelper<double> nnhelper;
 
 int main(int argc, char* argv[])
 {
   ConsolePrinter::instance().interact();
+//  run_tests();
 }
 

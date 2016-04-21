@@ -1,10 +1,10 @@
 /*
- * activation.h
+ * fullhidden.h
  *
- *  Created on : Mar 17, 2016
+ *  Created on : Mar 19, 2016
  *      Author : Omar Makke (O jMakke)
- *      ojQuote: "Young man, listen carefully to the gray hair."
- *
+ *      ojQutoe: "Software bugs and hell are similar. Painful, punishing,
+ *      	  and you cannot prove they don't exist"
  *      Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets
@@ -22,36 +22,24 @@ You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACTIVATION_H_
-#define ACTIVATION_H_
+#ifndef TAYLORNET_H_
+#define TAYLORNET_H_
 
-/** Activation function abstract structure */
+#include "classic_network.h"
+#include "../parts/layer.h"
+#include "../activation/activation.h"
+#include "fullhidden.h"
+#include "../activation/powern.hpp"
+#include <memory>
+
 template<typename T>
-class Activation
+class TaylorNet : public FullHidden<T>
 {
 public:
-  virtual T f(T fnet) = 0;
-  virtual T df(T fnet) = 0;
-  virtual ~Activation() = 0;
+  TaylorNet();
+  TaylorNet(size_t *layers,
+             size_t layer_count);
+  ~TaylorNet();
 };
 
-template<typename T>
-Activation<T>::~Activation()
-{
-}
-
-enum ActivationEnum
-{
-  LOGISTIC,
-  RECTIFY,
-  STEP,
-  TANH,
-  FIXEDINPUT,
-  POWERN,
-};
-
-// Tell compiler which classes to build
-template class Activation<double>;
-template class Activation<float>;
-
-#endif /* ACTIVATION_H_ */
+#endif /* TAYLORNET_H_ */

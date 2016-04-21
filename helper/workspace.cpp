@@ -21,8 +21,10 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <string.h>
 #include <memory>
+#include <cmath>
 
 #include "workspace.h"
+#include "../Images/bmp_handler.h"
 #include "console_printer.h"
 #include "../networks/fullhidden.h"
 #include "../activation/activation.h"
@@ -307,6 +309,95 @@ void Workspace::execute(Parser &parser)
 	  	      "output scale set to 1                ");
 	  output_scale = 1.0;
 	}
+    }
+  else if(parser.command.compare("plotSquare") == 0)
+    {
+      size_t params = parser.p_size;
+      if(params != 1
+	  || current_network->output_layer_size_ != 1
+	  || current_network->input_layer_size_ != 2)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(
+	      "Something is not 2D                ");
+	  return;
+	}
+      if(parser.parameters == nullptr)
+        {
+          ConsolePrinter::instance().feedback_rewrite(
+                "Error in input           ");
+          return;
+        }
+      Parser *range = parser.parameters[0];
+
+      if(range == nullptr)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(
+	                  "Error in input           ");
+	  return;
+	}
+      if(range->p_size != 3)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(
+	  	          "Error in input           ");
+	  	  return;
+	}
+      if(range->command.compare("x") != 0)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(
+	  	  	  "Error in input           ");
+	  return;
+	}
+      for(size_t ii = 0; ii < 3; ii++)
+      {
+	if(range->parameters[ii] == nullptr)
+	  {
+	    ConsolePrinter::instance().feedback_rewrite(
+			    "Error in input           ");
+	    return;
+	  }
+      }
+
+      double xp0 = atof(range->parameters[0]->command.c_str());
+      double xp1 = atof(range->parameters[1]->command.c_str());
+      double xp2 = atof(range->parameters[2]->command.c_str());
+
+      if(abs(xp2 - (xp0 + xp1)) > abs(xp2 - xp0))
+	{
+	  ConsolePrinter::instance().feedback_rewrite(
+	  		  "wrong range           ");
+	  return;
+	}
+      //TODO find a way to compare against expression
+      // Finally we know input is good
+      size_t img_size = (size_t) (xp2-xp0)/xp1;
+      if(img_size > 5000)	// prevent mistake: ridiculous image size
+	{
+	  img_size = 5000;
+	}
+
+      BMPInfo *pixels = new BMPInfo[img_size*img_size];
+      std::unique_ptr<double[]> out;
+      double input[2];
+      for(size_t ii = 0; ii < img_size; ii++)
+	{
+	  for(size_t jj = 0; jj < img_size; jj++)
+	    {
+	      input[0] = ((double) ii)/((double) img_size);
+	      input[1] = ((double) jj)/((double) img_size);
+	      current_network->set_inputs(input);
+	      current_network->forward_propagate();
+	      out = current_network->get_output();
+	      if(out[0] > 0.5) out[0] = 1.0; else out[0] = 0.0;
+	      pixels[ii*img_size + jj].color[0] = 255*fabs(out[0]);
+	      pixels[ii*img_size + jj].color[1] = 0;
+	      pixels[ii*img_size + jj].color[2] = 0;
+	      pixels[ii*img_size + jj].x = jj;
+	      pixels[ii*img_size + jj].y = img_size - ii - 1;
+	    }
+	}
+      create_square_bmp("output.bmp", pixels, img_size*img_size, img_size);
+      delete[] pixels;
+
     }
   else
     {

@@ -11,6 +11,7 @@ RM := rm -rf
 -include parts/subdir.mk
 -include networks/subdir.mk
 -include helper/subdir.mk
+-include Images/subdir.mk
 -include subdir.mk
 -include objects.mk
 

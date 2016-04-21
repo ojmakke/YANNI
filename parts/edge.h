@@ -53,7 +53,10 @@ public:
   T& value_;
 
   // Request set value. Not necessarily honored
-  void req_value(T value);
+  void accumulate(T edge_value);
+  void confirm_value();
+  void undo_value();
+  T get_value_test();
   void req_drop_off(bool state);
   void req_rand_drop_off(T percentage);
 

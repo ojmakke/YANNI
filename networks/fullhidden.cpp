@@ -23,6 +23,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdlib.h>
 #include <stdio.h>
 #include <memory>
+#include <math.h>
 
 #include "../common.h"
 #include "../parts/edge.h"
@@ -40,10 +41,10 @@ int FullHidden<T>::id = 0;
 
 template<typename T>
 FullHidden<T>::FullHidden():
-  input_allocated(false),
-  output_allocated(false),
   input_layer_size_(this->input_layer_size),
-  output_layer_size_(this->output_layer_size)
+  output_layer_size_(this->output_layer_size),
+  input_allocated(false),
+  output_allocated(false)
 {
   FullHidden::id++;
   self_id     = FullHidden::id;
@@ -53,6 +54,8 @@ FullHidden<T>::FullHidden():
   output_layer_size = 0;
   data_in_length = 0;
   data_out_length = 0;
+  error_now = 100000.0;
+  previous_error = 0.0;
 
 }
 
@@ -64,10 +67,10 @@ template<typename T>
 FullHidden<T>::FullHidden(size_t *layers,
 			  size_t layer_count,
 			  ActivationEnum *switching_functions):
-			  input_allocated(false),
-			  output_allocated(false),
 			  input_layer_size_(this->input_layer_size),
 			  output_layer_size_(this->output_layer_size),
+			  input_allocated(false),
+			  output_allocated(false),
 			  input_set(nullptr),
 			  output_set(nullptr),
 			  data_in_length(0),
@@ -79,6 +82,8 @@ FullHidden<T>::FullHidden(size_t *layers,
     {
       return;
     }
+  previous_error = 0.0;
+  error_now = 100000.0;
   input_layer_size = layers[0];
   output_layer_size = layers[layer_count-1];
   FullHidden::id++;
@@ -107,7 +112,7 @@ FullHidden<T>::FullHidden(size_t *layers,
       all_layers.push_back(i_layer);
     }
 
-  // Create bias bias nodes as input.
+  // Create bias nodes as input.
   for(size_t i = 0; i < layer_count-1; i++)
     {
       Layer<T> *i_layer = all_layers.at(i);
@@ -137,13 +142,13 @@ T FullHidden<T>::train(T target_error,
 		       double dropoff)
 {
   T error;
+  this->learning_rate = learning_rate;
   for(size_t study = 0; study < epoch; study++)
     {
       // We will calculate error as we go. Not the true error, but
       // more efficient. The proper way is to evaluate the error
       // for all the inputs after training. Imagine a huge training set!
       error = (T) 0.0;
-
       // dropoff enable
       Layer<T> *i_layer;
       Node<T> *j_node;
@@ -168,16 +173,67 @@ T FullHidden<T>::train(T target_error,
           (data_in_length <= data_out_length?data_in_length:data_out_length);
       //TODO
       // Create a stochastic approach to select inputs.
+      T error_test = 0.0;
       for(size_t i = 0; i < set; i++)
         {
           set_inputs((input_set)[i]);
           forward_propagate();
           // Important. Run this first to get the first delta to propagate
           error += calc_error(output_set[i]);
-          back_propagate(learning_rate);
-          // Does this have to be part of back_propagate?
-          update_weights(learning_rate);
+          back_propagate(this->learning_rate);
+          update_weights(this->learning_rate);
+
         }
+      for(size_t i = 0; i < set; i++)
+        {
+          set_inputs((input_set)[i]);
+          forward_propagate_test();
+          error_test += calc_error(output_set[i]);
+
+        }
+      if(error == error_test)
+	{
+	 // this->learning_rate =this->learning_rate*1.1;
+	}
+      else if(error < error_test)
+	{
+	  this->learning_rate =this->learning_rate*0.9;
+	  for(size_t ii = 1; ii <= all_layers.size(); ii++)
+	    {
+	      // work backwards
+	      size_t index = all_layers.size() - ii;
+	      i_layer = all_layers.at(index);
+	      for(size_t jj = 0; jj < i_layer->nodes.size(); jj++)
+		{
+		  j_node = i_layer->nodes.at(jj);
+
+		  for(size_t kk = 0; kk < (j_node->forward).size(); kk++)
+		    {
+		      k_edge = (j_node->forward).at(kk);
+//		      k_edge->undo_value();
+		    }
+		}
+	    }
+//	  continue;
+	}
+      for(size_t ii = 1; ii <= all_layers.size(); ii++)
+        {
+          // work backwards
+          size_t index = all_layers.size() - ii;
+          i_layer = all_layers.at(index);
+          for(size_t jj = 0; jj < i_layer->nodes.size(); jj++)
+            {
+              j_node = i_layer->nodes.at(jj);
+
+              for(size_t kk = 0; kk < (j_node->forward).size(); kk++)
+                {
+                  k_edge = (j_node->forward).at(kk);
+                  k_edge->confirm_value();
+                }
+            }
+        }
+
+
       std::string result = "Error in ";
       result.append(std::to_string(study)
                     .append(" is ")
@@ -241,13 +297,13 @@ void FullHidden<T>::dump_everything()
             }
           std::vector<Edge<T> *> j_all_edges = j_node->backward;
 
-          for(size_t k = 0; k <j_all_edges.size(); k++)
-            {
-              Edge<T> *k_edge = j_all_edges.at(k);
+//          for(size_t k = 0; k <j_all_edges.size(); k++)
+//            {
+//              Edge<T> *k_edge = j_all_edges.at(k);
 //              fprintf(stdout, "Edge %d: \t\tValue: %f\n",
 //                      (int) k,
 //                      (float) k_edge->get_value() );
-            }
+//            }
         }
     }
 }
@@ -257,15 +313,34 @@ void FullHidden<T>::forward_propagate()
 {
     // reset drop_off
 
-  for(size_t i = 0; i < all_layers.size(); i++)
+  for(size_t ii = 0; ii < all_layers.size(); ii++)
     {
-      Layer<T> *i_layer = all_layers.at(i);
+      Layer<T> *i_layer = all_layers.at(ii);
       std::vector<Node<T> *> i_nodes = i_layer->nodes;
 
-      for(size_t j = 0; j < i_nodes.size(); j++)
+      for(size_t jj = 0; jj < i_nodes.size(); jj++)
         {
-          Node<T> *j_node = i_nodes.at(j);
+          Node<T> *j_node = i_nodes.at(jj);
           j_node->calc_new_output();
+          //			fprintf(stdout, " %f ", j_node->get_output());
+        }
+    }
+}
+
+template<typename T>
+void FullHidden<T>::forward_propagate_test()
+{
+    // reset drop_off
+
+  for(size_t ii = 0; ii < all_layers.size(); ii++)
+    {
+      Layer<T> *i_layer = all_layers.at(ii);
+      std::vector<Node<T> *> i_nodes = i_layer->nodes;
+
+      for(size_t jj = 0; jj < i_nodes.size(); jj++)
+        {
+          Node<T> *j_node = i_nodes.at(jj);
+          j_node->calc_new_output_test();
           //			fprintf(stdout, " %f ", j_node->get_output());
         }
     }
@@ -324,11 +399,11 @@ void FullHidden<T>::back_propagate(T rate)
   // The output layer nodes must already have its delta calculated
   // Update delta.
   // Calc delta weight and update weights.
-  for(size_t i = 0; i < all_layers.size()-1; i++)
+  for(size_t ii = 1; ii < all_layers.size(); ii++)
     {
       // backwards. size_t cannot go below 0, cannot do < size_t
-      size_t j = all_layers.size()-2 - i;	//skip output.
-      Layer<T> *layer = all_layers.at(j);
+      size_t jj = all_layers.size() - ii -1;	//skip output.
+      Layer<T> *layer = all_layers.at(jj);
       layer->calc_node_delta();
     }
 }
@@ -343,13 +418,14 @@ T FullHidden<T>::calc_error(T *target)
   T diff;
   Layer<T> *output = all_layers.at(all_layers.size()-1);
 
-  for(size_t i = 0; i < output->nodes.size(); i++)
+  for(size_t ii = 0; ii < output->nodes.size(); ii++)
     {
-      Node<T> *i_node = output->nodes.at(i);
-      diff = target[i] - i_node->y_;
+      Node<T> *i_node = output->nodes.at(ii);
+      diff = target[ii] - i_node->y_;
       sum += diff*diff;
       // delta local to the node. This will be summed up later.
-      i_node->req_delta((T) -1.0f*diff*i_node->F->df(i_node->fnet_));
+      T delta = (T) -1.0f*diff*i_node->F->df(i_node->fnet_);
+      i_node->req_delta(delta);
     }
   return sum;
 }
@@ -361,22 +437,25 @@ void FullHidden<T>::update_weights(T rate)
   Node<T> *j_node;
   Edge<T> *k_edge;
 
-  for(size_t i = 0; i < all_layers.size() - 1; i++)
+  for(size_t ii = 1; ii <= all_layers.size(); ii++)
     {
       // work backwards
-      size_t index = all_layers.size() - 1 - i;
+      size_t index = all_layers.size() - ii;
       i_layer = all_layers.at(index);
-      for(size_t j = 0; j < i_layer->nodes.size(); j++)
+      for(size_t jj = 0; jj < i_layer->nodes.size(); jj++)
         {
-          j_node = i_layer->nodes.at(j);
+          j_node = i_layer->nodes.at(jj);
 
-          for(size_t k = 0; k < (j_node->forward).size(); k++)
+          for(size_t kk = 0; kk < (j_node->forward).size(); kk++)
             {
-              k_edge = (j_node->forward).at(k);
+              k_edge = (j_node->forward).at(kk);
               const Node<T> *k_node = k_edge->n_;
-              T w = k_edge->value_ -
-                  (rate*k_node->delta_*j_node->y_);
-              k_edge->req_value(w);
+              T dw = (rate*k_node->delta_*j_node->y_);
+              if(dw == 0)
+        	{
+        	  return;
+        	}
+              k_edge->accumulate(dw);
             }
         }
     }
@@ -425,7 +504,7 @@ void FullHidden<T>::output_file_alloc(std::string filename)
   if(data_out_length != data_in_length)
     {
       ConsolePrinter::instance().feedback_write(
-            "File mistaches. Future looks grim     ");
+            "File mismatch. Future looks grim     ");
     }
   if(data_out_length > 0)
     {

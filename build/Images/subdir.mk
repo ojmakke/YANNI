@@ -4,20 +4,20 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../networks/fullhidden.cpp \
-../networks/taylornet.cpp 
+../Images/EasyBMP.cpp \
+../Images/bmp_handler.cpp 
 
 OBJS += \
-./networks/fullhidden.o \
-./networks/taylornet.o 
+./Images/EasyBMP.o \
+./Images/bmp_handler.o 
 
 CPP_DEPS += \
-./networks/fullhidden.d \
-./networks/taylornet.d 
+./Images/EasyBMP.d \
+./Images/bmp_handler.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
-networks/%.o: ../networks/%.cpp
+Images/%.o: ../Images/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
 	g++ -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"

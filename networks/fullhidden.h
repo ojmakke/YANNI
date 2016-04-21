@@ -48,7 +48,7 @@ public:
   FullHidden(size_t *layers,
              size_t layer_count,
              ActivationEnum *swtiching_functions);
-  ~FullHidden();
+  virtual ~FullHidden();
 
   /*
          * Default training (incremental).
@@ -57,9 +57,9 @@ public:
   static int id;
   T train();
   T train(T target_error,
-          T epoch,
-          T learning_rate,
-          double dropoff);
+	  T epoch,
+	  T learning_rate,
+	  double dropoff);
   void forward_propagate();
   // Assumed to be equal to all_layers - 1, due to bias
   void set_inputs(T *inputs);
@@ -75,7 +75,7 @@ public:
   bool input_allocated;
   bool output_allocated;
 
-private:
+protected:
   T** input_set; // Tripple because allocation happens in function.
                   // The reference is passed by value :)
   T** output_set;
@@ -86,10 +86,13 @@ private:
   // the traiing set
   size_t data_in_length;
   size_t data_out_length;
-  void back_propagate(T rate);
-  void update_weights(T rate);
+  virtual void back_propagate(T rate);
+  virtual void update_weights(T rate);
+  virtual void forward_propagate_test();
   std::vector<Layer<T> *> all_layers;
   T learning_rate;
+  T error_now;
+  T previous_error;
 };
 
 #endif /* NETWORKS_FULLHIDDEN_H_ */

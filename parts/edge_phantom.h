@@ -44,11 +44,12 @@ private:
 
   // Value assigned to the edge
   T value;
+  T new_value;
 
   // Value used by the edge, seen by the world
   // Exeriment: Attempting to minimize methods.
   // Attempting to get rid of get_value()..
-  T effective_value;
+  T effective_value;	// dropoff value = 0
 
   // Nodes know about these.
   Node<T> *n;	// Link to next nodes

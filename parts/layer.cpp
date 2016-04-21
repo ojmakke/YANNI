@@ -27,15 +27,14 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "layer.h"
 #include "node.h"
 #include "../activation/activation.h"
+#include "../helper/console_printer.h"
 
 template<typename T>
 Layer<T>::Layer(size_t size, ActivationEnum switching_function)
 {
   if(size == 0)
     {
-//      fprintf(stderr, "Error in initializing Layer. Size is 0.\
-//              Expect crash...\n");
-              return;
+      return;
     }
   for(size_t i = 0; i < size; i++)
     {
@@ -188,10 +187,31 @@ void Layer<T>::calc_node_delta()
 
           // summation( w_exiting_edges*delta_of_next_neuron*this_neuron_derivative
           const Node<T> *j_node = j_edge->n_;
+          if(fabs(j_node->delta_) > 1000)
+            {
+ //             ConsolePrinter::instance().feedback_write("High Next Node");
+ //             abort();
+            }
+          if(fabs(j_edge->value_) > 100)
+            {
+  //            ConsolePrinter::instance().feedback_write("High Next Edge");
+  //            abort();
+            }
           delta += j_edge->value_ * (j_node->delta_);
         }
       Activation<T> *f = i_node->F;
-      delta *= f->df(i_node->fnet_);
+      delta *= f->df(i_node->fnet_);;
+      if(isnan(delta))
+	{
+//	   ConsolePrinter::instance().feedback_write("High Delta");
+//	   abort();
+	}
+
+      if(fabs(delta) > 10)
+	{
+//	   ConsolePrinter::instance().feedback_write("High Delta10");
+//	   abort();
+	}
       i_node->req_delta(delta);
     }
 
