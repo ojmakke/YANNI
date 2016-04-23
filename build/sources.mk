@@ -26,6 +26,7 @@ SUBDIRS := \
 Images \
 . \
 helper \
+interpreter \
 networks \
 parts \
 

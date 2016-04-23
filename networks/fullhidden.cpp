@@ -25,12 +25,11 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include <memory>
 #include <math.h>
 
-#include "../common.h"
-#include "../parts/edge.h"
-#include "../parts/node.h"
-#include "../parts/layer.h"
-#include "../helper/console_printer.h"
-#include "../helper/fileio.h"
+#include "common.h"
+#include "parts/edge.h"
+#include "parts/node.h"
+#include "parts/layer.h"
+#include "fileio/fileio.h"
 #include "fullhidden.h"
 
 void clear_2d(double** data, size_t dim);
@@ -462,8 +461,9 @@ void FullHidden<T>::update_weights(T rate)
 }
 
 template<typename T>
-void FullHidden<T>::input_file_alloc(std::string filename)
+NNInfo_uptr FullHidden<T>::input_file_alloc(std::string filename)
 {
+  NNInfo_uptr ret = default_info();
   Layer<T> *layer = all_layers.at(0);
 
   if(input_allocated)
@@ -473,10 +473,12 @@ void FullHidden<T>::input_file_alloc(std::string filename)
     }
   // ASSUMPTION
   // This function is read before output.
-  data_in_length = FileIO::get_text_1D(filename,
-                                       layer->nodes.size()-1,
-                                       (double*** )&input_set);
+  ret->stack = FileIO::get_text_1D(filename,
+				   layer->nodes.size()-1,
+				   (double*** )&input_set,
+				   &data_in_length);
 
+  append_info(ret);
   if(data_in_length > 0)
     {
       input_allocated = true;
@@ -485,27 +487,39 @@ void FullHidden<T>::input_file_alloc(std::string filename)
     {
       input_allocated = false; // in case bad file was loaded after
     }
+  return ret;
 }
 
 template<typename T>
-void FullHidden<T>::output_file_alloc(std::string filename)
+NNInfo_uptr FullHidden<T>::output_file_alloc(std::string filename)
 {
+  NNInfo_uptr ret = default_info();
   Layer<T> *layer = all_layers.at(all_layers.size()-1);
 
   if(output_allocated)
     {
       clear_2d(output_set, data_out_length);
     }
+
   // ASSUMPTION
   // input_file_alloc called first
-  data_out_length = FileIO::get_text_1D(filename,
-                                        layer->nodes.size(),
-                                        (double*** )&output_set );
+  // Execute the function and get the result
+  ret->stack = FileIO::get_text_1D(filename,
+				   layer->nodes.size(),
+				   (double*** )&output_set,
+				   &data_out_length);
+  // stack the error if stack has error
+  append_info(ret);
+  LEAVE_ON_ERROR(ret);
+
   if(data_out_length != data_in_length)
     {
-      ConsolePrinter::instance().feedback_write(
-            "File mismatch. Future looks grim     ");
+      ret->result = NNERROR;
+      ret->message = MSG::FILE_MISMATCH;
     }
+
+  // TODO
+  // Verify memory allocation and release is correct. Flags are ugly.
   if(data_out_length > 0)
     {
       output_allocated = true;
@@ -514,6 +528,7 @@ void FullHidden<T>::output_file_alloc(std::string filename)
     {
       output_allocated = false;
     }
+  return ret;
 }
 
 void clear_2d(double** data, size_t dim)

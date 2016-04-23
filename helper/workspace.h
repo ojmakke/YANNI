@@ -28,7 +28,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 
 #include "console_printer.h"
-#include "parser.h"
+#include "interpreter/parser.h"
 #include "../networks/fullhidden.h"
 
 class Workspace

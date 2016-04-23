@@ -26,6 +26,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #define PARTS_EDGE_H_
 
 #include "edge_phantom.h"
+#include "common.h"
 
 template<typename T>
 class Edge: Edge_Phantom<T>

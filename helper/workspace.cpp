@@ -24,10 +24,10 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include <cmath>
 
 #include "workspace.h"
-#include "../Images/bmp_handler.h"
+#include "Images/bmp_handler.h"
 #include "console_printer.h"
-#include "../networks/fullhidden.h"
-#include "../activation/activation.h"
+#include "networks/fullhidden.h"
+#include "activation/activation.h"
 
 extern void run_tests();
 

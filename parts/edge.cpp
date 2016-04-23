@@ -27,7 +27,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "edge.h"
 #include "node.h"
-#include "../helper/nnhelper.hpp"
+#include "helper/nnhelper.hpp"
 
 extern NNHelper<double> nnhelper;
 

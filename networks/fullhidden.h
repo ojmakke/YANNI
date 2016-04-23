@@ -25,11 +25,13 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef NETWORKS_FULLHIDDEN_H_
 #define NETWORKS_FULLHIDDEN_H_
 
-#include "classic_network.h"
-#include "../parts/layer.h"
-#include "../activation/activation.h"
-#include "../activation/tanh.hpp"
 #include <memory>
+#include "common.h"
+#include "classic_network.h"
+#include "parts/layer.h"
+#include "activation/activation.h"
+#include "activation/tanh.hpp"
+
 
 template<typename T>
 class FullHidden
@@ -70,8 +72,8 @@ public:
   // size will be assumed to equal the output layer.
   T calc_error(T *target);
   //TODO move to interface
-  void input_file_alloc(std::string filename);
-  void output_file_alloc(std::string filename);
+  NNInfo_uptr input_file_alloc(std::string filename);
+  NNInfo_uptr output_file_alloc(std::string filename);
   bool input_allocated;
   bool output_allocated;
 

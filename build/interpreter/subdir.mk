@@ -4,23 +4,17 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../helper/console_printer.cpp \
-../helper/randomizer.cpp \
-../helper/workspace.cpp 
+../interpreter/parser.cpp 
 
 OBJS += \
-./helper/console_printer.o \
-./helper/randomizer.o \
-./helper/workspace.o 
+./interpreter/parser.o 
 
 CPP_DEPS += \
-./helper/console_printer.d \
-./helper/randomizer.d \
-./helper/workspace.d 
+./interpreter/parser.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
-helper/%.o: ../helper/%.cpp
+interpreter/%.o: ../interpreter/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
 	g++ -I"/home/gnunets/workspace/GNUNets" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"

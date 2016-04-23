@@ -24,10 +24,10 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <memory>
 
-#include "../common.h"
-#include "../parts/edge.h"
-#include "../parts/node.h"
-#include "../parts/layer.h"
+#include "common.h"
+#include "parts/edge.h"
+#include "parts/node.h"
+#include "parts/layer.h"
 #include "taylornet.h"
 
 void clear_2d(double** data, size_t dim);

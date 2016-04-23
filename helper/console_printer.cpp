@@ -23,8 +23,8 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include <string.h>
 #include <stdlib.h>
 
-#include "../common.h"
-#include "parser.h"
+#include "common.h"
+#include "interpreter/parser.h"
 #include "console_printer.h"
 #include "workspace.h"
 
