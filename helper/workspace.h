@@ -43,8 +43,6 @@ public:
 
 private:
   bool hasStarted;
-  double input_scale; // divide input by this
-  double output_scale; // multiply output by this
 
   std::vector<FullHidden<double> *> networks;
   FullHidden<double> *current_network;
@@ -52,7 +50,6 @@ private:
   Workspace();
   Workspace(Workspace const&);
   void operator=(Workspace const&);
-  bool activate_network(int net_id);
   void execute(Parser& parser);
 };
 

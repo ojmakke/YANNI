@@ -21,6 +21,8 @@ You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
+
 #include <memory>
 #include "common.h"
 
@@ -45,5 +47,31 @@ void append_info(NNInfo_uptr& info)
     {
       info->message = "";
       info->result = NNOK;
+    }
+}
+
+// Keeps drilling through stack to get the deepest error message
+// If stack is shallow, returns the string
+// Otherwise, returns a stack of the messages and releases the stack
+std::string extract_release_error(NNInfo_uptr& info)
+{
+  if(info->result == NNOK)
+    {
+      return "";
+    }
+  else
+    {
+      if(info->stack ==  nullptr)
+	{
+	  return info->message;
+	}
+      else
+	{
+	  info->message += "\n";
+	  info->message += extract_release_error(info->stack);
+	  info->stack.release();
+	  info->stack = nullptr;
+	  return info->message;
+	}
     }
 }

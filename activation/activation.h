@@ -25,6 +25,8 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef ACTIVATION_H_
 #define ACTIVATION_H_
 
+#include <string>
+
 /** Activation function abstract structure */
 template<typename T>
 class Activation
@@ -49,6 +51,17 @@ enum ActivationEnum
   FIXEDINPUT,
   POWERN,
 };
+
+// for the interpreter
+namespace FUNCS
+{
+  const std::string TANH = "tanh";
+  const std::string LOGISTIC = "logistic";
+  const std::string RECTIFY = "rectify";
+  const std::string STEP = "step";
+  const std::string FIXEDINPUT = "fixedinput";
+  const std::string POWERN = "powern";
+}
 
 // Tell compiler which classes to build
 template class Activation<double>;

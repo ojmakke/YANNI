@@ -48,6 +48,7 @@ public:
   bool interact();
   void input_write(int c);
   void feedback_rewrite(std::string feedback);
+  void feedback_overwrite(std::string feedback);
   void feedback_write(std::string feedback);
   void network_write(std::string info);
   void network_write_nets(std::vector<FullHidden<double> *>& nets);
@@ -60,6 +61,8 @@ private:
   size_t ii_input;    // index to input buffer;
   size_t vi_feedback; // index to feedback window buffer, vertical
   size_t vi_network;  // index to network buffer, vertical
+  size_t feedback_width; // width of feedback window
+  size_t network_width; // width of network window
   ConsolePrinter();
 
   ConsolePrinter(ConsolePrinter const&);        // Don't Implement

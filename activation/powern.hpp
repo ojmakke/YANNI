@@ -55,7 +55,7 @@ public:
       }
     if(N_ == (T) 0) return (T) 0;
 
-    return (T) ((T) N_)*y/((T) N_);
+    return (T) ((T) N_)*y/((T) fnet); // n*x^(n-1) = n*x^n/x
   }
   ~PowerN<T>(){}
 

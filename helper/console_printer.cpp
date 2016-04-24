@@ -122,7 +122,9 @@ void ConsolePrinter::init_screen()
 
   w_input = create_newwin(4, col, row-4, 0);
   w_feedback = create_newwin(row-4, col/2-1,0,0);
+  feedback_width = col/2 - 4; // account for the borders
   w_network = create_newwin(row-4, col/2+1, 0,col/2-1);
+  network_width = col/2 -4; //account for the borders
   draw_feedback();
   draw_network();
   draw_input();
@@ -327,7 +329,25 @@ void ConsolePrinter::feedback_rewrite(std::string feedback)
     {
       vi_feedback = 10;
     }
-  mvwprintw(w_feedback, vi_feedback, 2, "%s    ", feedback.c_str());
+
+  for(size_t ii = 0; ii < feedback_width; ii++)
+    {
+      mvwprintw(w_feedback, vi_feedback, 2+ii, " ");
+    }
+  wrefresh(w_feedback);
+
+  mvwprintw(w_feedback, vi_feedback, 2, "%s", feedback.c_str());
+  wrefresh(w_feedback);
+}
+
+void ConsolePrinter::feedback_overwrite(std::string feedback)
+{
+  if(vi_feedback > (size_t) LINES - INPUTHEIGHT - 1)
+    {
+      vi_feedback = 10;
+    }
+
+  mvwprintw(w_feedback, vi_feedback, 2, "%s", feedback.c_str());
   wrefresh(w_feedback);
 }
 

@@ -61,5 +61,6 @@ namespace MSG
 }
 NNInfo_uptr default_info();
 void append_info(NNInfo_uptr& info);
+std::string extract_release_error(NNInfo_uptr& info);
 
 #endif // COMMON_H

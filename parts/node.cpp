@@ -123,6 +123,16 @@ void Node<T>::connect_to(Node<T> *node)
   return;
 }
 
+template<typename T>
+void Node<T>::reset_backward_weights()
+{
+  if(is_input) return;
+  for(size_t ii = 0; ii < backward.size(); ii++)
+    {
+      Edge<T> *edge_ii = backward.at(ii);
+      edge_ii->reset_weight();
+    }
+}
 
 template<typename T>
 void Node<T>::set_output(T output)

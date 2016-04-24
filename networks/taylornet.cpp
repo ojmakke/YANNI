@@ -57,13 +57,13 @@ TaylorNet<T>::TaylorNet(size_t *layers,
       Layer<T> *i_layer;
 
       // only last layer is POWERN
-      if(i < layer_count -1)
+      if(i == 1)
 	{
-	  i_layer = new Layer<T>(layers[i], TANH);
+	  i_layer = new Layer<T>(layers[i], POWERN);
 	}
       else
 	{
-	  i_layer = new Layer<T>(layers[i], POWERN);
+	  i_layer = new Layer<T>(layers[i], TANH);
 	}
 
       if(i == 0) // make input

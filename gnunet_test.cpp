@@ -60,9 +60,9 @@ void delete_2d(float **pointer, const float X)
 void run_tests()
 {
 //  fprintf(stdout, "Creating 2D arrays:\n");
-  size_t layers_sizes[] = {2,2,5,1};
+  size_t layers_sizes[] = {2,5,5,1};
 
-  ActivationEnum switching[] = {TANH, TANH, TANH, TANH};
+  ActivationEnum switching[] = {TANH, TANH, TANH, POWERN};
 
 //  FullHidden<double> network(layers_sizes, 4, switching);
 
@@ -114,6 +114,26 @@ void run_tests()
 
   {
   double in[] = {0.8, 0.8};
+  network.set_inputs(in);
+  network.forward_propagate();
+  std::unique_ptr<double[]> out = network.get_output();
+
+  size_t out_len = network.output_layer_size_;
+
+  for(size_t ii = 0; ii < out_len; ii++)
+    {
+      std::string outstr = "Output ";
+      double val = out[ii];
+      outstr.append(std::to_string(ii))
+                    .append(": Value: ")
+		    .append(std::to_string(val));
+
+      ConsolePrinter::instance().feedback_write(outstr);
+    }
+  }
+
+  {
+  double in[] = {0.1, 0.05};
   network.set_inputs(in);
   network.forward_propagate();
   std::unique_ptr<double[]> out = network.get_output();

@@ -46,6 +46,11 @@ public:
          * *layers: Array for the size of each layer.
          */
   int self_id;
+  bool input_allocated;
+  bool output_allocated;
+  T input_scale;	// divide input by this;
+  T output_scale;	// Multiply output by this
+
   FullHidden();
   FullHidden(size_t *layers,
              size_t layer_count,
@@ -62,6 +67,8 @@ public:
 	  T epoch,
 	  T learning_rate,
 	  double dropoff);
+  virtual T retrain();
+  virtual void reset_weights();
   void forward_propagate();
   // Assumed to be equal to all_layers - 1, due to bias
   void set_inputs(T *inputs);
@@ -74,8 +81,6 @@ public:
   //TODO move to interface
   NNInfo_uptr input_file_alloc(std::string filename);
   NNInfo_uptr output_file_alloc(std::string filename);
-  bool input_allocated;
-  bool output_allocated;
 
 protected:
   T** input_set; // Tripple because allocation happens in function.
@@ -88,13 +93,18 @@ protected:
   // the traiing set
   size_t data_in_length;
   size_t data_out_length;
+  std::vector<Layer<T> *> all_layers;
+  T learning_rate;
+  T learning_target;
+  T epoch;
+  T dropoff;
+  T error_now;
+  T previous_error;
+
   virtual void back_propagate(T rate);
   virtual void update_weights(T rate);
   virtual void forward_propagate_test();
-  std::vector<Layer<T> *> all_layers;
-  T learning_rate;
-  T error_now;
-  T previous_error;
+
 };
 
 #endif /* NETWORKS_FULLHIDDEN_H_ */

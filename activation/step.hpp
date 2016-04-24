@@ -48,7 +48,7 @@ public:
   {
     if((double) fnet == 0.0)
       {
-        fprintf(stderr, "Invalid derivative for Step\n");
+ //       fprintf(stderr, "Invalid derivative for Step\n");
         return (T) 0.0;
       }
     return (T) 0.0;

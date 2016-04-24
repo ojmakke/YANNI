@@ -43,7 +43,9 @@ FullHidden<T>::FullHidden():
   input_layer_size_(this->input_layer_size),
   output_layer_size_(this->output_layer_size),
   input_allocated(false),
-  output_allocated(false)
+  output_allocated(false),
+  input_scale(1.0),
+  output_scale(1.0)
 {
   FullHidden::id++;
   self_id     = FullHidden::id;
@@ -70,6 +72,8 @@ FullHidden<T>::FullHidden(size_t *layers,
 			  output_layer_size_(this->output_layer_size),
 			  input_allocated(false),
 			  output_allocated(false),
+			  input_scale(1.0),
+			  output_scale(1.0),
 			  input_set(nullptr),
 			  output_set(nullptr),
 			  data_in_length(0),
@@ -129,9 +133,30 @@ FullHidden<T>::FullHidden(size_t *layers,
 }
 
 template<typename T>
+void FullHidden<T>::reset_weights()
+{
+  // loop through backward edges
+  for(size_t ii = 1; ii < all_layers.size(); ii++)
+    {
+      Layer<T> *layer_ii = all_layers.at(ii);
+      for(size_t jj = 0; jj < layer_ii->nodes.size(); jj++)
+	{
+	  Node<T> *node_jj = layer_ii->nodes.at(jj);
+	  node_jj->reset_backward_weights();
+	}
+    }
+}
+
+template<typename T>
 T FullHidden<T>::train()
 {
   return (T) 0.01; 		// not implemented
+}
+
+template<typename T>
+T FullHidden<T>::retrain()
+{
+  train(learning_target, epoch, learning_rate, dropoff);
 }
 
 template<typename T>
@@ -142,6 +167,9 @@ T FullHidden<T>::train(T target_error,
 {
   T error;
   this->learning_rate = learning_rate;
+  this->epoch = epoch;
+  this->learning_target = learning_target;
+  this->dropoff = dropoff;
   for(size_t study = 0; study < epoch; study++)
     {
       // We will calculate error as we go. Not the true error, but
@@ -237,7 +265,7 @@ T FullHidden<T>::train(T target_error,
       result.append(std::to_string(study)
                     .append(" is ")
                     .append(std::to_string(error)));
-      ConsolePrinter::instance().feedback_rewrite(result);
+      ConsolePrinter::instance().feedback_overwrite(result);
       if(error <= target_error)
         {
           return error;
