@@ -27,7 +27,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "edge.h"
 #include "node.h"
-#include "../helper/nnhelper.hpp"
+#include "helper/nnhelper.hpp"
 
 extern NNHelper<double> nnhelper;
 
@@ -38,6 +38,7 @@ void Edge<T>::set_value(T edge_value)
     {
       this->value = edge_value;
       this->effective_value = this->value;
+      this->new_value = (T) 0.0;
     }
 }
 
@@ -86,12 +87,62 @@ void Edge<T>::req_rand_drop_off(T percentage)
 }
 
 
-
+// batch training. Accumulate total error
 template<typename T>
-void Edge<T>::req_value(T edge_value)
+void Edge<T>::accumulate(T edge_delta)
+{
+  if(edge_delta == 0)
+    {
+      return;
+    }
+  //TODO: Ask molecule
+  if(this->is_connected)
+    {
+      this->new_value += edge_delta;
+    }
+
+  if(this->new_value == 0 && edge_delta != 0)
+    {
+      return;
+    }
+
+  if(this->new_value == 0)
+    {
+      return;
+    }
+}
+
+// batch training. Apply accumulated total error
+template<typename T>
+void Edge<T>::confirm_value()
 {
   //TODO: Ask molecule
-  set_value(edge_value);
+  if(this->is_connected)
+    {
+      set_value(this->value - this->new_value);
+    }
+}
+
+// batch training. Apply accumulated total error
+template<typename T>
+T Edge<T>::get_value_test()
+{
+  //TODO: Ask molecule
+  if(this->is_connected)
+    {
+      return (this->value_ - this->new_value);
+    }
+}
+
+// batch training. Apply accumulated total error
+template<typename T>
+void Edge<T>::undo_value()
+{
+  //TODO: Ask molecule
+  if(this->is_connected)
+    {
+      this->new_value = 0.0;
+    }
 }
 
 template<typename T>
@@ -102,6 +153,7 @@ Edge<T>::Edge():value_(this->effective_value)
   p_ = this->p;
   n_ = this->n;
   this->is_connected = true;
+  this->new_value = 0.0;
   set_value(nnhelper.randomizer.get_rand());
 }
 
@@ -113,6 +165,7 @@ Edge<T>::Edge(T v):value_(this->effective_value)
   p_ = this->p;
   n_ = this->n;
   this->value = v;
+  this->new_value = 0.0;
   this->is_connected = true;
 }
 
@@ -128,6 +181,12 @@ void Edge<T>::set_prev(Node<T> * const prev)
 {
   this->p = prev;
   p_ = this->p;
+}
+
+template<typename T>
+void Edge<T>::reset_weight()
+{
+  set_value(nnhelper.randomizer.get_rand());
 }
 
 // Tell compiler what to build

@@ -25,21 +25,19 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "node.h"
 #include "node_phantom.h"
 #include "edge.h"
-#include "../activation/activation.h"
-#include "../activation/logistic.hpp"
-#include "../activation/step.hpp"
-#include "../activation/rectify.hpp"
-#include "../activation/tanh.hpp"
-#include "../activation/fixedinput.hpp"
-#include "../helper/nnhelper.hpp"
+#include "activation/activation.h"
+#include "activation/logistic.hpp"
+#include "activation/step.hpp"
+#include "activation/rectify.hpp"
+#include "activation/tanh.hpp"
+#include "activation/fixedinput.hpp"
+#include "activation/powern.hpp"
+#include "helper/nnhelper.hpp"
+#include "common.h"
 
 
 extern NNHelper<double> nnhelper;
-//template<typename T>
-//Node<T>::Node(size_t outputs, size_t inputs, ActivationEnum type)
-//{
-//
-//}
+
 template<typename T>
 Node<T>::Node(ActivationEnum type):
   Node_Phantom<T>(),
@@ -77,6 +75,11 @@ Node<T>::Node(ActivationEnum type):
         F = new FixedInput<T>();
         break;
       }
+    case POWERN:
+      {
+	F = new PowerN<T>();
+	break;
+      }
     }
 }
 
@@ -86,53 +89,50 @@ Node<T>::~Node()
   // Remember, as you see in connectTo(), edges are created in node.
   // Therefore, node clears them.
   // The "Next edge
-
-  //	fprintf(stdout, "Node destructor called\n");
   if(forward.size() == 0)
     {
-      //		fprintf(stdout, "No forward edges to delete\n");
+
     }
   else
     {
       for(size_t i = 0; i < forward.size(); i++)
         {
-          //			fprintf(stdout, "Deleting forwad edge %d\n", (int) i);
           Edge<T> *edge = forward.at(i);
           delete(edge);
         }
     }
   delete F;
-
-  //	// Now clean the vectors
-  //	typename std::vector<Edge<T>*>::iterator it;
-  //	for(it = forward.begin(); it != forward.end(); it++)
-
 }
 
 template<typename T>
 void Node<T>::connect_to(Node<T> *node)
 {
-  //	fprintf(stdout, "Creating edge\n");
   // Create an edge
   Edge<T> *edge = new Edge<T>();
 
   edge->set_value((T) nnhelper.randomizer.get_rand());
-  //	fprintf(stdout, "Some random number: %f\n", (float) edge->get_value());
   edge->set_next(node);
   edge->set_prev(this);
 
   // Store the edge in both nodes
   forward.push_back(edge);
-  //	fprintf(stdout, "Setting edge in next node\n");
 
   // This node is behind the next node
   std::vector<Edge<T> *> *backward = &(node->backward);
-  //	fprintf(stdout, "Edge obtained\n");
   backward->push_back(edge);
-  //	fprintf(stdout, "Edge connected\n");
   return;
 }
 
+template<typename T>
+void Node<T>::reset_backward_weights()
+{
+  if(is_input) return;
+  for(size_t ii = 0; ii < backward.size(); ii++)
+    {
+      Edge<T> *edge_ii = backward.at(ii);
+      edge_ii->reset_weight();
+    }
+}
 
 template<typename T>
 void Node<T>::set_output(T output)
@@ -157,7 +157,6 @@ T Node<T>::calc_new_output()
   // Input doesn't have input edges.
   if(is_input)
     {
-      //		fprintf(stdout, "Returning y = %f\n", y);
       return y_;
     }
 
@@ -169,6 +168,38 @@ T Node<T>::calc_new_output()
       // previous node connecting to current node through the edge
       const Node<T>* i_node = i_edge->p_;
       this->fnet += i_edge->value_ * i_node->y_;
+    }
+  this->y = F->f(this->fnet);
+  return (T) this->y;	// Optional. Doesn't have to be used.
+}
+
+template<typename T>
+T Node<T>::calc_new_output_test()
+{
+  // Input doesn't have input edges.
+  if(is_input)
+    {
+      return y_;
+    }
+
+  this->fnet = (T) 0.0;
+  // Loop through all edges
+  for(size_t i = 0; i < backward.size(); i++)
+    {
+      Edge<T> *i_edge = backward.at(i);
+      // previous node connecting to current node through the edge
+      const Node<T>* i_node = i_edge->p_;
+      if(i_edge->get_value_test() == i_edge->value_)
+	{
+	  int breakp = 0;
+	  breakp++;
+	}
+      else
+	{
+	  int breakp = 0;
+	  breakp++;
+	}
+      this->fnet += i_edge->get_value_test() * i_node->y_;
     }
   this->y = F->f(this->fnet);
   return (T) this->y;	// Optional. Doesn't have to be used.

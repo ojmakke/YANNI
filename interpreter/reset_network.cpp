@@ -1,7 +1,7 @@
 /*
- * gnunets.cpp
+ * reset_network.cpp
  *
- *  Created on : Mar 19, 2016
+ *  Created on : Apr 24, 2016
  *      Author : Omar Makke (O jMakke)
  *      Email  : ojmakke@yahoo.com
 
@@ -19,30 +19,34 @@ GNU General Public License for more details.
 You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <string>
+#include <vector>
 
-#include <string.h>
-#include <stdlib.h>
-#include <iostream>
-
-#include "activation/tanh.hpp"
-#include "activation/logistic.hpp"
-#include "activation/step.hpp"
-#include "activation/rectify.hpp"
-#include "helper/nnhelper.hpp"
-#include "helper/console_printer.h"
+#include "activation/activation.h"
+#include "common.h"
 #include "networks/fullhidden.h"
-
+#include "activation/activation.h"
+#include "parser.h"
 #include "Images/bmp_handler.h"
 
-#define CONTROL 0
-#define INPUT 1
+const std::string NOTREADY = "Network not initialized.";
 
-extern void run_tests();
-NNHelper<double> nnhelper;
-
-int main(int argc, char* argv[])
+NNInfo_uptr reset_network(
+    const Parser& parser,
+    FullHidden<double>* const net)
 {
-  ConsolePrinter::instance().interact();
-//  run_tests();
+  NNInfo_uptr ret = default_info();
+  size_t params = parser.p_size;
+
+  if( net == nullptr)
+    {
+      ret->message = NOTREADY;
+      ret->result = NNERROR;
+      return ret;
+    }
+  net->reset_weights();
+  ret->result = NNOK;
+  return ret;
 }
+
 

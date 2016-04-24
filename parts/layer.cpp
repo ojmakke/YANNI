@@ -26,16 +26,15 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "layer.h"
 #include "node.h"
-#include "../activation/activation.h"
+#include "activation/activation.h"
+#include "common.h"
 
 template<typename T>
 Layer<T>::Layer(size_t size, ActivationEnum switching_function)
 {
   if(size == 0)
     {
-//      fprintf(stderr, "Error in initializing Layer. Size is 0.\
-//              Expect crash...\n");
-              return;
+      return;
     }
   for(size_t i = 0; i < size; i++)
     {
@@ -107,12 +106,15 @@ std::vector<T> Layer<T>::get_layer_outputs()
 
 // Note: Size is assumed to be = to nodes.size() - 1, and bias already exits.
 template<typename T>
-int Layer<T>::fix_layer_inputs(T *input_array)
+NNInfo_uptr Layer<T>::fix_layer_inputs(T *input_array)
 {
+  NNInfo_uptr ret = default_info();
   if(nodes.size() == 0)
     {
   //    fprintf(stderr, "Incorrect input layer size\n");
-      return 0;
+      ret->message = MSG::LAYER_SIZE_ERROR;
+      ret->result = NNERROR;
+      return ret;
     }
 
   Node<T> *i_node;
@@ -123,18 +125,21 @@ int Layer<T>::fix_layer_inputs(T *input_array)
       i_node->req_output(input_array[i]);
       i_node->is_input = true;
     }
-  return 1;
+  ret->result = NNOK;
+  return ret;
 }
 
 template<typename T>
-int Layer<T>::fix_some_layer_inputs(T* input_array_values,
+NNInfo_uptr Layer<T>::fix_some_layer_inputs(T* input_array_values,
 				    size_t *input_array_index,
 				    size_t input_size)
 {
+  MAKE_NNINFO(ret);
   if(input_size > nodes.size() || nodes.size() == 0)
     {
-  //    fprintf(stderr, "Incorrect input size, too large\n");
-      return 0;
+      ret->message = MSG::LAYER_SIZE_ERROR;
+      ret->result = NNERROR;
+      return ret;
     }
 
   Node<T> *i_node;
@@ -142,13 +147,15 @@ int Layer<T>::fix_some_layer_inputs(T* input_array_values,
     {
       if(input_array_index[i] >= nodes.size())
         {
-      //    fprintf(stderr, "Incorrect value in input\n");
-          return 0;
+	  ret->message = MSG::INPUT_ERROR;
+	  ret->result = NNERROR;
+          return ret;
         }
       i_node =nodes.at(input_array_index[i]);
       i_node->req_output(input_array_values[i]);
     }
-  return 1; // success
+  ret->result = NNOK;
+  return ret; // success
 }
 
 template<typename T>
@@ -191,7 +198,7 @@ void Layer<T>::calc_node_delta()
           delta += j_edge->value_ * (j_node->delta_);
         }
       Activation<T> *f = i_node->F;
-      delta *= f->df(i_node->fnet_);
+      delta *= f->df(i_node->fnet_);;
       i_node->req_delta(delta);
     }
 

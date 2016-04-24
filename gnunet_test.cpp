@@ -31,6 +31,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "activation/rectify.hpp"
 #include "helper/nnhelper.hpp"
 #include "networks/fullhidden.h"
+#include "networks/taylornet.h"
 #include "helper/console_printer.h"
 
 
@@ -61,12 +62,97 @@ void run_tests()
 //  fprintf(stdout, "Creating 2D arrays:\n");
   size_t layers_sizes[] = {2,5,5,1};
 
-  ActivationEnum switching[] = {TANH, TANH, TANH, TANH};
+  ActivationEnum switching[] = {TANH, TANH, TANH, POWERN};
 
-  FullHidden<double> network(layers_sizes, 4, switching);
-  network.input_file_alloc("../logicinput.txt");
-  network.output_file_alloc("../logicoutput.txt");
-  network.train(0.001,20000,0.01, 0.0);
+//  FullHidden<double> network(layers_sizes, 4, switching);
+
+  TaylorNet<double> network(layers_sizes, 4);
+
+  network.input_file_alloc("logicinput.txt");
+  network.output_file_alloc("logicoutput.txt");
+  network.train(0.001,20000,0.005, 0.0);
+
+  {
+  double in[] = {0.2, 0.7};
+  network.set_inputs(in);
+  network.forward_propagate();
+  std::unique_ptr<double[]> out = network.get_output();
+
+  size_t out_len = network.output_layer_size_;
+
+  for(size_t ii = 0; ii < out_len; ii++)
+    {
+      std::string outstr = "Output ";
+      double val = out[ii];
+      outstr.append(std::to_string(ii))
+                    .append(": Value: ")
+		    .append(std::to_string(val));
+
+      ConsolePrinter::instance().feedback_write(outstr);
+    }
+  }
+
+  {
+  double in[] = {0.7, 0.2};
+  network.set_inputs(in);
+  network.forward_propagate();
+  std::unique_ptr<double[]> out = network.get_output();
+
+  size_t out_len = network.output_layer_size_;
+
+  for(size_t ii = 0; ii < out_len; ii++)
+    {
+      std::string outstr = "Output ";
+      double val = out[ii];
+      outstr.append(std::to_string(ii))
+                    .append(": Value: ")
+		    .append(std::to_string(val));
+
+      ConsolePrinter::instance().feedback_write(outstr);
+    }
+  }
+
+  {
+  double in[] = {0.8, 0.8};
+  network.set_inputs(in);
+  network.forward_propagate();
+  std::unique_ptr<double[]> out = network.get_output();
+
+  size_t out_len = network.output_layer_size_;
+
+  for(size_t ii = 0; ii < out_len; ii++)
+    {
+      std::string outstr = "Output ";
+      double val = out[ii];
+      outstr.append(std::to_string(ii))
+                    .append(": Value: ")
+		    .append(std::to_string(val));
+
+      ConsolePrinter::instance().feedback_write(outstr);
+    }
+  }
+
+  {
+  double in[] = {0.1, 0.05};
+  network.set_inputs(in);
+  network.forward_propagate();
+  std::unique_ptr<double[]> out = network.get_output();
+
+  size_t out_len = network.output_layer_size_;
+
+  for(size_t ii = 0; ii < out_len; ii++)
+    {
+      std::string outstr = "Output ";
+      double val = out[ii];
+      outstr.append(std::to_string(ii))
+                    .append(": Value: ")
+		    .append(std::to_string(val));
+
+      ConsolePrinter::instance().feedback_write(outstr);
+    }
+  }
+
+  while(1);
 
 }
 

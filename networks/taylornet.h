@@ -1,8 +1,10 @@
 /*
- * gnunets.cpp
+ * fullhidden.h
  *
  *  Created on : Mar 19, 2016
  *      Author : Omar Makke (O jMakke)
+ *      ojQutoe: "Software bugs and hell are similar. Painful, punishing,
+ *      	  and you cannot prove they don't exist"
  *      Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets
@@ -20,29 +22,24 @@ You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string.h>
-#include <stdlib.h>
-#include <iostream>
+#ifndef TAYLORNET_H_
+#define TAYLORNET_H_
 
-#include "activation/tanh.hpp"
-#include "activation/logistic.hpp"
-#include "activation/step.hpp"
-#include "activation/rectify.hpp"
-#include "helper/nnhelper.hpp"
-#include "helper/console_printer.h"
-#include "networks/fullhidden.h"
+#include "classic_network.h"
+#include "../parts/layer.h"
+#include "../activation/activation.h"
+#include "fullhidden.h"
+#include "../activation/powern.hpp"
+#include <memory>
 
-#include "Images/bmp_handler.h"
-
-#define CONTROL 0
-#define INPUT 1
-
-extern void run_tests();
-NNHelper<double> nnhelper;
-
-int main(int argc, char* argv[])
+template<typename T>
+class TaylorNet : public FullHidden<T>
 {
-  ConsolePrinter::instance().interact();
-//  run_tests();
-}
+public:
+  TaylorNet();
+  TaylorNet(size_t *layers,
+             size_t layer_count);
+  ~TaylorNet();
+};
 
+#endif /* TAYLORNET_H_ */

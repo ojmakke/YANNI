@@ -58,6 +58,8 @@ public:
   ~Node();
 
   T calc_new_output(); // Calculates new output from input
+  T calc_new_output_test(); // Calculates new output from input
+  void reset_backward_weights();
 
   /*
          * This will modify next nodes edge "backward" vector,

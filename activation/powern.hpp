@@ -1,9 +1,10 @@
 /*
- * step.hpp
+ * powern.hpp
  *
  *  Created on : Mar 17, 2016
- *      Author : Omar Makke (Omar jMakke)
- *      ojQuote: "Freedom of speech? More like freedom to impeach!"
+ *      Author : Omar Makke (O jMakke)
+ *      ojQuote: "The quality of code is inversely proportional
+ *      	  to the temperature outside."
  *      Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets
@@ -21,41 +22,52 @@ You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STEP_HPP_
-#define STEP_HPP_
+#ifndef POWERN_HPP_
+#define POWERN_HPP_
 
 #include "activation.h"
-#include <stdio.h>
 #include <math.h>
 
 template <typename T>
-class  Step : public Activation<T>
+class  PowerN : public Activation<T>
 {
 public:
+  static int N;
+  PowerN()
+  {
+    N_ = N++;
+  }
   /* <T> is casted to double and then back to <T> */
   T f(T fnet)
   {
-    if((double) fnet < 0.0)
-      {
-        return (T) 0.0;
-      }
-    return (T) 1.0;
+    y = (T) pow(fnet, N_);
+    fnet_old = fnet;
+    return y;
   }
   /**
-         *  Derivative. T will be casted double and back from double
-         *   */
+   *  Derivative of tanh. T will be casted double and back from double
+   *   */
   T df(T fnet)
   {
-    if((double) fnet == 0.0)
+    if(fnet != fnet_old)
       {
- //       fprintf(stderr, "Invalid derivative for Step\n");
-        return (T) 0.0;
+        y = f(fnet);
       }
-    return (T) 0.0;
-  }
-  ~Step<T>(){}
-};
-template class Step<double>;
-template class Step<float>;
+    if(N_ == (T) 0) return (T) 0;
 
-#endif /* STEP_HPP_ */
+    return (T) ((T) N_)*y/((T) fnet); // n*x^(n-1) = n*x^n/x
+  }
+  ~PowerN<T>(){}
+
+private:
+  int N_;
+  T fnet_old;
+  T y;
+};
+
+template<typename T>
+int PowerN<T>::N = 0;
+
+template class PowerN<double>;
+template class PowerN<float>;
+#endif /* POWERN_HPP_ */

@@ -28,12 +28,20 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include <iostream>
 #include <string.h>
 
-#include "../helper/console_printer.h"
+#include "common.h"
+#include "helper/console_printer.h"
 
 #define DELIMITER ','
 
 namespace FileIO
 {
+  typedef struct Table_def
+  {
+    size_t rows = 0;
+    size_t cols = 0;
+    const double** data = nullptr;
+  } Table;
+
   unsigned int char_count(std::string string, char c)
   {
     unsigned int counter = 0;
@@ -48,6 +56,7 @@ namespace FileIO
   }
 
   // This also modifies the string and returns the rest
+  // Gets first entry in a delimited line, modifies string to remaining line
   std::string get_first_entry(std::string *str, char d)
   {
     // Get the string from the beginning until delimiter, not including it.
@@ -60,18 +69,22 @@ namespace FileIO
 
   // Returns 0 if fails. Otherwise, returns lines read
 //  template<typename T>
-  int get_text_1D(std::string filename,
+  NNInfo_uptr get_text_1D(std::string filename,
                              unsigned int dimension,
-                             double*** you_own_data)
+                             double*** you_own_data,
+			     size_t *line_count_o)
   {
+    NNInfo_uptr ret = default_info();
     double **data;
     std::string line_read;
     std::ifstream infile(filename);
     if(!infile.is_open())
       {
-        ConsolePrinter::instance().feedback_rewrite(
-              "Cannot open file               ");
-        return 0; // error
+	ret->message = MSG::FILE_OPEN_ERR;
+	ret->result = NNERROR;
+//        ConsolePrinter::instance().feedback_rewrite(
+//              "Cannot open file               ");
+        return ret; // error
       }
     unsigned int line_count = 0;
     // Verification loop
@@ -88,9 +101,11 @@ namespace FileIO
           }
         else if(char_count(line_read, ',') != dimension - 1)
           {
-            ConsolePrinter::instance().feedback_rewrite(
-                  "Incorrect dimension              ");
-            return 0;
+            ret->message = MSG::DIM_ERROR;
+            ret->result = NNERROR;
+//            ConsolePrinter::instance().feedback_rewrite(
+//                  "Incorrect dimension              ");
+            return ret;
           }
         line_count++;
     }
@@ -122,10 +137,48 @@ namespace FileIO
         line_count++;
     }
     infile.close();
-  //  system ("pause");
-    *you_own_data = data;
 
-    return line_count;
+    *you_own_data = data;
+    *line_count_o = line_count;
+    ret->result = NNOK;
+    return ret;
+  }
+
+
+  // Write comma delimited table
+  NNInfo_uptr write_csv(std::string filename, Table data)
+  {
+    NNInfo_uptr ret = default_info();
+    if(data.cols == 0 || data.rows == 0)
+      {
+	ret->message = MSG::DIM_ERROR;
+	ret->result = NNERROR;
+	return ret;
+      }
+
+    std::ofstream ofile(filename);
+    if(!ofile.is_open())
+      {
+	ret->message = MSG::FILE_OPEN_ERR;
+	ret->result = NNERROR;
+        return ret;
+      }
+
+    // write data
+    for(size_t ii = 0; ii < data.cols; ii++)
+      {
+	for(size_t jj = 0; jj < data.rows; jj++)
+	  {
+	    if(jj > 0)
+	      {
+		ofile<<",";
+	      }
+	    ofile<<data.data[ii][jj];
+	  }
+	ofile<<"\n";
+      }
+    ret->result = NNOK;
+    return ret;
   }
 }
 

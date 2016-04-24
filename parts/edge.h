@@ -26,6 +26,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #define PARTS_EDGE_H_
 
 #include "edge_phantom.h"
+#include "common.h"
 
 template<typename T>
 class Edge: Edge_Phantom<T>
@@ -36,12 +37,13 @@ class Edge: Edge_Phantom<T>
 protected:
   Edge();
   Edge(T value);
-  void set_value(T edge_value);
+  virtual void set_value(T edge_value);
 
   // randomizes the edge connection
-  void set_drop_off(bool state);
-  void set_next(Node<T>* const next);
-  void set_prev(Node<T>* const prev);
+  virtual void set_drop_off(bool state);
+  virtual void set_next(Node<T>* const next);
+  virtual void set_prev(Node<T>* const prev);
+  virtual void reset_weight();
 
 public:
   // Allow the world to observe.
@@ -53,9 +55,14 @@ public:
   T& value_;
 
   // Request set value. Not necessarily honored
-  void req_value(T value);
+  void accumulate(T edge_value);
+  void confirm_value();
+  void undo_value();
+  T get_value_test();
   void req_drop_off(bool state);
   void req_rand_drop_off(T percentage);
+
+  virtual ~Edge(){}
 
 };
 
