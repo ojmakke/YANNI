@@ -61,6 +61,7 @@ public:
   // size will be assumed to equal the output layer.
   virtual T calc_error(T *target) = 0;
   virtual void learn(T rate) = 0;
+  virtual ~ClassicNetwork(){}
 };
 
 #endif // CLASSIC_NETWORK_H

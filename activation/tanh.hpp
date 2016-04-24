@@ -39,13 +39,13 @@ public:
   T f(T fnet)
   {
     y = (T) tanh((double) fnet);
-    if(y > (T) 0.995)
+    if(y > (T) 0.9995)
       {
-        y = (T) 0.995;
+        y = (T) 0.9995;
       }
-    else if(y < (T) -0.995)
+    else if(y < (T) -0.9995)
       {
-        y = (T) -0.995;
+        y = (T) -0.99995;
       }
     fnet_old  = fnet;
     return y;

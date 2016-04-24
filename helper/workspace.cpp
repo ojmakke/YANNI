@@ -19,12 +19,18 @@ GNU General Public License for more details.
 You should have received a copy of the Affero GNU General Public License
 along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <string>
+#include <string.h>
+#include <memory>
+#include <cmath>
 
+#include "common.h"
+#include "interpreter/commands.h"
 #include "workspace.h"
+
 #include "console_printer.h"
-#include "../networks/fullhidden.h"
-#include "../activation/activation.h"
+#include "networks/fullhidden.h"
+#include "activation/activation.h"
+#include "interpreter/parser.h"
 
 extern void run_tests();
 
@@ -51,233 +57,147 @@ void Workspace::execute(Parser &parser)
   // classic network
   else if(parser.command.compare("cn") == 0)
     {
-      size_t layers = parser.p_size;
-      if(layers < 3)
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "Must have at least 3 layers    ");
-          return;
-        }
-      // loop to make sure structure is good
-      for(size_t ii = 0; ii < layers; ii++)
-        {
-          if(atoi(parser.parameters[ii]->command.c_str()) < 1)
-            {
-              ConsolePrinter::instance().feedback_rewrite(
-                    "Incorrect layer size       ");
-              return;
-            }
-          // All but input need activation function
-          // Below checks are not for the input layer, skip.
-          if(ii == 0) { continue; }
+      NNInfo_uptr ret = classic_network(parser, networks);
 
-          if(parser.parameters[ii]->p_size != 1)
-            {
-              ConsolePrinter::instance().feedback_rewrite(
-                    "Layer needs a function    ");
-              return;
-            }
-          // get switching function
-          std::string sf = parser.parameters[ii]->parameters[0]->command;
-          if(sf.compare("tanh") != 0 && sf.compare("logistic") != 0)
-            {
-              ConsolePrinter::instance().feedback_rewrite(
-                    "Invalid function          ");
-              return;
-            }
-        }
-      // Up to here, good. Create
-      size_t *layers_size = new size_t[layers];
-      ActivationEnum *switching = new ActivationEnum[layers];
-      for(size_t ii = 0; ii < layers; ii++)
-        {
-          layers_size[ii] = atoi(parser.parameters[ii]->command.c_str());
-          // below do not apply for i = 0 (input layer)
-          if(ii == 0){ continue; }
-          // get switching function
-          std::string sf = parser.parameters[ii]->parameters[0]->command;
-          if(sf.compare("tanh") == 0)
-            {
-              switching[ii] = TANH;
-            }
-          else
-            {
-              switching[ii] = LOGISTIC;
-            }
-        }
-      FullHidden<double> *network =
-          new FullHidden<double>(layers_size, layers, switching);
-      networks.push_back(network);
-      ConsolePrinter::instance().network_write_nets(networks);
-
-      delete[] layers_size;
-      delete[] switching;
+      if(ret->result == NNOK)
+	{
+	  ConsolePrinter::instance().network_write_nets(networks);
+	}
+      else
+	{
+	  ConsolePrinter::instance().feedback_rewrite(ret->message);
+	}
+      return;
     }
 
   else if(parser.command.compare("use") == 0)
     {
-      size_t params = parser.p_size;
-      if(params  != 1)
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "Use takes 1 parmeter only ");
-          return;
-        }
-      if(parser.parameters == nullptr)
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "Error in input ");
-          return;
-        }
-      int id = atoi(parser.parameters[0]->command.c_str());
-      if(!activate_network(id))
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "Network is not found         ");
-          return;
-        }
-      ConsolePrinter::instance().network_write_active(current_network);
+      NNInfo_uptr ret = use_network(parser, networks, current_network);
+      if(ret->result == NNOK)
+	{
+	  ConsolePrinter::instance().network_write_active(current_network);
+	}
+      else
+	{
+	  ConsolePrinter::instance().feedback_rewrite(ret->message);
+	}
       return;
     }
 
   else if(parser.command.compare("set_io") == 0)
     {
-      size_t params = parser.p_size;
-      if(params  != 2)
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "input takes 1 parmeter only      ");
-          return;
-        }
-      if(parser.parameters == nullptr)
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "Error in input           ");
-          return;
-        }
-      if(current_network == nullptr)
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "No active networks           ");
-          return;
-        }
-      current_network->input_file_alloc(parser.parameters[0]->command);
-      ConsolePrinter::instance().feedback_rewrite(
-            "Input loaded...           ");
-      current_network->output_file_alloc(parser.parameters[1]->command);
-      ConsolePrinter::instance().feedback_rewrite(
-            "Output loaded...           ");
+      NNInfo_uptr ret = set_io(parser, networks, current_network);
+      if(ret->result == NNOK)
+	{
+	  ConsolePrinter::instance().feedback_rewrite("Input and Output loaded");
+	}
+      else
+	{
+	  ConsolePrinter::instance().feedback_rewrite(ret->message);
+	}
       return;
     }
 
   else if(parser.command.compare("train") == 0)
     {
-      size_t params = parser.p_size;
-      if(params  != 3 && params != 4)
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "train(error,epoch,rate, drop%)          ");
-          return;
-        }
-      if(parser.parameters == nullptr)
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "Error in input           ");
-          return;
-        }
-      if(   current_network == nullptr
-         || current_network->input_allocated == false
-         || current_network->output_allocated == false)
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "Network not active and ready           ");
-          return;
-        }
-      double error = atof(parser.parameters[0]->command.c_str());
-      unsigned int epoch = atoi(parser.parameters[1]->command.c_str());
-      double rate = atof(parser.parameters[2]->command.c_str());
-      double dropoff = 0.0;
-      if(params == 4)
-        {
-          dropoff = atof(parser.parameters[3]->command.c_str());
-        }
-      if(error < 0.0 || rate < 0.0000000001 || epoch > 500000
-         || dropoff < 0.0 || dropoff >  0.99 )
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "Invalid training parameters          ");
-          return;
-        }
+      NNInfo_uptr ret = train_network(parser, current_network);
+      if(ret->result != NNOK)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(ret->message);
+	}
 
-      current_network->train(error, epoch, rate, dropoff);
       return;
     }
 
   else if(parser.command.compare("eval") == 0)
     {
-      size_t params = parser.p_size;
-      if(   current_network == nullptr
-         || current_network->input_allocated == false
-         || current_network->output_allocated == false)
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "Network not active and ready           ");
-          return;
-        }
+      NNInfo_uptr ret = eval_network(parser, current_network);
+      if(ret->result != NNOK)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(ret->message);
+	}
+      else
+	{
+	  std::unique_ptr<double[]> out = current_network->get_output();
 
-      if(params  != current_network->input_layer_size)
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "wrong input size           ");
-          return;
-        }
-      if(parser.parameters == nullptr)
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "Error in input           ");
-          return;
-        }
-      if(   current_network == nullptr
-         || current_network->input_allocated == false
-         || current_network->output_allocated == false)
-        {
-          ConsolePrinter::instance().feedback_rewrite(
-                "Network not active and ready           ");
-          return;
-        }
+	  size_t out_len = current_network->output_layer_size_;
 
-      double *in = new double[parser.p_size];
-      for(size_t ii = 0; ii < parser.p_size; ii++)
-        {
-          in[ii] = atof(parser.parameters[ii]->command.c_str());
-        }
+	  // TODO:
+	  // Do not output from here.
+	  for(size_t ii = 0; ii < out_len; ii++)
+	    {
+	      std::string outstr = "Output ";
+	      double val = out[ii]*current_network->output_scale;
+	      outstr.append(std::to_string(ii))
+	          .append(": Value: ")
+	          .append(std::to_string(val));
 
-      current_network->set_inputs(in);
-      current_network->forward_propagate();
-      current_network->dump_outputs();
+	      ConsolePrinter::instance().feedback_write(outstr);
+	    }
+	}
       return;
     }
 
+  else if(parser.command.compare("exit") == 0)
+    {
+      abort();
+    }
 
+  else if(parser.command.compare("scale") == 0)
+    {
+      NNInfo_uptr ret = scale_network(parser, current_network);
+      if(ret->result != NNOK)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(ret->message);
+	}
+      else
+	{
+	  ConsolePrinter::instance().feedback_rewrite("Scales set");
+	}
+      return;
+    }
+  else if(parser.command.compare("plotSquare") == 0)
+    {
+      NNInfo_uptr ret = plot_square(parser, current_network);
+      if(ret->result != NNOK)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(ret->message);
+	}
+      else
+	{
+	  ConsolePrinter::instance().feedback_rewrite("Plot complete");
+	}
+      return;
+    }
+
+  else if(parser.command.compare("reset") == 0)
+    {
+      NNInfo_uptr ret = reset_network(parser, current_network);
+      if(ret->result != NNOK)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(ret->message);
+	}
+      else
+	{
+	  ConsolePrinter::instance().feedback_rewrite("Weights are reset");
+	}
+      return;
+    }
+  else if(parser.command.compare("retrain") == 0)
+    {
+      NNInfo_uptr ret = retrain_network(parser, current_network);
+      if(ret->result != NNOK)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(ret->message);
+	}
+      return;
+    }
   else
     {
       std::string result = "Unrecognized command: ";
       result.append(parser.command).append(". Try demo");
       ConsolePrinter::instance().feedback_rewrite(result);
     }
-}
-
-bool Workspace::activate_network(int net_id)
-{
-  for(size_t ii = 0; ii < networks.size(); ii++)
-    {
-      if(networks.at(ii)->self_id == net_id)
-        {
-          current_network = networks.at(ii);
-          return true;
-        }
-    }
-  return false;
 }
 
 void Workspace::start()

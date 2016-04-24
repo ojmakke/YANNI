@@ -5,19 +5,16 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../helper/console_printer.cpp \
-../helper/parser.cpp \
 ../helper/randomizer.cpp \
 ../helper/workspace.cpp 
 
 OBJS += \
 ./helper/console_printer.o \
-./helper/parser.o \
 ./helper/randomizer.o \
 ./helper/workspace.o 
 
 CPP_DEPS += \
 ./helper/console_printer.d \
-./helper/parser.d \
 ./helper/randomizer.d \
 ./helper/workspace.d 
 
@@ -26,7 +23,7 @@ CPP_DEPS += \
 helper/%.o: ../helper/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	g++ -I"/home/gnunets/workspace/GNUNets" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

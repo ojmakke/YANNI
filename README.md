@@ -1,6 +1,6 @@
 # GNUNets
 The GNU Neural Network Library, created by Omar J Makke
-Pleased to announce version 0.0.3
+Pleased to announce version 0.1.0
 
 You can simply use include the header files under activation, network, and parts.
 
@@ -48,5 +48,25 @@ Type:
 
 To evaluate the network output for the input vector [0.2, 0.9]
 
+If the network doesn't converge, you can reset the weights to new random values. Make sure you have selected a network.
+Type:
+
+    reset
+
+You can now train the new network.
+You can also retrain the network using the previous parameters you used. If you didn't pass parameters, this will not work as initial values are not suitable "on purpose".
+Type:
+
+    retrain
+    
+For demonstration purposes, a function called plotSquare is created. It only works for networks with 2 inputs and 1 output. It plots a square image where the input (x,y) is the network input, and the color is the output. This is to demonstrate learning with gates.
+Type:
+
+    plotSquare(0,0.01,1)
+    
+This will generate inputs: x from 0 to 1 step 0.01, y from 0 to 1 step 0.01, and feeds the network with all the generated input, and draws the output as pixel error. 
+Note: This works only for positive inputs. It is for demonstration only.
+
+
 # Next Release
-Refactor the code structure. Since basic capabilities are now available and provide a use, it is good time to organize the code to allow addition of features quickly.
+Create easy way to test and validate network.
