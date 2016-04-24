@@ -8,6 +8,8 @@ CPP_SRCS += \
 ../interpreter/eval_network.cpp \
 ../interpreter/parser.cpp \
 ../interpreter/plot_square.cpp \
+../interpreter/reset_network.cpp \
+../interpreter/retrain_network.cpp \
 ../interpreter/scale_network.cpp \
 ../interpreter/set_io.cpp \
 ../interpreter/train_network.cpp \
@@ -18,6 +20,8 @@ OBJS += \
 ./interpreter/eval_network.o \
 ./interpreter/parser.o \
 ./interpreter/plot_square.o \
+./interpreter/reset_network.o \
+./interpreter/retrain_network.o \
 ./interpreter/scale_network.o \
 ./interpreter/set_io.o \
 ./interpreter/train_network.o \
@@ -28,6 +32,8 @@ CPP_DEPS += \
 ./interpreter/eval_network.d \
 ./interpreter/parser.d \
 ./interpreter/plot_square.d \
+./interpreter/reset_network.d \
+./interpreter/retrain_network.d \
 ./interpreter/scale_network.d \
 ./interpreter/set_io.d \
 ./interpreter/train_network.d \

@@ -169,6 +169,29 @@ void Workspace::execute(Parser &parser)
 	}
       return;
     }
+
+  else if(parser.command.compare("reset") == 0)
+    {
+      NNInfo_uptr ret = reset_network(parser, current_network);
+      if(ret->result != NNOK)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(ret->message);
+	}
+      else
+	{
+	  ConsolePrinter::instance().feedback_rewrite("Weights are reset");
+	}
+      return;
+    }
+  else if(parser.command.compare("retrain") == 0)
+    {
+      NNInfo_uptr ret = retrain_network(parser, current_network);
+      if(ret->result != NNOK)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(ret->message);
+	}
+      return;
+    }
   else
     {
       std::string result = "Unrecognized command: ";
