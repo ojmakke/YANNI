@@ -12,6 +12,7 @@ RM := rm -rf
 -include networks/subdir.mk
 -include interpreter/subdir.mk
 -include helper/subdir.mk
+-include fileio/subdir.mk
 -include Images/subdir.mk
 -include subdir.mk
 -include objects.mk

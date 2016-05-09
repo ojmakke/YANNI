@@ -70,4 +70,8 @@ NNInfo_uptr retrain_network(
     const Parser& parser,
     FullHidden<double>* const net);
 
+NNInfo_uptr validate_network(
+    const Parser& parser,
+    FullHidden<double>* const net);
+
 #endif /* INTERPRETER_COMMANDS_H_ */

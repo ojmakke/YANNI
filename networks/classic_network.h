@@ -3,7 +3,7 @@
  *
  *  Created on : Mar 19, 2016
  *      Author : Omar Makke (O jMakke)
- *      ojQutoe: "When it doubt, fprintf out"
+ *      ojQuote: "When it doubt, fprintf out"
  *      Email  : ojmakke@yahoo.com
 
 This file is part of GNU Nets also known as GNUNets

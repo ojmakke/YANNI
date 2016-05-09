@@ -30,6 +30,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "parts/node.h"
 #include "parts/layer.h"
 #include "fileio/fileio.h"
+#include "helper/console_printer.h"
 #include "fullhidden.h"
 
 void clear_2d(double** data, size_t dim);
@@ -168,7 +169,7 @@ T FullHidden<T>::train(T target_error,
   T error;
   this->learning_rate = learning_rate;
   this->epoch = epoch;
-  this->learning_target = learning_target;
+  this->learning_target = target_error;
   this->dropoff = dropoff;
   for(size_t study = 0; study < epoch; study++)
     {
@@ -201,30 +202,53 @@ T FullHidden<T>::train(T target_error,
       //TODO
       // Create a stochastic approach to select inputs.
       T error_test = 0.0;
-      for(size_t i = 0; i < set; i++)
+
+      for(size_t ii = 0; ii < set; ii++)
         {
-          set_inputs((input_set)[i]);
+	  train_pattern = train_pattern | 1;
+          set_inputs((input_set)[ii]);
           forward_propagate();
           // Important. Run this first to get the first delta to propagate
-          error += calc_error(output_set[i]);
+          error += calc_error(output_set[ii]);
           back_propagate(this->learning_rate);
           update_weights(this->learning_rate);
 
         }
-      for(size_t i = 0; i < set; i++)
-        {
-          set_inputs((input_set)[i]);
-          forward_propagate_test();
-          error_test += calc_error(output_set[i]);
-
-        }
-      if(error == error_test)
+//      for(size_t i = 0; i < set; i++)
+//        {
+//          set_inputs((input_set)[i]);
+//          forward_propagate_test();
+//          error_test += calc_error(output_set[i]);
+//
+//        }
+//      if(error == error_test)
+//	{
+//	 // this->learning_rate =this->learning_rate*1.1;
+//	}
+//      else if(error < error_test)
+//	{
+//	  this->learning_rate =this->learning_rate*0.9;
+//	  for(size_t ii = 1; ii <= all_layers.size(); ii++)
+//	    {
+//	      // work backwards
+//	      size_t index = all_layers.size() - ii;
+//	      i_layer = all_layers.at(index);
+//	      for(size_t jj = 0; jj < i_layer->nodes.size(); jj++)
+//		{
+//		  j_node = i_layer->nodes.at(jj);
+//
+//		  for(size_t kk = 0; kk < (j_node->forward).size(); kk++)
+//		    {
+//		      k_edge = (j_node->forward).at(kk);
+////		      k_edge->undo_value();
+//		    }
+//		}
+//	    }
+////	  continue;
+//	}
+      // If 0, then batch
+      if(!train_pattern)
 	{
-	 // this->learning_rate =this->learning_rate*1.1;
-	}
-      else if(error < error_test)
-	{
-	  this->learning_rate =this->learning_rate*0.9;
 	  for(size_t ii = 1; ii <= all_layers.size(); ii++)
 	    {
 	      // work backwards
@@ -237,28 +261,11 @@ T FullHidden<T>::train(T target_error,
 		  for(size_t kk = 0; kk < (j_node->forward).size(); kk++)
 		    {
 		      k_edge = (j_node->forward).at(kk);
-//		      k_edge->undo_value();
+		      k_edge->confirm_value();
 		    }
 		}
 	    }
-//	  continue;
 	}
-      for(size_t ii = 1; ii <= all_layers.size(); ii++)
-        {
-          // work backwards
-          size_t index = all_layers.size() - ii;
-          i_layer = all_layers.at(index);
-          for(size_t jj = 0; jj < i_layer->nodes.size(); jj++)
-            {
-              j_node = i_layer->nodes.at(jj);
-
-              for(size_t kk = 0; kk < (j_node->forward).size(); kk++)
-                {
-                  k_edge = (j_node->forward).at(kk);
-                  k_edge->confirm_value();
-                }
-            }
-        }
 
 
       std::string result = "Error in ";
@@ -483,6 +490,7 @@ void FullHidden<T>::update_weights(T rate)
         	  return;
         	}
               k_edge->accumulate(dw);
+              if(train_pattern) k_edge->confirm_value();	// one = online
             }
         }
     }

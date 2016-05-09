@@ -70,7 +70,8 @@ NNInfo_uptr classic_network(
       std::string sf = parser.parameters[ii]->parameters[0]->command;
       if(    sf.compare(FUNCS::TANH) != 0
 	  && sf.compare(FUNCS::LOGISTIC) != 0
-	  && sf.compare(FUNCS::POWERN) != 0)
+	  && sf.compare(FUNCS::POWERN) != 0
+	  && sf.compare(FUNCS::RECTIFY) != 0)
 	{
 	  ret->result = NNERROR;
 	  ret->message = BADFUNCTION;
@@ -95,9 +96,9 @@ NNInfo_uptr classic_network(
 	{
 	  switching[ii] = LOGISTIC;
 	}
-      else
+      else if(sf.compare(FUNCS::RECTIFY) == 0)
 	{
-	  switching[ii] = POWERN;
+	  switching[ii] = RECTIFY;
 	}
     }
   FullHidden<double> *network =
