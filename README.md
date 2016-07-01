@@ -48,5 +48,15 @@ Type:
 
 To evaluate the network output for the input vector [0.2, 0.9]
 
+Now suppose that you trained your network, but now you want to reinitialize it. Type:
+
+    retrain
+
+After you train your network, you may want to validate an entire set of data. You can use:
+
+    validate(inputfile, outputfile)
+    
+The results will be written in the output file
+
 # Next Release
 Refactor the code structure. Since basic capabilities are now available and provide a use, it is good time to organize the code to allow addition of features quickly.
