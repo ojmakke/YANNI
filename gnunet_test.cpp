@@ -33,34 +33,12 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 #include "networks/fullhidden.h"
 #include "networks/taylornet.h"
 #include "helper/console_printer.h"
-
-
-float** construct_2d(const size_t X, const size_t Y)
-{
-  float **pointer;
-  pointer = new float*[50]; // dynamic `array (size 4) of pointers to int`
-//  fprintf(stdout, "First D\n");
-  for (size_t i = 0; i < X; i++)
-    {
-//      fprintf(stdout, "2nd D\n");
-      pointer[i] = new float[Y];
-    }
-  return pointer;
-}
-
-void delete_2d(float **pointer, const float X)
-{
-  for (size_t i = 0; i < X; ++i)
-    {
-      delete[] pointer[i];
-    }
-  delete[] pointer;
-}
+#include "interpreter/commands.h"
 
 void run_tests()
 {
 //  fprintf(stdout, "Creating 2D arrays:\n");
-  size_t layers_sizes[] = {2,5,5,1};
+  size_t layers_sizes[] = {4,10,10,1};
 
   ActivationEnum switching[] = {TANH, TANH, TANH, POWERN};
 
@@ -68,9 +46,11 @@ void run_tests()
 
   TaylorNet<double> network(layers_sizes, 4);
 
-  network.input_file_alloc("logicinput.txt");
-  network.output_file_alloc("logicoutput.txt");
-  network.train(0.001,20000,0.005, 0.0);
+  network.input_file_alloc("in.csv");
+  network.output_file_alloc("o.csv");
+  network.reset_weights();
+  network.train(0.001,2000,0.000005, 0.0);
+
 
   {
   double in[] = {0.2, 0.7};

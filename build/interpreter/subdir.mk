@@ -13,7 +13,8 @@ CPP_SRCS += \
 ../interpreter/scale_network.cpp \
 ../interpreter/set_io.cpp \
 ../interpreter/train_network.cpp \
-../interpreter/use_network.cpp 
+../interpreter/use_network.cpp \
+../interpreter/validate_network.cpp 
 
 OBJS += \
 ./interpreter/classic_network.o \
@@ -25,7 +26,8 @@ OBJS += \
 ./interpreter/scale_network.o \
 ./interpreter/set_io.o \
 ./interpreter/train_network.o \
-./interpreter/use_network.o 
+./interpreter/use_network.o \
+./interpreter/validate_network.o 
 
 CPP_DEPS += \
 ./interpreter/classic_network.d \
@@ -37,14 +39,15 @@ CPP_DEPS += \
 ./interpreter/scale_network.d \
 ./interpreter/set_io.d \
 ./interpreter/train_network.d \
-./interpreter/use_network.d 
+./interpreter/use_network.d \
+./interpreter/validate_network.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
 interpreter/%.o: ../interpreter/%.cpp
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C++ Compiler'
-	g++ -I"/home/gnunets/workspace/GNUNets" -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
+	g++ -I../ -O0 -g3 -Wall -c -fmessage-length=0 -std=c++11 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

@@ -33,10 +33,10 @@ class  Rectify : public Activation<T>
 public:
   T f(T fnet)
   {
-    if((double) fnet < 0.0)
-      {
-        return (T) 0.0;
-      }
+//    if((double) fnet < 0.0)
+//      {
+//        return (T) 0.0;
+//      }
     return (T) fnet;
   }
   /**
@@ -46,7 +46,7 @@ public:
   {
     if((double) fnet == 0.0)
       {
-        return (T) 0.0;
+//        return (T) 0.0;
       }
     return (T) 1.0;
   }

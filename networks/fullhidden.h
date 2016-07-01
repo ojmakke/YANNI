@@ -50,6 +50,7 @@ public:
   bool output_allocated;
   T input_scale;	// divide input by this;
   T output_scale;	// Multiply output by this
+  bool train_pattern = 0; // hack & test. One time batch, other online.
 
   FullHidden();
   FullHidden(size_t *layers,
@@ -62,25 +63,25 @@ public:
          * Returns error achieved after end of training
          */
   static int id;
-  T train();
-  T train(T target_error,
+  virtual T train();
+  virtual T train(T target_error,
 	  T epoch,
 	  T learning_rate,
 	  double dropoff);
   virtual T retrain();
   virtual void reset_weights();
-  void forward_propagate();
+  virtual void forward_propagate();
   // Assumed to be equal to all_layers - 1, due to bias
-  void set_inputs(T *inputs);
-  void dump_everything();
-  void dump_outputs();
-  void dump_layer(size_t n);
-  std::unique_ptr<T[]> get_output();
+  virtual void set_inputs(T *inputs);
+  virtual void dump_everything();
+  virtual void dump_outputs();
+//  virtual void dump_layer(size_t n);
+  virtual std::unique_ptr<T[]> get_output();
   // size will be assumed to equal the output layer.
-  T calc_error(T *target);
+  virtual T calc_error(T *target);
   //TODO move to interface
-  NNInfo_uptr input_file_alloc(std::string filename);
-  NNInfo_uptr output_file_alloc(std::string filename);
+  virtual NNInfo_uptr input_file_alloc(std::string filename);
+  virtual NNInfo_uptr output_file_alloc(std::string filename);
 
 protected:
   T** input_set; // Tripple because allocation happens in function.

@@ -186,7 +186,7 @@ void Edge<T>::set_prev(Node<T> * const prev)
 template<typename T>
 void Edge<T>::reset_weight()
 {
-  set_value(nnhelper.randomizer.get_rand());
+  set_value(nnhelper.randomizer.get_rand(-0.5,0.5));
 }
 
 // Tell compiler what to build
