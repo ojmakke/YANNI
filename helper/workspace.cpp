@@ -192,6 +192,20 @@ void Workspace::execute(Parser &parser)
 	}
       return;
     }
+  else if(parser.command.compare("validate") == 0)
+    {
+      NNInfo_uptr ret = validate_network(parser, current_network);
+      if(ret->result != NNOK)
+	{
+	  ConsolePrinter::instance().feedback_rewrite(ret->message);
+	}
+      else
+	{
+	  ConsolePrinter::instance().feedback_rewrite("Output file written");
+	}
+      return;
+    }
+
   else
     {
       std::string result = "Unrecognized command: ";

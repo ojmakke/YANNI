@@ -35,6 +35,7 @@ Randomizer<T>::Randomizer()
 template<typename T>
 T Randomizer<T>::get_rand()
 {
+  srand(time(0));
   return ((T) rand())/((T) RAND_MAX);
 }
 

@@ -33,6 +33,9 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 void clear_2d(double** data, size_t dim);
 void clear_2d(float** data, size_t dim);
 
+//TODO
+// Changed functions in FullHiden to virtual.
+// Provide implementation
 template<typename T>
 TaylorNet<T>::TaylorNet():FullHidden<T>()
 {
