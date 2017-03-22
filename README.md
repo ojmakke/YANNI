@@ -1,5 +1,8 @@
-# GNUNets
-The GNU Neural Network Library, created by Omar J Makke
+# YANNI
+Yet Another Neural Network Implementation, created by Omar J Makke
+
+The project is renamed to YANNI, originally it was "GNUNets". This is to avoid confusion with the amazing GNU Nets for distributed networking.
+
 Pleased to announce version 0.0.3
 
 You can simply use include the header files under activation, network, and parts.
@@ -13,7 +16,7 @@ Create comma delimited text files for inputs and outputs. Make sure they have sa
 
 These files are the inputs and outputs for an XOR with 2 inputs.
 
-Once created, run GNUNets.
+Once created, run yanni.
 
 Type:
 
@@ -59,4 +62,4 @@ After you train your network, you may want to validate an entire set of data. Yo
 The results will be written in the output file
 
 # Next Release
-Refactor the code structure. Since basic capabilities are now available and provide a use, it is good time to organize the code to allow addition of features quickly.
+The API's will change to Scheme, and will use Guile as extention language.
