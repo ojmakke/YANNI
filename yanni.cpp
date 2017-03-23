@@ -1,7 +1,7 @@
 /*
- * retrain_network.cpp
+ * gnunets.cpp
  *
- *  Created on : Apr 24, 2016
+ *  Created on : Mar 19, 2016
  *      Author : Omar Makke (O jMakke)
  *      Email  : ojmakke@yahoo.com
 
@@ -21,33 +21,24 @@ You should have received a copy of the Affero GNU General Public License
 along with YANNI.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <string>
-#include <vector>
+#include <string.h>
+#include <stdlib.h>
+#include <iostream>
 
-#include "common.h"
-#include "networks/fullhidden.h"
-#include "parser.h"
+#include "helper/nnhelper.hpp"
+#include "helper/console_printer.h"
 
-const std::string BADPARAM = "Error. Use train(error,epoch,rate, drop%)";
-const std::string NOTREADY = "Network not initialized.";
-const std::string OUTOFRANGE = "Parameters are out of range";
 
-NNInfo_uptr retrain_network(
-    const Parser& parser,
-    FullHidden<double>* const net)
+
+#define CONTROL 0
+#define INPUT 1
+
+extern void run_tests();
+NNHelper<double> nnhelper;
+
+int main(int argc, char* argv[])
 {
-  NNInfo_uptr ret = default_info();
-
-  if(   net == nullptr
-     || net->input_allocated == false
-     || net->output_allocated == false)
-    {
-      ret->message = NOTREADY;
-      ret->result = NNERROR;
-      return ret;
-    }
-
-  net->retrain();
-  ret->result = NNOK;
-  return ret;
+  ConsolePrinter::instance().interact();
+//  run_tests();
 }
+

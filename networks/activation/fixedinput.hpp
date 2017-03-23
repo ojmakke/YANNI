@@ -1,10 +1,10 @@
 /*
- * randomizer.h
+ * fixedinput.hpp
  *
  *  Created on : Mar 17, 2016
  *      Author : Omar Makke (O jMakke)
- *      ojQuote: "Every person needs some personal philosophy in life"
- *      Email  : ojmakke@yahoo.com
+ *      ojQuote: "Programming is a science while coding is an art"
+ *    	Email  : ojmakke@yahoo.com
 
 This file is part of "Yet Another Neural Nets Implementation",
 also known as YANNI
@@ -21,20 +21,29 @@ GNU General Public License for more details.
 You should have received a copy of the Affero GNU General Public License
 along with YANNI.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef RANDOMIZER_H_
-#define RANDOMIZER_H_
 
-template<typename T>
-class Randomizer
+#ifndef FIXEDINPUT_HPP_
+#define FIXEDINPUT_HPP_
+
+#include "activation.h"
+#include <math.h>
+
+template <typename T>
+class  FixedInput : public Activation<T>
 {
 public:
-  Randomizer();
-  T get_rand(T in, T max);
-  T get_rand();		// Between 0 and 1
-
+  /* <T> is casted to double and then back to <T> */
+  T f(T fnet)
+  {
+    return (T) 1.0;
+  }
+  T df(T fnet)
+  {
+    return (T) 0.0;
+  }
+  ~FixedInput<T>(){}
 };
-
-#endif /* RANDOMIZER_H_ */
-
-
+template class FixedInput<double>;
+template class FixedInput<float>;
+#endif /* FIXEDINPUT_HPP_ */
 

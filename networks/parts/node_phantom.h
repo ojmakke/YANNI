@@ -1,10 +1,11 @@
 /*
- * randomizer.h
+ * node_phantom.h
  *
- *  Created on : Mar 17, 2016
+ *  Created on : Apr 03, 2016
  *      Author : Omar Makke (O jMakke)
- *      ojQuote: "Every person needs some personal philosophy in life"
- *      Email  : ojmakke@yahoo.com
+ *		ojQuote: "There are 3 kinds of people:
+ *                        the rich, the poor, and the hackers"
+ *		Email  : ojmakke@yahoo.com
 
 This file is part of "Yet Another Neural Nets Implementation",
 also known as YANNI
@@ -21,20 +22,22 @@ GNU General Public License for more details.
 You should have received a copy of the Affero GNU General Public License
 along with YANNI.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef RANDOMIZER_H_
-#define RANDOMIZER_H_
+#ifndef NODE_PHANTOM_H
+#define NODE_PHANTOM_H
 
 template<typename T>
-class Randomizer
-{
-public:
-  Randomizer();
-  T get_rand(T in, T max);
-  T get_rand();		// Between 0 and 1
+class Node;
 
+// Trick; Befriend the inherited. Then friends of the inherited
+// can only see protected (not privates) of the inherited
+template<typename T>
+class Node_Phantom
+{
+  friend class Node<T>;
+private:
+  T y;
+  T fnet;
+  T delta;
 };
 
-#endif /* RANDOMIZER_H_ */
-
-
-
+#endif // NODE_PHANTOM_H

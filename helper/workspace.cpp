@@ -5,19 +5,20 @@
  *      Author : Omar Makke (O jMakke)
  *      Email  : ojmakke@yahoo.com
 
-This file is part of GNU Nets also known as GNUNets
+This file is part of "Yet Another Neural Nets Implementation",
+also known as YANNI
 
-GNU Nets is free software: you can redistribute it and/or modify
+YANNI is free software: you can redistribute it and/or modify
 it under the terms of the Affero GNU General Public License as published by
 the Free Software Foundation, version 3 of the License.
 
-GNU Nets is distributed in the hope that it will be useful,
+YANNI is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the Affero
 GNU General Public License for more details.
 
 You should have received a copy of the Affero GNU General Public License
-along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
+along with YANNI.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <string.h>
 #include <memory>
@@ -29,7 +30,7 @@ along with GNU Nets.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "console_printer.h"
 #include "networks/fullhidden.h"
-#include "activation/activation.h"
+//#include "activation/activation.h"
 #include "interpreter/parser.h"
 
 extern void run_tests();
@@ -51,7 +52,7 @@ void Workspace::execute(Parser &parser)
     {
       ConsolePrinter::instance().feedback_rewrite(
             "Starting Demo...                   ");
-      run_tests();
+ //     run_tests();
       return;
     }
   // classic network
@@ -158,15 +159,15 @@ void Workspace::execute(Parser &parser)
     }
   else if(parser.command.compare("plotSquare") == 0)
     {
-      NNInfo_uptr ret = plot_square(parser, current_network);
-      if(ret->result != NNOK)
-	{
-	  ConsolePrinter::instance().feedback_rewrite(ret->message);
-	}
-      else
-	{
-	  ConsolePrinter::instance().feedback_rewrite("Plot complete");
-	}
+   //   NNInfo_uptr ret = plot_square(parser, current_network);
+   //   if(ret->result != NNOK)
+//	{
+//	  ConsolePrinter::instance().feedback_rewrite(ret->message);
+//	}
+//      else
+//	{
+//	  ConsolePrinter::instance().feedback_rewrite("Plot complete");
+//	}
       return;
     }
 

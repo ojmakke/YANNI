@@ -1,9 +1,10 @@
 /*
- * parser.h
+ * activation.h
  *
- *  Created on : Mar 26, 2016
+ *  Created on : Mar 17, 2016
  *      Author : Omar Makke (O jMakke)
- *      ojQuote: "Math is simply a numeric implementation of Logic."
+ *      ojQuote: "Young man, listen carefully to the gray hair."
+ *
  *      Email  : ojmakke@yahoo.com
 
 This file is part of "Yet Another Neural Nets Implementation",
@@ -22,38 +23,40 @@ You should have received a copy of the Affero GNU General Public License
 along with YANNI.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef ACTIVATION_H_
+#define ACTIVATION_H_
 
 #include <string>
 
-class Parser
+/** Activation function abstract structure */
+template<typename T>
+class Activation
 {
 public:
-  Parser();
-  std::string command;
-  Parser **parameters; // Parameters of the command. This is like a tree.
-  size_t p_size; // Arguments: Size of parameters
-  void parse(std::string input_command, bool is_root);
-  ~Parser();
+  virtual T f(T fnet) = 0;
+  virtual T df(T fnet) = 0;
+  virtual ~Activation() = 0;
+};
 
-private:
+template<typename T>
+Activation<T>::~Activation()
+{
+}
 
-
-  void clean_tree(Parser *parser);
+enum ActivationEnum
+{
+  LOGISTIC,
+  RECTIFY,
+  STEP,
+  TANH,
+  FIXEDINPUT,
+  POWERN,
 };
 
 
-// for the interpreter
-namespace FUNCS
-{
-  const std::string TANH = "tanh";
-  const std::string LOGISTIC = "logistic";
-  const std::string RECTIFY = "rectify";
-  const std::string STEP = "step";
-  const std::string FIXEDINPUT = "fixedinput";
-  const std::string POWERN = "powern";
-}
 
+// Tell compiler which classes to build
+template class Activation<double>;
+template class Activation<float>;
 
-#endif // PARSER_H
+#endif /* ACTIVATION_H_ */
