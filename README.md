@@ -1,11 +1,7 @@
 # YANNI
-Yet Another Neural Network Implementation, created by Omar J Makke
+Yet Another Neural Network Implementation. 
 
-The project is renamed to YANNI, originally it was "GNUNets". This is to avoid confusion with the amazing GNU Nets for distributed networking.
-
-Pleased to announce version 0.0.3
-
-You can simply use include the header files under activation, network, and parts.
+The project is renamed to YANNI. This is how I discovered Lisp.
 
 Push i to enter edit mode. When in edit mode, type demo. Not all items in the menu are implemented yet.
 
